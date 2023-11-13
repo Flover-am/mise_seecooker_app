@@ -54,7 +54,7 @@ class _MainPageState extends State<MainPage> {
         onPressed: () => {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const PostPage()),
+            MaterialPageRoute(builder: (context) => const PostPage(param: '111',)),
           )
         },
         child: const Icon(Icons.edit),

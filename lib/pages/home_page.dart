@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:seecooker/widgets/community_card.dart';
-import 'package:waterfall_flow/waterfall_flow.dart';
+import 'package:seecooker/widgets/community_waterfall.dart';
+import 'package:seecooker/widgets/my_search_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,32 +9,52 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   var text = 'home';
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return WaterfallFlow.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-      ),
-      itemBuilder: (BuildContext context, int index) {
-        return index % 2 == 0
-            ? const CommunityCard(
-            coverUrl: 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-            author: 'author',
-            title: 'title',
-            avatarUrl: 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg')
-            : const CommunityCard(
-            coverUrl: 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-            author: 'author',
-            title: 'titletitletitletitletitletitletitletitletitletitle',
-            avatarUrl: 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg');
-      },
-      itemCount: 10,
+    return Column(
+      children: [
+        // HomeSearchBar(),
+        AppBar(
+          title: MySearchBar(),
+          actions: [
+            Container(
+              margin: const EdgeInsets.only(right: 16),
+              child: const CircleAvatar(
+                radius: 16,
+                backgroundImage: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
+              ),
+            ),
+          ],
+        ),
+        TabBar(
+          controller: _tabController,
+          tabs: const <Widget>[
+            Tab(text: '收藏'),
+            Tab(text: '推荐'),
+            Tab(text: '社区'),
+          ],
+        ),
+        Expanded(
+          child: TabBarView (
+            controller: _tabController,
+            children: const [
+              Text('收藏'),
+              Text('推荐'),
+              CommunityWaterfall(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
