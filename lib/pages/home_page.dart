@@ -26,15 +26,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         // HomeSearchBar(),
         AppBar(
           title: MySearchBar(),
-          actions: [
-            Container(
-              margin: const EdgeInsets.only(right: 16),
-              child: const CircleAvatar(
-                radius: 16,
-                backgroundImage: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-              ),
-            ),
-          ],
         ),
         TabBar(
           controller: _tabController,
