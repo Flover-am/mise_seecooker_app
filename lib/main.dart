@@ -1,7 +1,7 @@
 import 'package:seecooker/pages/account_page.dart';
 import 'package:seecooker/pages/explore_page.dart';
 import 'package:seecooker/pages/home_page.dart';
-import 'package:seecooker/pages/mall_page.dart';
+import 'package:seecooker/pages/community_page.dart';
 import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +42,7 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _body = [
     const HomePage(),
     const ExplorePage(),
-    const MallPage(),
+    const CommunityPage(),
     const AccountPage(),
   ];
 
@@ -79,9 +79,9 @@ class _MainPageState extends State<MainPage> {
             label: '发现',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.local_mall),
-            icon: Icon(Icons.local_mall_outlined),
-            label: '商城',
+            selectedIcon: Icon(Icons.camera),
+            icon: Icon(Icons.camera_outlined),
+            label: '社区',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.account_circle),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:seecooker/widgets/community_waterfall.dart';
-import 'package:seecooker/widgets/my_search_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,31 +19,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // HomeSearchBar(),
-        AppBar(
-          title: MySearchBar(),
-        ),
-        TabBar(
-          controller: _tabController,
-          tabs: const <Widget>[
-            Tab(text: '收藏'),
-            Tab(text: '推荐'),
-            Tab(text: '社区'),
-          ],
-        ),
-        Expanded(
-          child: TabBarView (
-            controller: _tabController,
-            children: const [
-              Text('收藏'),
-              Text('推荐'),
-              CommunityWaterfall(),
-            ],
-          ),
-        ),
-      ],
+    return const Center(
+      child: Text('home')
     );
   }
 }
