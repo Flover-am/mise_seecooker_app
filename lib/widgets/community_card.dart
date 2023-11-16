@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:seecooker/pages/detail_page.dart';
+
+import '../pages/detail_page.dart';
 
 class CommunityCard extends StatelessWidget {
   final String coverUrl;
@@ -17,6 +18,14 @@ class CommunityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
+      color: Theme.of(context).colorScheme.surfaceVariant, // filled card
+      // shape: RoundedRectangleBorder( // outlined card
+      //   side: BorderSide(
+      //     color: Theme.of(context).colorScheme.outline,
+      //   ),
+      //   borderRadius: const BorderRadius.all(Radius.circular(12)),
+      // ),
       child: InkWell(
         onTap: () {
           Navigator.push(
