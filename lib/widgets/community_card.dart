@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '../pages/detail_page.dart';
 
 class CommunityCard extends StatelessWidget {
-  final String coverUrl;
+  final String thumbnailUrl;
   final String author;
   final String title;
   final String avatarUrl;
 
   const CommunityCard(
       {super.key,
-      required this.coverUrl,
+      required this.thumbnailUrl,
       required this.author,
       required this.title,
       required this.avatarUrl});
@@ -46,7 +46,7 @@ class CommunityCard extends StatelessWidget {
                   topRight: Radius.circular(12),
                 ),
                 child: Image(
-                  image: NetworkImage(coverUrl),
+                  image: NetworkImage(thumbnailUrl),
                   fit: BoxFit.cover,
                 ),
               ),

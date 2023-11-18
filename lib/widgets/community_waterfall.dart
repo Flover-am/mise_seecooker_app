@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:seecooker/widgets/community_card.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
-class CommunityWaterfall extends StatelessWidget {
+class CommunityWaterfall extends StatefulWidget {
   const CommunityWaterfall({super.key});
 
+  @override
+  State<CommunityWaterfall> createState() => _CommunityWaterfallState();
+}
+
+class _CommunityWaterfallState extends State<CommunityWaterfall> {
   @override
   Widget build(BuildContext context) {
     return WaterfallFlow.builder(
@@ -16,7 +21,7 @@ class CommunityWaterfall extends StatelessWidget {
       ),
       itemBuilder: (BuildContext context, int index) {
         return const CommunityCard(
-            coverUrl: 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
+            thumbnailUrl: 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
             author: 'author',
             title: 'title',
             avatarUrl: 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg');

@@ -1,3 +1,5 @@
+import 'package:provider/provider.dart';
+import 'package:seecooker/models/community_posts.dart';
 import 'package:seecooker/pages/account_page.dart';
 import 'package:seecooker/pages/explore_page.dart';
 import 'package:seecooker/pages/home_page.dart';
@@ -6,7 +8,13 @@ import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CommunityPostsModel())
+      ],
+      child: const MyApp()
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +44,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin {
   int _currentPageIndex = 0;
 
   final List<Widget> _body = [
@@ -47,9 +55,15 @@ class _MainPageState extends State<MainPage> {
   ];
 
   @override
+  bool get wantKeepAlive => true; // keep page alive
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _body[_currentPageIndex],
+      body: IndexedStack(
+        index: _currentPageIndex,
+        children: _body,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {
           Navigator.push(
