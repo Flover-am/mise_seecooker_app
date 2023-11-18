@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(brightness: Brightness.dark, seedColor: Colors.pink),
+        colorScheme: ColorScheme.fromSeed(brightness: Brightness.light, seedColor: Colors.pink),
         useMaterial3: true,
       ),
       home: const MainPage(),
