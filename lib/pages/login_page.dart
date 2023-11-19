@@ -31,8 +31,14 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        // 添加 seecooker 的 logo
+        Image.asset(
+          'assets/images/seecooker_logo.png', // 请将图片路径替换为你实际的图片路径
+          height: 240, // 根据需要调整高度
+        ),
+        const SizedBox(height: 16),
         TextField(
           controller: _usernameController,
           decoration: const InputDecoration(
@@ -57,7 +63,7 @@ class _LoginFormState extends State<LoginForm> {
             // 简单的示例：如果用户名和密码都不为空，视为登录成功
             if (username.isNotEmpty && password.isNotEmpty) {
               // 登录成功后可以使用 Navigator.pop 或 Navigator.pushReplacement 返回上一个页面
-               Navigator.pop(context,true);
+              Navigator.pop(context, true);
               // 或者你可以进行其他操作
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -75,7 +81,7 @@ class _LoginFormState extends State<LoginForm> {
               );
             }
           },
-          child: Text('登录'),
+          child: const Text('登录'),
         ),
       ],
     );
