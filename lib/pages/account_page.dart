@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:seecooker/models/user_model.dart';
 import 'package:seecooker/pages/login_page.dart';
 
 class AccountPage extends StatefulWidget {
@@ -9,11 +11,10 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  //var text = 'account';
-  bool isLoggedIn = false; // 默认未登录
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('我的'),
@@ -21,10 +22,13 @@ class _AccountPageState extends State<AccountPage> {
       body: ListView(
         children: [
           // 个人信息部分
-          isLoggedIn
-              ? _buildLoggedInProfileSection()
-              : _buildNotLoggedInProfileSection(context),
-
+          Consumer<UserModel>(
+            builder: (context, userModel, child) {
+              return userModel.isLoggedIn
+                  ? _buildLoggedInProfileSection(userModel)
+                  : _buildNotLoggedInProfileSection(context);
+            },
+          ),
           // 收藏和发布栏目
           _buildTabBarSection(),
         ],
@@ -32,7 +36,7 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildLoggedInProfileSection() {
+  Widget _buildLoggedInProfileSection(UserModel userModel) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -44,9 +48,9 @@ class _AccountPageState extends State<AccountPage> {
                 'https://example.com/avatar.jpg'), // 你的头像图片地址
           ),
           const SizedBox(height: 16),
-          const Text(
-            '用户名',
-            style: TextStyle(
+                Text(
+            userModel.username,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -102,19 +106,12 @@ class _AccountPageState extends State<AccountPage> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () async {
+            onPressed: () => {
               // 在此处理登录操作，可以跳转到登录页面等
-              final result = await Navigator.push(
+              Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-
-              // 根据返回的结果更新 isLoggedIn 变量
-              if (result == true) {
-                setState(() {
-                  isLoggedIn = true;
-                });
-              }
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              )
             },
             child: const Text('登录'),
           ),
