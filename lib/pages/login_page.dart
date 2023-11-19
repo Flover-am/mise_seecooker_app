@@ -30,13 +30,14 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SingleChildScrollView(
+        child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         // 添加 seecooker 的 logo
         Image.asset(
           'assets/images/seecooker_logo.png', // 请将图片路径替换为你实际的图片路径
-          height: 240, // 根据需要调整高度
+          height: 200, // 根据需要调整高度
         ),
         const SizedBox(height: 16),
         TextField(
@@ -84,6 +85,7 @@ class _LoginFormState extends State<LoginForm> {
           child: const Text('登录'),
         ),
       ],
+    )
     );
   }
 
