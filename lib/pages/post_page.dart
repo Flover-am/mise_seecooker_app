@@ -37,7 +37,12 @@ class _PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('post'),
+        actions: [
+          IconButton(onPressed: (){
+            Fluttertoast.showToast(msg: "//TODO: 发布");
+
+          }, icon: const Icon(Icons.publish_rounded))
+        ],
       ),
       body: ListView(
         // 整个页面
@@ -192,7 +197,7 @@ class _PostPageState extends State<PostPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: 18)),
         onPressed: () {
-          Fluttertoast.showToast(msg: "//TODO: Send !");
+          Fluttertoast.showToast(msg: "//TODO: 发布");
         },
       ),
     );
