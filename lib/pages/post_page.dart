@@ -63,6 +63,14 @@ class _PostPageState extends State<PostPage> {
               },
               icon: const Icon(Icons.publish_rounded))
         ],
+        title:
+          Consumer<UserModel>(
+          builder: (context, user, child) => Stack(
+            children: [
+              Text('${user.username} post'),
+            ],
+          ),
+        )
       ),
       body: ListView(
         // 整个页面
