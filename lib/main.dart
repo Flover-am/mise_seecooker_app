@@ -1,20 +1,23 @@
 import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/account_page.dart';
 import 'package:seecooker/pages/explore_page.dart';
 import 'package:seecooker/pages/home_page.dart';
 import 'package:seecooker/pages/community_page.dart';
+import 'package:seecooker/pages/login_page.dart';
 import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:seecooker/utils/color_schems.dart';
 
+import 'models/user_model.dart';
+
 void main() {
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
+      ChangeNotifierProvider(create: (context) => UserModel())
       ],
       child: const MyApp()
     )
@@ -86,7 +89,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const PostPage(param: '111',)),
-          )
+          ),
         },
         child: const Icon(Icons.edit),
       ), // This trailing comma makes auto-formatting nicer for build methods.
