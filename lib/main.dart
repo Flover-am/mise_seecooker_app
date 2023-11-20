@@ -1,12 +1,21 @@
+import 'package:provider/provider.dart';
 import 'package:seecooker/pages/account_page.dart';
 import 'package:seecooker/pages/explore_page.dart';
 import 'package:seecooker/pages/home_page.dart';
 import 'package:seecooker/pages/community_page.dart';
+import 'package:seecooker/pages/login_page.dart';
 import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
 
+import 'models/user_model.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserModel(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -55,7 +64,7 @@ class _MainPageState extends State<MainPage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const PostPage(param: '111',)),
-          )
+          ),
         },
         child: const Icon(Icons.edit),
       ), // This trailing comma makes auto-formatting nicer for build methods.
