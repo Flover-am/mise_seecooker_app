@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PostPage extends StatefulWidget {
   final String param;
@@ -38,10 +41,11 @@ class _PostPageState extends State<PostPage> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(onPressed: (){
-            Fluttertoast.showToast(msg: "//TODO: 发布");
-
-          }, icon: const Icon(Icons.publish_rounded))
+          IconButton(
+              onPressed: () {
+                Fluttertoast.showToast(msg: "//TODO: 发布");
+              },
+              icon: const Icon(Icons.publish_rounded))
         ],
       ),
       body: ListView(
@@ -68,12 +72,15 @@ class _PostPageState extends State<PostPage> {
                 Divider(
                     thickness: 1,
                     color: Theme.of(context).colorScheme.primary.withAlpha(10)),
-                TextField(
-                  controller: summaryController,
-                  decoration: const InputDecoration(
-                    hintText: "输入这道美食背后的故事",
-                    border: InputBorder.none,
-                    // TODO: 修改样式
+                Container(
+                  margin:  const EdgeInsets.only(bottom: 50),
+                  child: TextField(
+                    controller: summaryController,
+                    decoration: const InputDecoration(
+                      hintText: "输入这道美食背后的故事",
+                      border: InputBorder.none,
+                      // TODO: 修改样式
+                    ),
                   ),
                 ),
 
@@ -92,6 +99,7 @@ class _PostPageState extends State<PostPage> {
                 /// 配料＋1 按钮
                 ,
                 ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
                   trailing: IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: () {
@@ -99,12 +107,15 @@ class _PostPageState extends State<PostPage> {
                     },
                   ),
                 ),
+                /// “做法”文字
                 ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
                   leading: Text("做法", style: titleStyle()),
                 ),
                 allSteps(),
+                /// 步骤＋1 按钮
                 ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
                   trailing: IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: () {
@@ -154,7 +165,7 @@ class _PostPageState extends State<PostPage> {
               Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
             },
             child: Container(
-              height: 150,
+              height: 200,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: const Color.fromARGB(0xFF, 0xF6, 0xF6, 0xF6)),
@@ -189,8 +200,7 @@ class _PostPageState extends State<PostPage> {
       color: Theme.of(context).colorScheme.primaryContainer,
       child: TextButton(
         style: ButtonStyle(
-          shape: MaterialStateProperty.all(const BeveledRectangleBorder())
-        ),
+            shape: MaterialStateProperty.all(const BeveledRectangleBorder())),
         child: const Text("发布菜谱",
             style: TextStyle(
                 color: Colors.white,
@@ -282,12 +292,13 @@ class _PostPageState extends State<PostPage> {
     return GestureDetector(
         onTap: () {
           Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
+          selectImage();
           setState(() {
-            this.hasCover = true;
+            // this.hasCover = true;
           });
         },
         child: Container(
-          height: 200,
+          height: 250,
           color: const Color.fromARGB(0xFF, 0xF6, 0xF6, 0xF6),
           child: Center(
             child: hasCover
@@ -302,6 +313,13 @@ class _PostPageState extends State<PostPage> {
 
   /// 标题样式
   TextStyle titleStyle() {
-    return const TextStyle(fontWeight: FontWeight.bold, fontSize: 20);
+    return  TextStyle(fontWeight: FontWeight.bold, fontSize: 23,color: Theme.of(context).textTheme.titleLarge?.color);
+  }
+
+  void selectImage() async {
+    final ImagePicker picker = ImagePicker();
+    XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final File file = File(image!.path);
+
   }
 }
