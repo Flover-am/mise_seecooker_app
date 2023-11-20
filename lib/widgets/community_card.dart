@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../pages/detail_page.dart';
+import '../pages/post_detail_page.dart';
+import '../providers/post_detail_provider.dart';
 
 class CommunityCard extends StatelessWidget {
+  final int id;
   final String thumbnailUrl;
   final String author;
   final String title;
   final String avatarUrl;
 
-  const CommunityCard(
-      {super.key,
-      required this.thumbnailUrl,
-      required this.author,
-      required this.title,
-      required this.avatarUrl});
+  const CommunityCard({
+    super.key,
+    required this.id,
+    required this.thumbnailUrl,
+    required this.author,
+    required this.title,
+    required this.avatarUrl
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +35,14 @@ class CommunityCard extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => DetailPage(id: 1)),
+            // MaterialPageRoute(
+            //   builder: (context) {
+            //     return ChangeNotifierProvider(
+            //       create: (context) => PostDetailProvider(),
+            //       child: PostDetailPage(id: id),
+            //     );
+            // }),
+            MaterialPageRoute(builder: (context) => PostDetailPage(id: id))
           );
         },
         borderRadius: BorderRadius.circular(12),

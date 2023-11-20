@@ -1,20 +1,34 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/models/community_posts.dart';
 import 'package:seecooker/pages/account_page.dart';
 import 'package:seecooker/pages/explore_page.dart';
 import 'package:seecooker/pages/home_page.dart';
 import 'package:seecooker/pages/community_page.dart';
 import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
+import 'package:seecooker/providers/community_posts_provider.dart';
+import 'package:seecooker/utils/color_schems.dart';
 
 void main() {
   runApp(MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => CommunityPostsModel())
+        ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
       ],
       child: const MyApp()
     )
   );
+  if (Platform.isAndroid) {
+    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.black.withOpacity(0.002),
+      systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark
+    );
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -25,12 +39,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'seecooker',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
+        colorScheme: lightColorScheme,
         useMaterial3: true,
+        //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(brightness: Brightness.dark, seedColor: Colors.pink),
+        colorScheme: darkColorScheme,
         useMaterial3: true,
+        //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       home: const MainPage(),
     );
@@ -59,6 +75,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: IndexedStack(
         index: _currentPageIndex,
@@ -73,36 +90,39 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
         },
         child: const Icon(Icons.edit),
       ), // This trailing comma makes auto-formatting nicer for build methods.
-      bottomNavigationBar: NavigationBar(
-        onDestinationSelected: (int index) {
-          setState(() {
-            _currentPageIndex = index;
-          });
-        },
-        //labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-        selectedIndex: _currentPageIndex,
-        destinations: const <Widget>[
-          NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
-            label: '首页',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.explore),
-            icon: Icon(Icons.explore_outlined),
-            label: '发现',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.camera),
-            icon: Icon(Icons.camera_outlined),
-            label: '社区',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.account_circle),
-            icon: Icon(Icons.account_circle_outlined),
-            label: '我的',
-          ),
-        ],
+      bottomNavigationBar: SizedBox(
+        height: 80,
+        child: NavigationBar(
+          onDestinationSelected: (int index) {
+            setState(() {
+              _currentPageIndex = index;
+            });
+          },
+          //labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+          selectedIndex: _currentPageIndex,
+          destinations: const <Widget>[
+            NavigationDestination(
+              selectedIcon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
+              label: '首页',
+            ),
+            NavigationDestination(
+              selectedIcon: Icon(Icons.explore),
+              icon: Icon(Icons.explore_outlined),
+              label: '发现',
+            ),
+            NavigationDestination(
+              selectedIcon: Icon(Icons.camera),
+              icon: Icon(Icons.camera_outlined),
+              label: '社区',
+            ),
+            NavigationDestination(
+              selectedIcon: Icon(Icons.account_circle),
+              icon: Icon(Icons.account_circle_outlined),
+              label: '我的',
+            ),
+          ],
+        ),
       ),
     );
   }
