@@ -131,23 +131,20 @@ class PageContent extends StatelessWidget {
               )
             ],
           ),
-          bottomNavigationBar: SizedBox(
-            height: 80,
-            child: BottomAppBar(
-              child: Row(
-                children: <Widget>[
-                  IconButton(
-                    tooltip: '评论',
-                    icon: const Icon(Icons.notes),
-                    onPressed: () => showCommentSection(context, false, model.comments, provider.postComment),
-                  ),
-                  IconButton(
-                    tooltip: '喜欢',
-                    icon: const Icon(Icons.favorite_outline),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
+          bottomNavigationBar: BottomAppBar(
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                  tooltip: '评论',
+                  icon: const Icon(Icons.notes),
+                  onPressed: () => showCommentSection(context, false, model.comments, provider.postComment),
+                ),
+                IconButton(
+                  tooltip: '喜欢',
+                  icon: const Icon(Icons.favorite_outline),
+                  onPressed: () {},
+                ),
+              ],
             ),
           ),
           floatingActionButton: FloatingActionButton(

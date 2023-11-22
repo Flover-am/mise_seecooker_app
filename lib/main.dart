@@ -84,48 +84,47 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
         index: _currentPageIndex,
         children: _body,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PostPage(param: '111',)),
-          ),
-        },
-        child: const Icon(Icons.edit),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-      bottomNavigationBar: SizedBox(
-        height: 80,
-        child: NavigationBar(
-          onDestinationSelected: (int index) {
-            setState(() {
-              _currentPageIndex = index;
-            });
+      floatingActionButton: _currentPageIndex == 2
+        ? FloatingActionButton(
+          onPressed: () => {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PostPage(param: '111',)),
+            ),
           },
-          //labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-          selectedIndex: _currentPageIndex,
-          destinations: const <Widget>[
-            NavigationDestination(
-              selectedIcon: Icon(Icons.home),
-              icon: Icon(Icons.home_outlined),
-              label: '首页',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.explore),
-              icon: Icon(Icons.explore_outlined),
-              label: '发现',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.camera),
-              icon: Icon(Icons.camera_outlined),
-              label: '社区',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.account_circle),
-              icon: Icon(Icons.account_circle_outlined),
-              label: '我的',
-            ),
-          ],
-        ),
+          child: const Icon(Icons.edit),
+        )
+        : null,
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            _currentPageIndex = index;
+          });
+        },
+        //labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        selectedIndex: _currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
+            label: '首页',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.explore),
+            icon: Icon(Icons.explore_outlined),
+            label: '发现',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.camera),
+            icon: Icon(Icons.camera_outlined),
+            label: '社区',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.account_circle),
+            icon: Icon(Icons.account_circle_outlined),
+            label: '我的',
+          ),
+        ],
       ),
     );
   }
