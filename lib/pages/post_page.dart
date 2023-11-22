@@ -39,14 +39,9 @@ class _PostPageState extends State<PostPage> {
   /// 步骤介绍的监听
   Map<int, TextEditingController> stepInfoController = {};
 
-  static const imageUrlTmp =
-      "https://iknow-pic.cdn.bcebos.com/79f0f736afc3793104af684afbc4b74542a91189?x-bce-process=image%2Fresize%2Cm_lfit%2Cw_600%2Ch_800%2Climit_1%2Fquality%2Cq_85%2Fformat%2Cf_auto";
-
   /// 主页面
   @override
   Widget build(BuildContext context) {
-    var userModel = Provider.of<UserModel>(context, listen: false);
-
     // // 检查用户是否已登录
     // if (!userModel.isLoggedIn) {
     //   // 如果未登录，则导航到LoginPage

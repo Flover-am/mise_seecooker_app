@@ -25,7 +25,7 @@ class RecipeBar extends StatelessWidget {
                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                      crossAxisAlignment: CrossAxisAlignment.center,
                      children: List.generate(5, (index) {
-                       return Container(
+                       return SizedBox(
                          height: 35,
                          width: 35,
                          child: IconButton(
