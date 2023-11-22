@@ -56,7 +56,7 @@ class CommunityWaterfall extends StatelessWidget {
           return WaterfallFlow.builder(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             gridDelegate: const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-            itemBuilder: (BuildContext context, int index) {
+            itemBuilder: (context, index) {
               if (index == provider.length - 1) {
                 provider.fetchMorePosts();
               }

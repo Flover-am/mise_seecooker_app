@@ -9,6 +9,7 @@ import 'package:seecooker/pages/login_page.dart';
 import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
+import 'package:seecooker/providers/home_recipes_provider.dart';
 import 'package:seecooker/utils/color_schems.dart';
 
 import 'models/user_model.dart';
@@ -17,7 +18,8 @@ void main() {
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
-      ChangeNotifierProvider(create: (context) => UserModel())
+        ChangeNotifierProvider(create: (context) => UserModel()),
+        ChangeNotifierProvider(create: (context) => HomeRecipesProvider()),
       ],
       child: const MyApp()
     )
@@ -42,12 +44,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'seecooker',
       theme: ThemeData(
-        colorScheme: lightColorScheme,
+        colorScheme: customLightColorScheme,
         useMaterial3: true,
         //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       darkTheme: ThemeData(
-        colorScheme: darkColorScheme,
+        colorScheme: customDarkColorScheme,
         useMaterial3: true,
         //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
