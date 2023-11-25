@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/search_result_page.dart';
 import 'package:seecooker/providers/search_history_provider.dart';
+import 'package:seecooker/providers/search_recommend_provider.dart';
 import 'package:skeletons/skeletons.dart';
 
 class SearchPage extends StatelessWidget {
@@ -13,8 +14,11 @@ class SearchPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => SearchHistoryProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => SearchHistoryProvider()),
+        ChangeNotifierProvider(create: (context) => SearchRecommendProvider()),
+      ],
       builder: (context, child) {
         return Scaffold(
           appBar: AppBar(
@@ -60,73 +64,144 @@ class SearchPage extends StatelessWidget {
           ),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: FutureBuilder(
-              future: Provider.of<SearchHistoryProvider>(context, listen: false).fetchSearchHistory(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Column(
-                    children: [
-                      const SizedBox(height: 8),
-                      SkeletonLine(
-                        style: SkeletonLineStyle(
-                          height: 36,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      SkeletonLine(
-                        style: SkeletonLineStyle(
-                          height: 36,
-                          width: 64,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  return Consumer<SearchHistoryProvider>(
-                    builder: (context, provider, child) {
+            child: Column(
+              children: [
+                FutureBuilder(
+                  future: Provider.of<SearchHistoryProvider>(context, listen: false).fetchSearchHistory(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              const SizedBox(width: 8),
-                              const Icon(Icons.history),
-                              const SizedBox(width: 4),
-                              Text('搜索历史', style: Theme.of(context).textTheme.titleMedium,),
-                              const Spacer(),
-                              IconButton(
-                                onPressed: provider.history.isNotEmpty
-                                  ? () => provider.clearSearchHistory()
-                                  : null,
-                                icon: const Icon(Icons.delete_outline),
-                                //visualDensity: VisualDensity.compact,
-                              )
-                            ],
+                          const SizedBox(height: 8),
+                          SkeletonLine(
+                            style: SkeletonLineStyle(
+                              height: 36,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
-                          const SizedBox(height: 4),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 4,
-                            children: provider.history.map((item) =>
-                                ActionChip(
-                                  label: Text(item),
-                                  visualDensity: VisualDensity.compact,
-                                  onPressed: () {
-                                    goToSearchResult(context, item);
-                                  },
-                                )
-                            ).toList(),
+                          const SizedBox(height: 8),
+                          SkeletonLine(
+                            style: SkeletonLineStyle(
+                              height: 36,
+                              width: 64,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                         ],
                       );
-                    },
-                  );
-                }
-              }
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return Consumer<SearchHistoryProvider>(
+                        builder: (context, provider, child) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.history),
+                                  const SizedBox(width: 4),
+                                  Text('搜索历史', style: Theme.of(context).textTheme.titleMedium,),
+                                  const Spacer(),
+                                  IconButton(
+                                    onPressed: provider.history.isNotEmpty
+                                      ? () => provider.clearSearchHistory()
+                                      : null,
+                                    icon: const Icon(Icons.delete_outline),
+                                    //visualDensity: VisualDensity.compact,
+                                  )
+                                ],
+                              ),
+                              provider.history.isNotEmpty
+                              ? Wrap(
+                                spacing: 8,
+                                runSpacing: 4,
+                                children: provider.history.map((item) =>
+                                  ActionChip(
+                                    label: Text(item, overflow: TextOverflow.ellipsis),
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () {
+                                      goToSearchResult(context, item);
+                                    },
+                                  )
+                                ).toList(),
+                              )
+                              : const Text('   暂无搜索历史'),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  }
+                ),
+                const SizedBox(height: 8),
+                FutureBuilder(
+                  future: Provider.of<SearchRecommendProvider>(context, listen: false).fetchSearchRecommend(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Column(
+                        children: [
+                          SkeletonLine(
+                            style: SkeletonLineStyle(
+                              height: 36,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          SkeletonLine(
+                            style: SkeletonLineStyle(
+                              height: 36,
+                              width: 64,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return Consumer<SearchRecommendProvider>(
+                        builder: (context, provider, child) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const SizedBox(width: 8),
+                                  const Icon(Icons.whatshot_outlined),
+                                  const SizedBox(width: 4),
+                                  Text('推荐食谱', style: Theme.of(context).textTheme.titleMedium,),
+                                  const Spacer(),
+                                  IconButton(
+                                    onPressed: () => provider.refreshSearchRecommend(),
+                                    icon: const Icon(Icons.refresh_outlined),
+                                    //visualDensity: VisualDensity.compact,
+                                  )
+                                ],
+                              ),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 4,
+                                children: provider.recommend.map((item) =>
+                                  ActionChip(
+                                    label: Text(item, overflow: TextOverflow.ellipsis),
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () {
+                                      goToSearchResult(context, item);
+                                    },
+                                  )
+                                ).toList(),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  }
+                ),
+              ],
             ),
           ),
         );
