@@ -5,23 +5,18 @@ import 'package:seecooker/models/post_detail.dart';
 import 'package:seecooker/providers/post_detail_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-class PostDetailPage extends StatefulWidget {
+class PostDetailPage extends StatelessWidget {
   final int id;
 
   const PostDetailPage({super.key, required this.id});
 
-  @override
-  State<PostDetailPage> createState() => _PostDetailPageState();
-}
-
-class _PostDetailPageState extends State<PostDetailPage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => PostDetailProvider(),
       builder: (context, child) {
         return FutureBuilder(
-          future: Provider.of<PostDetailProvider>(context, listen: false).fetchPostDetail(widget.id),
+          future: Provider.of<PostDetailProvider>(context, listen: false).fetchPostDetail(id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
@@ -30,8 +25,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ),
               );
             } else if (snapshot.hasError) {
-              return Center(
-                  child: Text('Error: ${snapshot.error}')
+              return Scaffold(
+                body: Center(
+                    child: Text('Error: ${snapshot.error}')
+                ),
               );
             } else {
               return PageContent();
@@ -44,39 +41,24 @@ class _PostDetailPageState extends State<PostDetailPage> {
 }
 
 class PageContent extends StatelessWidget {
-  const PageContent({super.key});
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _commentSectionTitleKey = GlobalKey();
+  final FocusNode _focusNode = FocusNode();
+  final TextEditingController _textEditingController = TextEditingController();
+  late OverlayEntry _overlayEntry;
 
-  void showCommentSection(BuildContext context, bool autofocus, List<CommentModel> comments, Function onSubmit) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SizedBox(
-          height: 600,
-          child: Column(
-              children: [
-                CommentInput(autofocus: autofocus, onSubmit: onSubmit),
-                const SizedBox(height: 8),
-                const CommentSectionTitle(),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      return CommentItem(comment: comments[index]);
-                    },
-                    itemCount: comments.length,
-                  ),
-                )
-              ]
-          ),
-        );
-      },
-      isScrollControlled: true,
-      showDragHandle: true,
-    );
-  }
+  PageContent({super.key});
 
   @override
   Widget build(BuildContext context) {
+    _overlayEntry = _buildOverlayEntry(context);
+
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        _overlayEntry.remove();
+      }
+    });
+
     return Consumer<PostDetailProvider>(
       builder: (context, provider, child) {
         PostDetailModel model = provider.model;
@@ -111,6 +93,7 @@ class PageContent extends StatelessWidget {
             ],
           ),
           body: CustomScrollView(
+            controller: _scrollController,
             slivers: [
               SliverToBoxAdapter(
                 child: ImageCardSwiper(imageUrls: model.imageUrls),
@@ -118,13 +101,31 @@ class PageContent extends StatelessWidget {
               SliverToBoxAdapter(
                 child: TextSection(title: model.title, content: model.content),
               ),
-              const SliverToBoxAdapter(
-                child: CommentSectionTitle(),
+              SliverToBoxAdapter(
+                key: _commentSectionTitleKey,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('评论区', style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    return CommentItem(comment: model.comments[index]);
+                    return CommentItem(
+                      comment: model.comments[index],
+                      onTap: (author) {
+                        _textEditingController.clear();
+                        _textEditingController.text = '回复 @$author : ';
+                        Overlay.of(context).insert(_overlayEntry);
+                        _focusNode.requestFocus();
+                      },
+                    );
                   },
                   childCount: model.comments.length
                 )
@@ -137,7 +138,8 @@ class PageContent extends StatelessWidget {
                 IconButton(
                   tooltip: '评论',
                   icon: const Icon(Icons.notes),
-                  onPressed: () => showCommentSection(context, false, model.comments, provider.postComment),
+                  onPressed: () => Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease),
+                  //onPressed: () => showCommentSection(context, false, model.comments, provider.postComment),
                 ),
                 IconButton(
                   tooltip: '喜欢',
@@ -149,7 +151,13 @@ class PageContent extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton(
             elevation: 0,
-            onPressed: () => showCommentSection(context, true, model.comments, provider.postComment),
+            onPressed: () {
+              //Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+              Overlay.of(context).insert(_overlayEntry);
+              _focusNode.requestFocus();
+              //FocusScope.of(context).requestFocus(_focusNode);
+            },
+            //onPressed: () => showCommentSection(context, true, model.comments, provider.postComment),
             mini: true,
             child: const Icon(Icons.edit),
           ),
@@ -158,140 +166,55 @@ class PageContent extends StatelessWidget {
       },
     );
   }
-}
 
-class CommentInput extends StatefulWidget {
-  final bool autofocus;
-  final Function onSubmit;
-
-  const CommentInput({super.key, required this.autofocus, required this.onSubmit});
-
-  @override
-  State<CommentInput> createState() => _CommentInputState();
-}
-
-class _CommentInputState extends State<CommentInput> {
-  final TextEditingController _controller = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
-  String? _errorText;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      height: 68,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              autofocus: widget.autofocus,
+  OverlayEntry _buildOverlayEntry(BuildContext buildContext) {
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 0,
+        right: 0,
+        child: Card(
+          //elevation: 0,
+          //color: Theme.of(context).colorScheme.surfaceVariant,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            horizontalTitleGap: 0,
+            leading: IconButton(
+              onPressed: () {
+                _overlayEntry.remove();
+                _textEditingController.clear();
+              },
+              icon: const Icon(Icons.clear_rounded),
+            ),
+            title: TextField(
               focusNode: _focusNode,
+              controller: _textEditingController,
               cursorRadius: const Radius.circular(2),
-              style: Theme.of(context).textTheme.bodyMedium,
               decoration: InputDecoration(
-                  hintText: '在此输入你的评论',
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
-                  errorText: _errorText,
+                hintText: '在此输入你的评论',
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
               ),
+              onEditingComplete: () {
+                _overlayEntry.remove();
+              },
+              onSubmitted: (value) {
+                Provider.of<PostDetailProvider>(buildContext, listen: false).postComment(value);
+                _textEditingController.clear();
+              },
+            ),
+            trailing: IconButton(
+              onPressed: () {
+                if(_textEditingController.text.isNotEmpty) {
+                  Provider.of<PostDetailProvider>(buildContext, listen: false).postComment(_textEditingController.text);
+                }
+                _overlayEntry.remove();
+              },
+              icon: const Icon(Icons.done_rounded),
             ),
           ),
-          const SizedBox(width: 8),
-          FilledButton.tonal(
-              onPressed: () {
-                if (_controller.text.isNotEmpty) {
-                  widget.onSubmit(_controller.text);
-                  _focusNode.unfocus();
-                } else {
-                  _focusNode.requestFocus();
-                }
-              },
-              child: const Text('发送')
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus && _controller.text.isEmpty) {
-        setState(() {
-          _errorText = '请输入内容';
-        });
-      } else {
-        setState(() {
-          _errorText = null;
-        });
-      }
-    });
-
-    _controller.addListener(() {
-      if (_focusNode.hasFocus && _controller.text.isEmpty) {
-        setState(() {
-          _errorText = '请输入内容';
-        });
-      } else {
-        setState(() {
-          _errorText = null;
-        });
-      }
-    });
-  }
-}
-
-enum Order { hot, time }
-
-class CommentSectionTitle extends StatefulWidget {
-  const CommentSectionTitle({super.key});
-
-  @override
-  State<CommentSectionTitle> createState() => _CommentSectionTitleState();
-}
-
-class _CommentSectionTitleState extends State<CommentSectionTitle> {
-  Order order = Order.hot;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '评论区',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          SegmentedButton<Order>(
-            style: const ButtonStyle(visualDensity: VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)),
-            multiSelectionEnabled: false,
-            segments: [
-              ButtonSegment(
-                value: Order.hot,
-                label: Text('最热', style: Theme.of(context).textTheme.labelMedium),
-                icon: const Icon(Icons.whatshot_outlined)
-              ),
-              ButtonSegment(
-                value: Order.time,
-                label: Text('最新', style: Theme.of(context).textTheme.labelMedium),
-                icon: const Icon(Icons.calendar_today_outlined)
-              )
-            ],
-            selected: {order},
-            onSelectionChanged: (newSelection) {
-              setState(() {
-                order = newSelection.first;
-              });
-            },
-          )
-        ],
+        ),
       ),
     );
   }
@@ -378,65 +301,47 @@ class TextSection extends StatelessWidget {
   }
 }
 
-class CommentItem extends StatefulWidget {
+class CommentItem extends StatelessWidget {
   final CommentModel comment;
+  final void Function(String author) onTap;
 
-  const CommentItem({super.key, required this.comment});
-
-  @override
-  State<CommentItem> createState() => _CommentItemState();
-}
-
-class _CommentItemState extends State<CommentItem> {
-  bool hasThumbUped = false;
+  const CommentItem({super.key, required this.comment, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            horizontalTitleGap: 0,
-            title: Row(
-              children: [
-                CircleAvatar(
-                  radius: 16,
-                  backgroundImage: NetworkImage(widget.comment.avatarUrl),
+          CircleAvatar(
+            radius: 16,
+            backgroundImage: NetworkImage(comment.avatarUrl),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Card(
+              elevation: 0,
+              margin: const EdgeInsets.all(0),
+              color: Theme.of(context).colorScheme.surfaceVariant,
+              child: InkWell(
+                onTap: () => onTap(comment.author),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(comment.author, style: Theme.of(context).textTheme.titleSmall),
+                      const SizedBox(height: 2),
+                      Text(comment.content),
+                      const SizedBox(height: 2),
+                      Text('${comment.date}', style: Theme.of(context).textTheme.labelSmall)
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.comment.author,
-                      style: Theme.of(context).textTheme.titleSmall
-                    ),
-                    Text(
-                      widget.comment.date.toString(),
-                      style: Theme.of(context).textTheme.labelSmall,
-                    )
-                  ],
-                )
-              ],
-            ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(left: 48),
-              child: Text(widget.comment.content),
-            ),
-            trailing: IconButton(
-              icon: hasThumbUped
-                ? const Icon(Icons.thumb_up, color: Colors.red)
-                : const Icon(Icons.thumb_up_outlined),
-              onPressed: () {
-                setState(() {
-                  hasThumbUped = !hasThumbUped;
-                });
-              },
+              ),
             ),
           ),
-          const Divider(indent: 48)
         ],
       ),
     );
