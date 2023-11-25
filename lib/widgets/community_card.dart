@@ -32,19 +32,7 @@ class CommunityCard extends StatelessWidget {
       //   borderRadius: const BorderRadius.all(Radius.circular(12)),
       // ),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            // MaterialPageRoute(
-            //   builder: (context) {
-            //     return ChangeNotifierProvider(
-            //       create: (context) => PostDetailProvider(),
-            //       child: PostDetailPage(id: id),
-            //     );
-            // }),
-            MaterialPageRoute(builder: (context) => PostDetailPage(id: id))
-          );
-        },
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailPage(id: id))),
         borderRadius: BorderRadius.circular(12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
