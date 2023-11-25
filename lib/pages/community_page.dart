@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seecooker/pages/search_page.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
@@ -19,9 +20,21 @@ class _CommunityPageState extends State<CommunityPage> {
     return Column(
       children: [
         AppBar(
-          //scrolledUnderElevation: 0,
-          title: const MySearchBar(),
-          centerTitle: true,
+          scrolledUnderElevation: 0,
+          title: Text('社区'),
+          //centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SearchPage()),
+                );
+              },
+            ),
+            const SizedBox(width: 4),
+          ],
         ),
         Expanded(
           child: FutureBuilder(

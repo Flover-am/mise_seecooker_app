@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/post_detail.dart';
 import 'package:seecooker/providers/post_detail_provider.dart';
@@ -174,8 +175,8 @@ class PageContent extends StatelessWidget {
         left: 0,
         right: 0,
         child: Card(
-          //elevation: 0,
-          //color: Theme.of(context).colorScheme.surfaceVariant,
+          elevation: 0,
+          color: Theme.of(context).colorScheme.surfaceVariant,
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             horizontalTitleGap: 0,
@@ -190,11 +191,13 @@ class PageContent extends StatelessWidget {
               focusNode: _focusNode,
               controller: _textEditingController,
               cursorRadius: const Radius.circular(2),
+              maxLength: 100,
+              maxLines: 3,
               decoration: InputDecoration(
                 hintText: '在此输入你的评论',
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
               onEditingComplete: () {
                 _overlayEntry.remove();
@@ -202,12 +205,15 @@ class PageContent extends StatelessWidget {
               onSubmitted: (value) {
                 Provider.of<PostDetailProvider>(buildContext, listen: false).postComment(value);
                 _textEditingController.clear();
+                Fluttertoast.showToast(msg: "评论已发送");
               },
             ),
             trailing: IconButton(
               onPressed: () {
                 if(_textEditingController.text.isNotEmpty) {
                   Provider.of<PostDetailProvider>(buildContext, listen: false).postComment(_textEditingController.text);
+                  _textEditingController.clear();
+                  Fluttertoast.showToast(msg: "评论已发送");
                 }
                 _overlayEntry.remove();
               },
@@ -325,17 +331,30 @@ class CommentItem extends StatelessWidget {
               margin: const EdgeInsets.all(0),
               color: Theme.of(context).colorScheme.surfaceVariant,
               child: InkWell(
+                borderRadius: BorderRadius.circular(12),
                 onTap: () => onTap(comment.author),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(comment.author, style: Theme.of(context).textTheme.titleSmall),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       Text(comment.content),
-                      const SizedBox(height: 2),
-                      Text('${comment.date}', style: Theme.of(context).textTheme.labelSmall)
+                      const SizedBox(height: 4),
+                      //Text('${comment.date}', style: Theme.of(context).textTheme.labelSmall),
+                      Text.rich(
+                        TextSpan(
+                          style: Theme.of(context).textTheme.labelSmall,
+                          children: [
+                            TextSpan(
+                              text: '${comment.date}',
+                              style: TextStyle(color: Theme.of(context).textTheme.labelSmall?.color?.withOpacity(0.7))
+                            ),
+                            TextSpan(text: ' 回复', style: Theme.of(context).textTheme.bodySmall),
+                          ]
+                        )
+                      )
                     ],
                   ),
                 ),

@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:seecooker/models/post_detail.dart';
 
 class PostDetailProvider with ChangeNotifier{
