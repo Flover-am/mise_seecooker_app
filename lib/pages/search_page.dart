@@ -66,6 +66,7 @@ class SearchPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               children: [
+                /* Search History */
                 FutureBuilder(
                   future: Provider.of<SearchHistoryProvider>(context, listen: false).fetchSearchHistory(),
                   builder: (context, snapshot) {
@@ -136,12 +137,14 @@ class SearchPage extends StatelessWidget {
                   }
                 ),
                 const SizedBox(height: 8),
+                /* Search Recommend */
                 FutureBuilder(
                   future: Provider.of<SearchRecommendProvider>(context, listen: false).fetchSearchRecommend(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Column(
                         children: [
+                          const SizedBox(height: 8),
                           SkeletonLine(
                             style: SkeletonLineStyle(
                               height: 36,
@@ -166,7 +169,6 @@ class SearchPage extends StatelessWidget {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 4),
                               Row(
                                 children: [
                                   const SizedBox(width: 8),

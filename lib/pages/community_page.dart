@@ -84,11 +84,11 @@ class CommunityWaterfall extends StatelessWidget {
                   );
                 },
                 child: CommunityCard(
-                  id: provider.itemAt(index).id,
-                  thumbnailUrl: provider.itemAt(index).thumbnailUrl,
-                  author: provider.itemAt(index).author,
+                  id: provider.itemAt(index).postId,
+                  thumbnailUrl: provider.itemAt(index).cover,
+                  author: provider.itemAt(index).posterName,
                   title: provider.itemAt(index).title,
-                  avatarUrl: provider.itemAt(index).avatarUrl
+                  avatarUrl: provider.itemAt(index).posterAvatar
                 ),
               );
             },

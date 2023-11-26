@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:seecooker/models/recipe.dart';
 
 class HomeRecipesProvider extends ChangeNotifier {
-  final List<RecipeModel> _list = [];
+  final List<Recipe> _list = [];
 
   int get length => _list.length;
 
-  RecipeModel itemAt(int index) => _list[index];
+  Recipe itemAt(int index) => _list[index];
 
   Future<void> fetchRecipes() async {
     // TODO: ADD HTTP GET REQUEST
     await Future.delayed(const Duration(seconds: 1));
     _list.addAll(List.generate(
         5,
-            (index) => RecipeModel(
+            (index) => Recipe(
             index,
             '五红银耳羹',
             'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
@@ -29,7 +29,7 @@ class HomeRecipesProvider extends ChangeNotifier {
     await Future.delayed(const Duration(seconds: 1));
     _list.addAll(List.generate(
         5,
-            (index) => RecipeModel(
+            (index) => Recipe(
           index,
           '黄焖鸡',
           'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',

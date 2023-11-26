@@ -1,4 +1,4 @@
-class RecipeModel {
+class Recipe {
   int id;
   String title;
   String coverUrl;
@@ -6,5 +6,5 @@ class RecipeModel {
   int like;
   double rate;
 
-  RecipeModel(this.id, this.title, this.coverUrl, this.author, this.like, this.rate);
+  Recipe(this.id, this.title, this.coverUrl, this.author, this.like, this.rate);
 }

@@ -3,30 +3,33 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/post_detail.dart';
+import 'package:seecooker/models/comment.dart';
+import 'package:seecooker/providers/comments_provider.dart';
 import 'package:seecooker/providers/post_detail_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:skeletons/skeletons.dart';
 
 class PostDetailPage extends StatelessWidget {
-  final int id;
+  final int postId;
 
-  const PostDetailPage({super.key, required this.id});
+  const PostDetailPage({super.key, required this.postId});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => PostDetailProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => PostDetailProvider(postId)),
+        ChangeNotifierProvider(create: (context) => CommentsProvider(postId)),
+      ],
       builder: (context, child) {
         return FutureBuilder(
-          future: Provider.of<PostDetailProvider>(context, listen: false).fetchPostDetail(id),
+          future: Provider.of<PostDetailProvider>(context, listen: false).fetchPostDetail(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator()
-                ),
-              );
+              return _buildSkeleton();
             } else if (snapshot.hasError) {
               return Scaffold(
+                appBar: AppBar(),
                 body: Center(
                     child: Text('Error: ${snapshot.error}')
                 ),
@@ -37,6 +40,49 @@ class PostDetailPage extends StatelessWidget {
           },
         );
       }
+    );
+  }
+
+  Widget _buildSkeleton(){
+    return Scaffold(
+      appBar: AppBar(
+        title: SkeletonListTile(
+          leadingStyle: SkeletonAvatarStyle(
+              height: 36,
+              width: 36,
+              borderRadius: BorderRadius.circular(18)
+          ),
+          titleStyle: const SkeletonLineStyle(
+              height: 24,
+              width: 72,
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          SkeletonLine(
+            style: SkeletonLineStyle(
+                height: 368,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                borderRadius: BorderRadius.circular(12)
+            ),
+          ),
+          const SizedBox(height: 32),
+          const SkeletonLine(
+            style: SkeletonLineStyle(
+              height: 24,
+              width: 96,
+              padding: EdgeInsets.symmetric(horizontal: 16),
+            ),
+          ),
+          SkeletonParagraph(
+            style: const SkeletonParagraphStyle(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              spacing: 8,
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -62,7 +108,7 @@ class PageContent extends StatelessWidget {
 
     return Consumer<PostDetailProvider>(
       builder: (context, provider, child) {
-        PostDetailModel model = provider.model;
+        PostDetail model = provider.model;
         return Scaffold(
           appBar: AppBar(
             scrolledUnderElevation: 0,
@@ -70,12 +116,12 @@ class PageContent extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundImage: NetworkImage(model.avatarUrl),
+                  backgroundImage: NetworkImage(model.posterAvatar),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: Text(
-                    model.author,
+                    model.posterName,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -97,7 +143,7 @@ class PageContent extends StatelessWidget {
             controller: _scrollController,
             slivers: [
               SliverToBoxAdapter(
-                child: ImageCardSwiper(imageUrls: model.imageUrls),
+                child: ImageCardSwiper(imageUrls: model.images),
               ),
               SliverToBoxAdapter(
                 child: TextSection(title: model.title, content: model.content),
@@ -115,52 +161,90 @@ class PageContent extends StatelessWidget {
                   ),
                 ),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return CommentItem(
-                      comment: model.comments[index],
-                      onTap: (author) {
-                        _textEditingController.clear();
-                        _textEditingController.text = '回复 @$author : ';
-                        Overlay.of(context).insert(_overlayEntry);
-                        _focusNode.requestFocus();
+              /* comment section */
+              FutureBuilder(
+                future: Provider.of<CommentsProvider>(context, listen: false).fetchComments(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SliverToBoxAdapter(
+                      child: SkeletonListTile(
+                        leadingStyle: SkeletonAvatarStyle(
+                          height: 36,
+                          width: 36,
+                          borderRadius: BorderRadius.circular(18)
+                        ),
+                        titleStyle: SkeletonLineStyle(
+                          height: 36,
+                          borderRadius: BorderRadius.circular(12)
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      )
+                    );
+                  } else if (snapshot.hasError) {
+                    return SliverToBoxAdapter(
+                      child: Center(
+                        child: Text('Error: ${snapshot.error}')
+                      )
+                    );
+                  } else {
+                    return Consumer<CommentsProvider>(
+                      builder: (context, provider, child) {
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return CommentItem(
+                                comment: provider.itemAt(index),
+                                onTap: (commenter) {
+                                  _textEditingController.clear();
+                                  _textEditingController.text = '回复 @$commenter : ';
+                                  Overlay.of(context).insert(_overlayEntry);
+                                  _focusNode.requestFocus();
+                                },
+                              );
+                            },
+                            childCount: provider.length
+                          )
+                      );
                       },
                     );
-                  },
-                  childCount: model.comments.length
-                )
-              )
+                  }
+                }
+              ),
             ],
           ),
           bottomNavigationBar: BottomAppBar(
+            surfaceTintColor: Theme.of(context).colorScheme.primary,
             child: Row(
               children: <Widget>[
                 IconButton(
                   tooltip: '评论',
-                  icon: const Icon(Icons.notes),
+                  icon: const Icon(Icons.chat_bubble_outline_rounded),
                   onPressed: () => Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease),
-                  //onPressed: () => showCommentSection(context, false, model.comments, provider.postComment),
                 ),
+                Consumer<CommentsProvider>(
+                  builder: (context, provider, child) {
+                    return Text('${provider.length}', style: Theme.of(context).textTheme.titleSmall);
+                  }
+                ),
+                const SizedBox(width: 16),
                 IconButton(
                   tooltip: '喜欢',
-                  icon: const Icon(Icons.favorite_outline),
+                  icon: const Icon(Icons.favorite_outline_rounded),
                   onPressed: () {},
                 ),
+                Text('${model.like}', style: Theme.of(context).textTheme.titleSmall),
               ],
             ),
           ),
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: FloatingActionButton.extended(
             elevation: 0,
             onPressed: () {
               //Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease);
               Overlay.of(context).insert(_overlayEntry);
               _focusNode.requestFocus();
-              //FocusScope.of(context).requestFocus(_focusNode);
             },
-            //onPressed: () => showCommentSection(context, true, model.comments, provider.postComment),
-            mini: true,
-            child: const Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
+            label: const Text('评论'),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
         );
@@ -199,23 +283,22 @@ class PageContent extends StatelessWidget {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              onEditingComplete: () {
-                _overlayEntry.remove();
-              },
-              onSubmitted: (value) {
-                Provider.of<PostDetailProvider>(buildContext, listen: false).postComment(value);
-                _textEditingController.clear();
-                Fluttertoast.showToast(msg: "评论已发送");
-              },
             ),
             trailing: IconButton(
-              onPressed: () {
+              onPressed: () async {
                 if(_textEditingController.text.isNotEmpty) {
-                  Provider.of<PostDetailProvider>(buildContext, listen: false).postComment(_textEditingController.text);
+                  _overlayEntry.remove();
+                  // TODO: get user id from provider
+                  try {
+                    await Provider.of<CommentsProvider>(buildContext, listen: false).createComment(1, _textEditingController.text);
+                    Fluttertoast.showToast(msg: "评论已发送");
+                  } catch (e) {
+                    Fluttertoast.showToast(msg: "评论发送失败: $e");
+                  }
                   _textEditingController.clear();
-                  Fluttertoast.showToast(msg: "评论已发送");
+                } else {
+                  Fluttertoast.showToast(msg: "请输入内容");
                 }
-                _overlayEntry.remove();
               },
               icon: const Icon(Icons.done_rounded),
             ),
@@ -308,7 +391,7 @@ class TextSection extends StatelessWidget {
 }
 
 class CommentItem extends StatelessWidget {
-  final CommentModel comment;
+  final Comment comment;
   final void Function(String author) onTap;
 
   const CommentItem({super.key, required this.comment, required this.onTap});
@@ -321,8 +404,8 @@ class CommentItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            radius: 16,
-            backgroundImage: NetworkImage(comment.avatarUrl),
+            radius: 18,
+            backgroundImage: NetworkImage(comment.commenterAvatar),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -332,23 +415,23 @@ class CommentItem extends StatelessWidget {
               color: Theme.of(context).colorScheme.surfaceVariant,
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
-                onTap: () => onTap(comment.author),
+                onTap: () => onTap(comment.commenterName),
                 child: Padding(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(comment.author, style: Theme.of(context).textTheme.titleSmall),
+                      Text(comment.commenterName, style: Theme.of(context).textTheme.titleSmall),
                       const SizedBox(height: 4),
-                      Text(comment.content),
-                      const SizedBox(height: 4),
+                      Text(comment.content, style: Theme.of(context).textTheme.bodyMedium),
+                      const SizedBox(height: 6),
                       //Text('${comment.date}', style: Theme.of(context).textTheme.labelSmall),
                       Text.rich(
                         TextSpan(
-                          style: Theme.of(context).textTheme.labelSmall,
+                          style: Theme.of(context).textTheme.labelMedium,
                           children: [
                             TextSpan(
-                              text: '${comment.date}',
+                              text: comment.commentTime,
                               style: TextStyle(color: Theme.of(context).textTheme.labelSmall?.color?.withOpacity(0.7))
                             ),
                             TextSpan(text: ' 回复', style: Theme.of(context).textTheme.bodySmall),
