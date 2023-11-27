@@ -9,15 +9,20 @@ import 'package:seecooker/pages/login_page.dart';
 import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
+import 'package:seecooker/providers/explore_post_provider.dart';
+import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/service/recommand_provider.dart';
 import 'package:seecooker/utils/color_schems.dart';
 
-import 'models/user_model.dart';
+import 'models/user.dart';
 
 void main() {
   runApp(MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => ExplorePostProvider()),
         ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
-      ChangeNotifierProvider(create: (context) => UserModel())
+      ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => RecommandProvider())
       ],
       child: const MyApp()
     )
@@ -84,48 +89,47 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
         index: _currentPageIndex,
         children: _body,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PostPage(param: '111',)),
-          ),
-        },
-        child: const Icon(Icons.edit),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-      bottomNavigationBar: SizedBox(
-        height: 80,
-        child: NavigationBar(
-          onDestinationSelected: (int index) {
-            setState(() {
-              _currentPageIndex = index;
-            });
+      floatingActionButton: _currentPageIndex == 2
+        ? FloatingActionButton(
+          onPressed: () => {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PostPage(param: '111',)),
+            ),
           },
-          //labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-          selectedIndex: _currentPageIndex,
-          destinations: const <Widget>[
-            NavigationDestination(
-              selectedIcon: Icon(Icons.home),
-              icon: Icon(Icons.home_outlined),
-              label: '首页',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.explore),
-              icon: Icon(Icons.explore_outlined),
-              label: '发现',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.camera),
-              icon: Icon(Icons.camera_outlined),
-              label: '社区',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.account_circle),
-              icon: Icon(Icons.account_circle_outlined),
-              label: '我的',
-            ),
-          ],
-        ),
+          child: const Icon(Icons.edit),
+        )
+        : null,
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            _currentPageIndex = index;
+          });
+        },
+        //labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        selectedIndex: _currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(
+            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
+            label: '首页',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.explore),
+            icon: Icon(Icons.explore_outlined),
+            label: '发现',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.camera),
+            icon: Icon(Icons.camera_outlined),
+            label: '社区',
+          ),
+          NavigationDestination(
+            selectedIcon: Icon(Icons.account_circle),
+            icon: Icon(Icons.account_circle_outlined),
+            label: '我的',
+          ),
+        ],
       ),
     );
   }
