@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seecooker/pages/search_page.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
@@ -19,9 +20,21 @@ class _CommunityPageState extends State<CommunityPage> {
     return Column(
       children: [
         AppBar(
-          //scrolledUnderElevation: 0,
-          title: const MySearchBar(),
-          centerTitle: true,
+          scrolledUnderElevation: 0,
+          title: Text('社区'),
+          //centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SearchPage()),
+                );
+              },
+            ),
+            const SizedBox(width: 4),
+          ],
         ),
         Expanded(
           child: FutureBuilder(
@@ -56,7 +69,7 @@ class CommunityWaterfall extends StatelessWidget {
           return WaterfallFlow.builder(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             gridDelegate: const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-            itemBuilder: (BuildContext context, int index) {
+            itemBuilder: (context, index) {
               if (index == provider.length - 1) {
                 provider.fetchMorePosts();
               }
@@ -71,11 +84,11 @@ class CommunityWaterfall extends StatelessWidget {
                   );
                 },
                 child: CommunityCard(
-                  id: provider.itemAt(index).id,
-                  thumbnailUrl: provider.itemAt(index).thumbnailUrl,
-                  author: provider.itemAt(index).author,
+                  postId: provider.itemAt(index).postId,
+                  cover: provider.itemAt(index).cover,
+                  posterName: provider.itemAt(index).posterName,
                   title: provider.itemAt(index).title,
-                  avatarUrl: provider.itemAt(index).avatarUrl
+                  posterAvatar: provider.itemAt(index).posterAvatar
                 ),
               );
             },

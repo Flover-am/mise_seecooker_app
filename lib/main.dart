@@ -12,7 +12,8 @@ import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/service/recommand_provider.dart';
-import 'package:seecooker/utils/color_schems.dart';
+import 'package:seecooker/providers/home_recipes_provider.dart';
+import 'package:seecooker/utils/color_schemes.dart';
 
 import 'models/user.dart';
 
@@ -21,7 +22,8 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (context) => ExplorePostProvider()),
         ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
-      ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => HomeRecipesProvider()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => RecommandProvider())
       ],
       child: const MyApp()
@@ -47,12 +49,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'seecooker',
       theme: ThemeData(
-        colorScheme: lightColorScheme,
+        colorScheme: customLightColorScheme,
         useMaterial3: true,
         //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       darkTheme: ThemeData(
-        colorScheme: darkColorScheme,
+        colorScheme: customDarkColorScheme,
         useMaterial3: true,
         //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
