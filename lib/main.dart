@@ -10,17 +10,18 @@ import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
+import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/service/recommand_provider.dart';
 import 'package:seecooker/utils/color_schems.dart';
 
-import 'models/user_model.dart';
+import 'models/user.dart';
 
 void main() {
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ExplorePostProvider()),
         ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
-      ChangeNotifierProvider(create: (context) => UserModel()),
+      ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => RecommandProvider())
       ],
       child: const MyApp()
