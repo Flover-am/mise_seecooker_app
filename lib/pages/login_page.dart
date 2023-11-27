@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/models/user_model.dart';
+import 'package:seecooker/models/user.dart';
+import 'package:seecooker/providers/user_provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -64,11 +65,11 @@ class _LoginFormState extends State<LoginForm> {
             String password = _passwordController.text;
 
             // 获取当前上下文中的 UserModel 实例
-            final userModel = Provider.of<UserModel>(context, listen: false);
+            final userProvider = Provider.of<UserProvider>(context, listen: false);
 
             // 简单的示例：如果用户名和密码都不为空，视为登录成功
             if (username == 'admin' && password == '123456') {
-              userModel.loginAdmin();
+              userProvider.loginAdmin();
               // 登录成功后可以使用 Navigator.pop 或 Navigator.pushReplacement 返回上一个页面
               Navigator.pop(context);
               // 或者你可以进行其他操作
