@@ -1,39 +1,31 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class ApiClient {
-  final String baseUrl;
+final String apiUrl = 'https://a5eb-202-119-41-55.ngrok-free.app/v1/post';
 
-  ApiClient(this.baseUrl);
+Future<void> sendFormDataRequest(String apiUrl,String title,String content, List<String> filePath,var success,var fail,var err) async {
+  var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
 
-  Future<void> get(String path, Function(dynamic) onSuccess, Function(String) onError) async {
-    try {
-      final response = await http.get(Uri.parse('$baseUrl$path'));
-      handleResponse(response, onSuccess, onError);
-    } catch (error) {
-      onError('Error: $error');
-    }
+  // 添加文本字段
+  request.fields['title'] = title;
+  request.fields['content'] = content;
+
+  // 添加文件字段
+  for(var path in filePath){
+    var file = await http.MultipartFile.fromPath('fileField', path);
+    request.files.add(file);
   }
 
-  Future<void> post(String path, Map<String, dynamic> body, Function(dynamic) onSuccess, Function(String) onError) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl$path'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      );
-      handleResponse(response, onSuccess, onError);
-    } catch (error) {
-      onError('Error: $error');
-    }
-  }
+  try {
+    // 发送请求
+    var response = await http.Response.fromStream(await request.send());
 
-  void handleResponse(http.Response response, Function(dynamic) onSuccess, Function(String) onError) {
+    // 处理响应
     if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      onSuccess(jsonResponse);
+      success(response.body);
     } else {
-      onError('Request failed with status: ${response.statusCode}');
+      fail(response.body);
     }
+  } catch (error) {
+    err(error);
   }
 }

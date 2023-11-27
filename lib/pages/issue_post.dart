@@ -112,14 +112,20 @@ class _IssuePostState extends State<IssuePost> {
         const Text('标题',style: TextStyle(fontSize: 16)),//TODO:更改样式
         Padding(
           padding: const EdgeInsets.fromLTRB(16,8,16,8),
-          child:TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: '请输入标题(可选)',
-            ),
-            onChanged: (text){
-              this.title=text;
-            },
+          child:Focus(
+            onFocusChange:(hasFocus){
+            setState(() {
+            _issueButtonVisible=!hasFocus;
+            });
+            },child:TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: '请输入标题(可选)',
+              ),
+              onChanged: (text){
+                this.title=text;//TODO:标题长度控制
+              },
+            )
           )
         )
       ]
@@ -202,31 +208,33 @@ class _IssuePostState extends State<IssuePost> {
               onTap: (){
                 overlayEntry.remove();
               },
-              child:Stack(
+              child:Column(
+                mainAxisSize: MainAxisSize.min,
                 children:[
-                  Hero(
-                      tag:'showDetailImage$index',
-                      child:Image.file(
-                        File(_userImage[index]),
-                        fit: BoxFit.contain,
-                        width: MediaQuery.of(ctx).size.width,
-                        height: MediaQuery.of(ctx).size.height,
-                      )
-                  ),
-                  SafeArea(
-                    child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child:
-                        ElevatedButton(onPressed: (){
-                                //TODO:添加确认
-                                setState((){
-                                  _userImage.removeAt(index);
-                                });
-                                overlayEntry.remove();
-                              }, child: const Icon(Icons.delete),
-                              )
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children:[
+                      Hero(
+                          tag:'showDetailImage$index',
+                          child:Image.file(
+                            File(_userImage[index]),
+                            fit: BoxFit.contain,
+                            width: MediaQuery.of(ctx).size.width,
+                            height: MediaQuery.of(ctx).size.height,
                           )
-                    )
+                      ),
+                    ]
+                  ),
+                  ElevatedButton(onPressed: (){
+                        //TODO:添加确认
+                        setState((){
+                          _userImage.removeAt(index);
+                        });
+                        overlayEntry.remove();
+                      }, child: const Icon(Icons.delete),
+                  )
+
                   ]
                 )
               )
@@ -384,19 +392,16 @@ class _IssuePostState extends State<IssuePost> {
   //发布
   void _issuePost() async{
       print("Issue");
-      final apiClient=ApiClient('http://localhost:8080');//TODO:更改url
-      //TODO:图片上传到数据库并返回url
-      final postData={
-        'title':title,
-        'text':text,
-        'image':_userImage
-      };
-      apiClient.post('/post', postData, (dynamic json){
-        print(json);//TODO:handle success
-      }, (String error){
-        print(error);//TODO:handle failure
-      });
-
-    //TODO:帖子上传到数据库
+      await sendFormDataRequest(apiUrl, title, text, _userImage,
+              (body){
+              print(body);
+              print("-------------SUCCESS--------------");
+            },(body){
+              print(body.toString());
+              print("-------------FAIL--------------");
+          }, (err){
+            print(err);
+            print("-------------ERROR--------------");
+          });
   }
 }
