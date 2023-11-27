@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -19,8 +20,11 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
   /// 是否有封面
   bool hasCover = false;
-  List<bool> hasStepsCover = [false, false];
+  final ImagePicker picker = ImagePicker();
 
+  late XFile cover;
+  List<bool> hasStepsCover = [false, false];
+  late Map<int, XFile> stepsCover = {};
   ValueNotifier<int> countIngredient = ValueNotifier<int>(1);
   ValueNotifier<int> countStep = ValueNotifier<int>(2);
 
@@ -35,43 +39,36 @@ class _PostPageState extends State<PostPage> {
   /// 步骤介绍的监听
   Map<int, TextEditingController> stepInfoController = {};
 
-  static const imageUrlTmp =
-      "https://iknow-pic.cdn.bcebos.com/79f0f736afc3793104af684afbc4b74542a91189?x-bce-process=image%2Fresize%2Cm_lfit%2Cw_600%2Ch_800%2Climit_1%2Fquality%2Cq_85%2Fformat%2Cf_auto";
-
   /// 主页面
   @override
   Widget build(BuildContext context) {
-    var userModel = Provider.of<UserModel>(context,listen: false);
-
-    // 检查用户是否已登录
-    if (!userModel.isLoggedIn) {
-      // 如果未登录，则导航到LoginPage
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
-      });
-      print(userModel.isLoggedIn);
-      //Navigator.pop(context);
-    }
+    // // 检查用户是否已登录
+    // if (!userModel.isLoggedIn) {
+    //   // 如果未登录，则导航到LoginPage
+    //   WidgetsBinding.instance!.addPostFrameCallback((_) {
+    //     Navigator.of(context).pushReplacement(
+    //       MaterialPageRoute(builder: (context) => const LoginPage()),
+    //     );
+    //   });
+    //   print(userModel.isLoggedIn);
+    //   //Navigator.pop(context);
+    // }
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () {
-                Fluttertoast.showToast(msg: "//TODO: 发布");
-              },
-              icon: const Icon(Icons.publish_rounded))
-        ],
-        title:
-          Consumer<UserModel>(
-          builder: (context, user, child) => Stack(
-            children: [
-              Text('${user.username} post'),
-            ],
-          ),
-        )
-      ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Fluttertoast.showToast(msg: "//TODO: 发布");
+                },
+                icon: const Icon(Icons.publish_rounded))
+          ],
+          title: Consumer<UserModel>(
+            builder: (context, user, child) => Stack(
+              children: [
+                Text('${user.username} post'),
+              ],
+            ),
+          )),
       body: ListView(
         // 整个页面
         children: [
@@ -85,6 +82,7 @@ class _PostPageState extends State<PostPage> {
             child: Column(
               children: [
                 TextField(
+                  style: const TextStyle(fontSize: 25.0,fontWeight: FontWeight.w800),
                   controller: titleController,
                   decoration: const InputDecoration(
                     hintText: "添加菜谱标题",
@@ -97,7 +95,7 @@ class _PostPageState extends State<PostPage> {
                     thickness: 1,
                     color: Theme.of(context).colorScheme.primary.withAlpha(10)),
                 Container(
-                  margin:  const EdgeInsets.only(bottom: 50),
+                  margin: const EdgeInsets.only(bottom: 50),
                   child: TextField(
                     controller: summaryController,
                     decoration: const InputDecoration(
@@ -131,12 +129,14 @@ class _PostPageState extends State<PostPage> {
                     },
                   ),
                 ),
+
                 /// “做法”文字
                 ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
                   leading: Text("做法", style: titleStyle()),
                 ),
                 allSteps(),
+
                 /// 步骤＋1 按钮
                 ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
@@ -156,13 +156,16 @@ class _PostPageState extends State<PostPage> {
     );
   }
 
+  /// 所有步骤
   Widget allSteps() {
     return ValueListenableBuilder(
         valueListenable: countStep,
         builder: (context, value, child) {
           return Column(
             children: List.generate(countStep.value, (index) {
-              hasStepsCover = List.filled(countStep.value, false);
+              if (hasStepsCover.length <= index) {
+                hasStepsCover.add(false);
+              }
               TextEditingController? stepInfoCT = stepInfoController[index];
               if (stepInfoCT == null) {
                 stepInfoCT = TextEditingController();
@@ -187,21 +190,28 @@ class _PostPageState extends State<PostPage> {
         GestureDetector(
             onTap: () {
               Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
+              selectStepCover(index);
+              log("hasStepsCover:$hasStepsCover");
             },
             child: Container(
-              height: 200,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: const Color.fromARGB(0xFF, 0xF6, 0xF6, 0xF6)),
               child: Center(
-                child: hasStepsCover[index]
-                    ? Image.network(imageUrlTmp)
-                    : const Text(
-                        "+ 步骤图\n清晰的步骤图会让菜谱更加受欢迎 ～",
-                        style: TextStyle(color: Color(0xFF909090)),
-                        textAlign: TextAlign.center,
-                      ),
-              ),
+                  child: hasStepsCover[index]
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Image.file(File(stepsCover[index]!.path),
+                              fit: BoxFit.fitWidth))
+                      : Container(
+                          height: 250,
+                          alignment: Alignment.center,
+                          child: const Text(
+                            "+ 步骤图\n清晰的步骤图会让菜谱更加受欢迎 ～",
+                            style: TextStyle(color: Color(0xFF909090)),
+                            textAlign: TextAlign.center,
+                          ),
+                        )),
             )),
         TextField(
           controller: stepInfoCT,
@@ -219,6 +229,7 @@ class _PostPageState extends State<PostPage> {
     );
   }
 
+  /// 发布按钮
   Widget sendButton() {
     return Container(
       color: Theme.of(context).colorScheme.primaryContainer,
@@ -316,20 +327,26 @@ class _PostPageState extends State<PostPage> {
     return GestureDetector(
         onTap: () {
           Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
-          selectImage();
+          selectCover();
           setState(() {
             // this.hasCover = true;
           });
         },
         child: Container(
-          height: 250,
           color: const Color.fromARGB(0xFF, 0xF6, 0xF6, 0xF6),
           child: Center(
             child: hasCover
-                ? Image.network(imageUrlTmp)
-                : const Text(
-                    "+ 添加你的美食封面 ～",
-                    style: TextStyle(color: Color(0xFF909090)),
+                ? Image.file(
+                    File(cover.path),
+                    fit: BoxFit.fitWidth,
+                  )
+                : Container(
+                    height: 300,
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "+ 添加你的美食封面 ～",
+                      style: TextStyle(color: Color(0xFF909090)),
+                    ),
                   ),
           ),
         ));
@@ -337,13 +354,30 @@ class _PostPageState extends State<PostPage> {
 
   /// 标题样式
   TextStyle titleStyle() {
-    return  TextStyle(fontWeight: FontWeight.bold, fontSize: 23,color: Theme.of(context).textTheme.titleLarge?.color);
+    return TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 23,
+        color: Theme.of(context).textTheme.titleLarge?.color);
   }
 
-  void selectImage() async {
-    final ImagePicker picker = ImagePicker();
-    XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    final File file = File(image!.path);
+  void selectCover() async {
+    XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
+    setState(() {
+      cover = image;
+      hasCover = true;
+      log("path: ${image.path}");
+    });
+  }
 
+  void selectStepCover(index) async {
+    XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
+    var tmp = hasStepsCover;
+
+    setState(() {
+      tmp[index] = true;
+      stepsCover[index] = image;
+      hasStepsCover = tmp;
+      log("hasStepsCover2:$hasStepsCover");
+    });
   }
 }
