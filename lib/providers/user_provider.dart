@@ -6,13 +6,22 @@ import '../models/user.dart';
 class UserProvider extends ChangeNotifier{
   late UserModel _userModel = UserModel("未登录", "未登录", false);
 
-  UserProvider() {
-    _initializeUserModel();
+  void refreshStatus() async {
+    await _initializeUserModel();
+    notifyListeners();
   }
 
   Future<void> _initializeUserModel() async {
     bool isLoggedIn = await SharedPreferencesUtil.getBool("isLoggedIn") ?? false;
-    _userModel = UserModel("admin", "123456", isLoggedIn);
+    if(isLoggedIn) {
+      _userModel.username = "admin";
+      _userModel.password = "123456";
+      _userModel.isLoggedIn = true;
+    }else{
+      _userModel.username = "未登录";
+      _userModel.password = "未登录";
+      _userModel.isLoggedIn = false;
+    }
   }
 
   get isLoggedIn => _userModel.isLoggedIn;

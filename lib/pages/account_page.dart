@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/login_page.dart';
 import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/utils/shared_preferences_util.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -25,6 +26,7 @@ class _AccountPageState extends State<AccountPage> {
           // 个人信息部分
           Consumer<UserProvider>(
             builder: (context, userProvider, child) {
+              userProvider.refreshStatus();
               return userProvider.isLoggedIn
                   ? _buildLoggedInProfileSection(userProvider)
                   : _buildNotLoggedInProfileSection(context);
