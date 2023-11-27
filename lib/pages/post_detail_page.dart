@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -62,9 +63,9 @@ class PostDetailPage extends StatelessWidget {
         children: [
           SkeletonLine(
             style: SkeletonLineStyle(
-                height: 368,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                borderRadius: BorderRadius.circular(12)
+              height: 368,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              borderRadius: BorderRadius.circular(12)
             ),
           ),
           const SizedBox(height: 32),
@@ -116,7 +117,11 @@ class PageContent extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundImage: NetworkImage(model.posterAvatar),
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: ExtendedNetworkImageProvider(
+                    model.posterAvatar,
+                    cache: false,
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
@@ -143,7 +148,7 @@ class PageContent extends StatelessWidget {
             controller: _scrollController,
             slivers: [
               SliverToBoxAdapter(
-                child: ImageCardSwiper(imageUrls: model.images),
+                child: ImageCardSwiper(images: model.images),
               ),
               SliverToBoxAdapter(
                 child: TextSection(title: model.title, content: model.content),
@@ -310,43 +315,90 @@ class PageContent extends StatelessWidget {
 }
 
 class ImageCardSwiper extends StatelessWidget {
-  final List<String> imageUrls;
+  final List<String> images;
+  int _currentIndex = 0;
 
-  const ImageCardSwiper({super.key, required this.imageUrls});
+  ImageCardSwiper({super.key, required this.images});
+
+  final SwiperController _controller = SwiperController();
 
   @override
   Widget build(BuildContext context) {
+    for(var image in images) {
+      precacheImage(ExtendedNetworkImageProvider(image), context);
+    }
+
     return SizedBox(
       height: 400,
       child: Swiper(
+        index: _currentIndex,
+        controller: _controller,
+        onIndexChanged: (index) {
+          _currentIndex = index;
+        },
         scale: 0.8,
         loop: false,
         indicatorLayout: PageIndicatorLayout.COLOR,
-        itemBuilder: (BuildContext context,
-            int index) {
+        itemBuilder: (BuildContext context, int index) {
           return Padding(
-              padding: const EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  bottom: 32
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(
-                    12),
-                child: Container(
-                  color: Theme
-                      .of(context)
-                      .colorScheme
-                      .secondaryContainer,
-                  child: Image.network(
-                    imageUrls[index],
-                    fit: BoxFit.cover,
+            padding: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                bottom: 32
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        fullscreenDialog: true,
+                        builder: (context) {
+                          return ExtendedImageGesturePageView.builder(
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                padding: const EdgeInsets.all(4),
+                                child: Hero(
+                                  tag: images[index],
+                                  child: ExtendedImage.network(
+                                    images[index],
+                                    fit: BoxFit.contain,
+                                    mode: ExtendedImageMode.gesture,
+                                  ),
+                                ),
+                              );
+                            },
+                            itemCount: images.length,
+                            onPageChanged: (int index) {
+                              _currentIndex = index;
+                            },
+                            controller: ExtendedPageController(
+                              initialPage: _currentIndex,
+                            ),
+                          );
+                        }
+                      )
+                    );
+                    _controller.move(_currentIndex);
+                  },
+                  child: Hero(
+                    tag: images[index],
+                    child: ExtendedImage.network(
+                      images[index],
+                      cache: true,
+                      enableLoadState: false,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              )
+              ),
+            )
           );
         },
-        itemCount: imageUrls.length,
+        itemCount: images.length,
         pagination: SwiperPagination(
             builder: DotSwiperPaginationBuilder(
               color: Colors.grey,

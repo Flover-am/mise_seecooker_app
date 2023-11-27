@@ -22,10 +22,10 @@ class PostService {
         5,
             (index) => Post(
             index,
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
+            'https://picsum.photos/140',
             'author$index',
             'title$index',
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
+            'https://picsum.photos/170'
         )
     ));
   }
@@ -37,15 +37,15 @@ class PostService {
     // } else {
     //   throw Exception('Failed to get post detail');
     // }
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     return PostDetail(
         '标题$postId',
-        'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
+        'https://picsum.photos/90',
         '作者$postId',
         '内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容$postId',
-        ['https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
+        [
           'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-          'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
+          'https://picsum.photos/250?image=9',
         ],
         5
     );

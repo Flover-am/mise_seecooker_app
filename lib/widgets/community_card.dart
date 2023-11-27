@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,19 +6,19 @@ import '../pages/post_detail_page.dart';
 import '../providers/post_detail_provider.dart';
 
 class CommunityCard extends StatelessWidget {
-  final int id;
-  final String thumbnailUrl;
-  final String author;
+  final int postId;
+  final String cover;
+  final String posterName;
   final String title;
-  final String avatarUrl;
+  final String posterAvatar;
 
   const CommunityCard({
     super.key,
-    required this.id,
-    required this.thumbnailUrl,
-    required this.author,
+    required this.postId,
+    required this.cover,
+    required this.posterName,
     required this.title,
-    required this.avatarUrl
+    required this.posterAvatar
   });
 
   @override
@@ -32,7 +33,7 @@ class CommunityCard extends StatelessWidget {
       //   borderRadius: const BorderRadius.all(Radius.circular(12)),
       // ),
       child: InkWell(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailPage(postId: id))),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailPage(postId: postId))),
         borderRadius: BorderRadius.circular(12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -45,8 +46,9 @@ class CommunityCard extends StatelessWidget {
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
                 ),
-                child: Image(
-                  image: NetworkImage(thumbnailUrl),
+                child: ExtendedImage.network(
+                  cover,
+                  cache: false,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -66,11 +68,14 @@ class CommunityCard extends StatelessWidget {
                 children: <Widget>[
                   CircleAvatar(
                     radius: 12,
-                    backgroundImage: NetworkImage(avatarUrl),
+                    backgroundImage: ExtendedNetworkImageProvider(
+                      posterAvatar,
+                      cache: false,
+                    ),
                   ),
                   const SizedBox(width: 12),  // add some space between the avatar and the text
                   Text(
-                    author,
+                    posterName,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ],

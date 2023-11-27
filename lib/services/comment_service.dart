@@ -16,10 +16,10 @@ class CommentService {
     // } else {
     //   throw Exception('Failed to get comments');
     // }
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
     return [
-      Comment('111', '2023-2-11', 'content', 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-      Comment('111', '2023-2-11', 'content', 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
+      Comment('111', '2023-2-11', 'content', 'https://picsum.photos/210'),
+      Comment('111', '2023-2-11', 'content', 'https://picsum.photos/190'),
     ];
   }
 
