@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../pages/post_page.dart';
+import '../pages/publish/post_page.dart';
 
 class MySearchBar extends StatefulWidget {
   const MySearchBar({super.key});
