@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/search_result_page.dart';
+import 'package:seecooker/pages/search/search_result_page.dart';
 import 'package:seecooker/providers/search_history_provider.dart';
 import 'package:seecooker/providers/search_recommend_provider.dart';
 import 'package:skeletons/skeletons.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../models/post.dart';
 
-class RecommandProvider extends ChangeNotifier {
+class RecommendProvider extends ChangeNotifier {
   final List<String> _list = [];
 
   int get length => _list.length;

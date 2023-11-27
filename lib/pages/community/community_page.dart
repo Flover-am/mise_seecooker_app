@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/search_page.dart';
+import 'package:seecooker/pages/search/search_page.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
-import '../widgets/community_card.dart';
-import '../widgets/my_search_bar.dart';
+import '../../widgets/community_card.dart';
+import '../../widgets/my_search_bar.dart';
 
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});

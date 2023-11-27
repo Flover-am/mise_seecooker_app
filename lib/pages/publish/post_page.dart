@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/models/user_model.dart';
-import 'package:seecooker/pages/login_page.dart';
+import 'package:seecooker/models/user.dart';
+import 'package:seecooker/pages/account/login_page.dart';
+import 'package:seecooker/providers/user_provider.dart';
 
 class PostPage extends StatefulWidget {
   final String param;
@@ -62,7 +63,7 @@ class _PostPageState extends State<PostPage> {
                 },
                 icon: const Icon(Icons.publish_rounded))
           ],
-          title: Consumer<UserModel>(
+          title: Consumer<UserProvider>(
             builder: (context, user, child) => Stack(
               children: [
                 Text('${user.username} post'),

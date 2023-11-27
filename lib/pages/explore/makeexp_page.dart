@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/service/recommand_provider.dart';
+import 'package:seecooker/providers/recommend_provider.dart';
 import 'package:seecooker/widgets/tinder_card.dart';
 
-import '../widgets/community_card.dart';
+import 'package:seecooker/widgets/community_card.dart';
 
 class MakeExpPage extends StatefulWidget {
   const MakeExpPage({super.key});
@@ -23,7 +23,7 @@ class _MakeExpPageState extends State<MakeExpPage> {
           title: Text("explore"),
         ),
         body: FutureBuilder(
-            future: Provider.of<RecommandProvider>(context, listen: false)
+            future: Provider.of<RecommendProvider>(context, listen: false)
                 .fetchPosts(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -53,7 +53,7 @@ class SwipeCardState extends State<SwipeCard>{
   bool being_left = false;
   @override
   Widget build(BuildContext context) {
-    return Consumer<RecommandProvider>(
+    return Consumer<RecommendProvider>(
         builder: (context, provider, child) {
           return Column(
             children: [
