@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/models/user_model.dart';
+import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/login_page.dart';
+import 'package:seecooker/providers/user_provider.dart';
 
 class PostPage extends StatefulWidget {
   final String param;
@@ -41,17 +42,17 @@ class _PostPageState extends State<PostPage> {
   /// 主页面
   @override
   Widget build(BuildContext context) {
-    var userModel = Provider.of<UserModel>(context,listen: false);
+    var userProvider = Provider.of<UserProvider>(context,listen: false);
 
     // 检查用户是否已登录
-    if (!userModel.isLoggedIn) {
+    if (!userProvider.isLoggedIn) {
       // 如果未登录，则导航到LoginPage
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       });
-      print(userModel.isLoggedIn);
+      //print(userProvider.isLoggedIn);
       //Navigator.pop(context);
     }
     return Scaffold(
@@ -64,7 +65,7 @@ class _PostPageState extends State<PostPage> {
               icon: const Icon(Icons.publish_rounded))
         ],
         title:
-          Consumer<UserModel>(
+          Consumer<UserProvider>(
           builder: (context, user, child) => Stack(
             children: [
               Text('${user.username} post'),

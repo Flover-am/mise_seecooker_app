@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/models/user_model.dart';
+import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/login_page.dart';
+import 'package:seecooker/providers/user_provider.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -22,10 +23,10 @@ class _AccountPageState extends State<AccountPage> {
       body: ListView(
         children: [
           // 个人信息部分
-          Consumer<UserModel>(
-            builder: (context, userModel, child) {
-              return userModel.isLoggedIn
-                  ? _buildLoggedInProfileSection(userModel)
+          Consumer<UserProvider>(
+            builder: (context, userProvider, child) {
+              return userProvider.isLoggedIn
+                  ? _buildLoggedInProfileSection(userProvider)
                   : _buildNotLoggedInProfileSection(context);
             },
           ),
@@ -36,7 +37,7 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildLoggedInProfileSection(UserModel userModel) {
+  Widget _buildLoggedInProfileSection(UserProvider userProvider) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -49,7 +50,7 @@ class _AccountPageState extends State<AccountPage> {
           ),
           const SizedBox(height: 16),
                 Text(
-            userModel.username,
+            userProvider.username,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -60,6 +61,15 @@ class _AccountPageState extends State<AccountPage> {
 
           // 发布数和获赞数
           _buildUserStats(),
+
+          // 添加退出登录按钮
+          ElevatedButton(
+            onPressed: () =>{
+              userProvider.logout(),
+              //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const AccountPage())),
+            },
+            child: const Text('退出登录'),
+          ),
         ],
       ),
     );
