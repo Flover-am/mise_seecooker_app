@@ -1,12 +1,42 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:seecooker/pages/account_page.dart';
 import 'package:seecooker/pages/explore_page.dart';
 import 'package:seecooker/pages/home_page.dart';
-import 'package:seecooker/pages/mall_page.dart';
+import 'package:seecooker/pages/community_page.dart';
+import 'package:seecooker/pages/login_page.dart';
 import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
+import 'package:seecooker/providers/community_posts_provider.dart';
+import 'package:seecooker/providers/explore_post_provider.dart';
+import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/service/recommand_provider.dart';
+import 'package:seecooker/utils/color_schems.dart';
+
+import 'models/user.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ExplorePostProvider()),
+        ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
+      ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => RecommandProvider())
+      ],
+      child: const MyApp()
+    )
+  );
+  if (Platform.isAndroid) {
+    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.black.withOpacity(0.002),
+      systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.dark
+    );
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -17,12 +47,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'seecooker',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.pink),
+        colorScheme: lightColorScheme,
         useMaterial3: true,
+        //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(brightness: Brightness.dark, seedColor: Colors.pink),
+        colorScheme: darkColorScheme,
         useMaterial3: true,
+        //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       home: const MainPage(),
     );
@@ -36,29 +68,38 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin {
   int _currentPageIndex = 0;
 
   final List<Widget> _body = [
     const HomePage(),
     const ExplorePage(),
-    const MallPage(),
+    const CommunityPage(),
     const AccountPage(),
   ];
 
   @override
+  bool get wantKeepAlive => true; // keep page alive
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
-      body: _body[_currentPageIndex],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PostPage()),
-          )
-        },
-        child: const Icon(Icons.edit),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: IndexedStack(
+        index: _currentPageIndex,
+        children: _body,
+      ),
+      floatingActionButton: _currentPageIndex == 2
+        ? FloatingActionButton(
+          onPressed: () => {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PostPage(param: '111',)),
+            ),
+          },
+          child: const Icon(Icons.edit),
+        )
+        : null,
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
           setState(() {
@@ -79,9 +120,9 @@ class _MainPageState extends State<MainPage> {
             label: '发现',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.local_mall),
-            icon: Icon(Icons.local_mall_outlined),
-            label: '商城',
+            selectedIcon: Icon(Icons.camera),
+            icon: Icon(Icons.camera_outlined),
+            label: '社区',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.account_circle),
