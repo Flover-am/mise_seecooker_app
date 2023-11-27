@@ -10,7 +10,7 @@ import 'package:seecooker/pages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:seecooker/providers/home_recipes_provider.dart';
-import 'package:seecooker/utils/color_schems.dart';
+import 'package:seecooker/utils/color_schemes.dart';
 
 import 'models/user_model.dart';
 
