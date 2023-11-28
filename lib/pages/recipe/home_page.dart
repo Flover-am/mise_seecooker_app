@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seecooker/pages/recipe/recipe_detail.dart';
 import 'package:seecooker/providers/home_recipes_provider.dart';
 import 'package:seecooker/widgets/recipe_card.dart';
 
@@ -11,13 +12,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes(),
+      future: Provider.of<HomeRecipesProvider>(context, listen: false)
+          .fetchRecipes(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting){
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -38,23 +39,23 @@ class RecipeList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeRecipesProvider>(
-      builder: (context, provider, child) {
-        return ListView.builder(
-          itemBuilder: (BuildContext context, int index) {
-            if (index == provider.length - 1) {
-              provider.fetchMoreRecipes();
-            }
-            return TweenAnimationBuilder(
-              duration: const Duration(milliseconds: 500),
-              tween: Tween<double>(begin: 0.0, end: 1.0),
-              curve: Curves.easeOut,
-              builder: (context, value, child) {
-                return Opacity(
-                  opacity: value,
-                  child: child,
-                );
-              },
+    return Consumer<HomeRecipesProvider>(builder: (context, provider, child) {
+      return ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          if (index == provider.length - 1) {
+            provider.fetchMoreRecipes();
+          }
+          return TweenAnimationBuilder(
+            duration: const Duration(milliseconds: 500),
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            curve: Curves.easeOut,
+            builder: (context, value, child) {
+              return Opacity(
+                opacity: value,
+                child: child,
+              );
+            },
+            child: GestureDetector(
               child: RecipeCard(
                 id: index,
                 title: provider.itemAt(index).title,
@@ -63,11 +64,17 @@ class RecipeList extends StatelessWidget {
                 like: provider.itemAt(index).like,
                 rate: provider.itemAt(index).rate,
               ),
-            );
-          },
-          itemCount: provider.length,
-        );
-      }
-    );
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => RecipeDetail(id: index)));
+              },
+            ),
+          );
+        },
+        itemCount: provider.length,
+      );
+    });
   }
 }

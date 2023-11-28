@@ -1,15 +1,35 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'recipe_detail.g.dart';
+@JsonSerializable()
 class RecipeModel {
+  String name;
+  String cover;
+  String introduction;
   String authorName;
   String authorAvatar;
-  // String name;
-  // String introduction;
-  int starAmount;
+  List<String> stepContents;
+  List<String> stepImages;
 
+  int starAmount;
   bool isFavorite;
   bool isMarked;
-  Map<int, String> stepContents;
+
+  RecipeModel(
+      this.name,
+      this.cover,
+      this.introduction,
+      this.authorName,
+      this.authorAvatar,
+      this.stepContents,
+      this.stepImages,
+      this.starAmount,
+      this.isFavorite,
+      this.isMarked);
 
 
-  RecipeModel(this.authorName, this.authorAvatar, this.starAmount,
-      this.isFavorite, this.isMarked, this.stepContents);
+
+
+  factory RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
+  Map<String, dynamic> toJson() => _$RecipeModelToJson(this);
 }

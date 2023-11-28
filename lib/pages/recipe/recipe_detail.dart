@@ -23,7 +23,7 @@ class _RecipeDetailState extends State<RecipeDetail> {
       create: (context) => RecipeDetailProvider(),
       builder: (context, child) {
         var init = Provider.of<RecipeDetailProvider>(context, listen: false)
-            .fetchPostDetail(widget.id);
+            .fetchRecipeDetail(widget.id);
         return FutureBuilder(
             future: init,
             builder: (context, snapshot) {
@@ -80,12 +80,10 @@ class _RecipeDetailState extends State<RecipeDetail> {
                                         ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(10.0),
-                                          child: Image(
-                                              image: AssetImage(
-                                                  model.authorAvatar)),
+                                          child: Image.network(model.stepImages[index]),
                                         ),
                                         TextSection(
-                                          content: model.stepContents[index]!,
+                                          content: model.stepContents[index],
                                           index: index,
                                           allLength: model.stepContents.length,
                                         )

@@ -11,7 +11,7 @@ import 'package:seecooker/models/recipe.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
 import 'package:seecooker/providers/user_provider.dart';
-import 'package:seecooker/services/publish_recipe_service.dart';
+import 'package:seecooker/services/recipe_service.dart';
 import 'package:seecooker/utils/FileConverter.dart';
 
 class PostPage extends StatefulWidget {
@@ -22,7 +22,6 @@ class PostPage extends StatefulWidget {
   @override
   State<PostPage> createState() => _PostPageState();
 }
-
 
 class _PostPageState extends State<PostPage> {
   /// 是否有封面
@@ -49,6 +48,7 @@ class _PostPageState extends State<PostPage> {
   /// 主页面
   @override
   Widget build(BuildContext context) {
+    var page = this;
     // // 检查用户是否已登录
     // if (!userModel.isLoggedIn) {
     //   // 如果未登录，则导航到LoginPage
@@ -251,20 +251,21 @@ class _PostPageState extends State<PostPage> {
                 fontSize: 18)),
         onPressed: () async {
           NewRecipe recipe = NewRecipe();
-          if(!hasCover){
+          if (!hasCover) {
             Fluttertoast.showToast(msg: "请上传封面～");
             return;
           }
-          if(!hasStepsCover.any((element) => element==true)){
+          if (!hasStepsCover.any((element) => element == true)) {
             Fluttertoast.showToast(msg: "请上传步骤对应的图片哦～");
             return;
           }
 
-
           /// 标题
           recipe.name = titleController.text;
+
           /// 封面
-          recipe.cover =  await FileConverter.xFile2File(cover);
+          recipe.cover = await FileConverter.xFile2File(cover);
+
           /// 配料
           recipe.introduction = introductionController.text;
           ingredientsNameController.forEach((key, value) {
@@ -276,13 +277,20 @@ class _PostPageState extends State<PostPage> {
           stepContentsController.forEach((key, value) {
             recipe.stepContents.add(value.text);
           });
+
           /// 每一步的图片
           stepsCover.forEach((key, value) async {
             recipe.stepImages.add(await FileConverter.xFile2File(value));
           });
-          PublishRecipeService.postRecipe(recipe);
 
-          Fluttertoast.showToast(msg: "//TODO: 发布");
+          var resp = await RecipeService.postRecipe(recipe);
+          log(resp.toString());
+          if (!resp.isSuccess()) {
+            Fluttertoast.showToast(msg: "发布失败: ${resp.message}");
+          } else {
+            Fluttertoast.showToast(msg: "发布成功！");
+            Navigator.pop(context);
+          }
         },
       ),
     );
