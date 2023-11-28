@@ -71,7 +71,7 @@ class _RecipeDetailState extends State<RecipeDetail> {
                                   // viewportFraction: 0.8,
                                   scale: 0.8,
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: model.contents.length,
+                                  itemCount: model.stepContents.length,
                                   loop: false,
                                   itemBuilder:
                                       (BuildContext context, int index) {
@@ -85,9 +85,9 @@ class _RecipeDetailState extends State<RecipeDetail> {
                                                   model.authorAvatar)),
                                         ),
                                         TextSection(
-                                          content: model.contents[index]!,
+                                          content: model.stepContents[index]!,
                                           index: index,
-                                          allLength: model.contents.length,
+                                          allLength: model.stepContents.length,
                                         )
                                       ],
                                     );
