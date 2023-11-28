@@ -25,7 +25,7 @@ class RecipeService {
   }
 
   static Future<HttpResult> getRecipe(int id) async {
-    String lastUrl = "$baseUrl/0";
+    String lastUrl = "$baseUrl/$id";
     /// 发起get请求，拿到response
     var response = await dio.get(lastUrl);
     /// 将response的data转换为HttpResult返回给上一层
