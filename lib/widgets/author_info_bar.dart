@@ -11,7 +11,7 @@ class AuthorInfoBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CircleAvatar(
-          backgroundImage: AssetImage(authorAvatar),
+          backgroundImage: Image.network(authorAvatar).image,
         ),
         Container(
             margin:

@@ -1,13 +1,18 @@
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:seecooker/models/NewRecipe.dart';
+import 'package:seecooker/models/recipe.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
 import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/services/recipe_service.dart';
+import 'package:seecooker/utils/FileConverter.dart';
 
 class PostPage extends StatefulWidget {
   final String param;
@@ -31,18 +36,19 @@ class _PostPageState extends State<PostPage> {
 
   /// 标题和简介的监听
   final titleController = TextEditingController();
-  final summaryController = TextEditingController();
+  final introductionController = TextEditingController();
 
   /// 配料表的名字和用量的监听
   Map<int, TextEditingController> ingredientsNameController = {};
   Map<int, TextEditingController> ingredientsAmountController = {};
 
   /// 步骤介绍的监听
-  Map<int, TextEditingController> stepInfoController = {};
+  Map<int, TextEditingController> stepContentsController = {};
 
   /// 主页面
   @override
   Widget build(BuildContext context) {
+    var page = this;
     // // 检查用户是否已登录
     // if (!userModel.isLoggedIn) {
     //   // 如果未登录，则导航到LoginPage
@@ -83,7 +89,8 @@ class _PostPageState extends State<PostPage> {
             child: Column(
               children: [
                 TextField(
-                  style: const TextStyle(fontSize: 25.0,fontWeight: FontWeight.w800),
+                  style: const TextStyle(
+                      fontSize: 25.0, fontWeight: FontWeight.w800),
                   controller: titleController,
                   decoration: const InputDecoration(
                     hintText: "添加菜谱标题",
@@ -98,7 +105,7 @@ class _PostPageState extends State<PostPage> {
                 Container(
                   margin: const EdgeInsets.only(bottom: 50),
                   child: TextField(
-                    controller: summaryController,
+                    controller: introductionController,
                     decoration: const InputDecoration(
                       hintText: "输入这道美食背后的故事",
                       border: InputBorder.none,
@@ -167,10 +174,10 @@ class _PostPageState extends State<PostPage> {
               if (hasStepsCover.length <= index) {
                 hasStepsCover.add(false);
               }
-              TextEditingController? stepInfoCT = stepInfoController[index];
+              TextEditingController? stepInfoCT = stepContentsController[index];
               if (stepInfoCT == null) {
                 stepInfoCT = TextEditingController();
-                stepInfoController[index] = stepInfoCT;
+                stepContentsController[index] = stepInfoCT;
               }
               return singleStep(index, stepInfoCT);
             }),
@@ -242,8 +249,48 @@ class _PostPageState extends State<PostPage> {
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 18)),
-        onPressed: () {
-          Fluttertoast.showToast(msg: "//TODO: 发布");
+        onPressed: () async {
+          NewRecipe recipe = NewRecipe();
+          if (!hasCover) {
+            Fluttertoast.showToast(msg: "请上传封面～");
+            return;
+          }
+          if (!hasStepsCover.any((element) => element == true)) {
+            Fluttertoast.showToast(msg: "请上传步骤对应的图片哦～");
+            return;
+          }
+
+          /// 标题
+          recipe.name = titleController.text;
+
+          /// 封面
+          recipe.cover = await FileConverter.xFile2File(cover);
+
+          /// 配料
+          recipe.introduction = introductionController.text;
+          ingredientsNameController.forEach((key, value) {
+            recipe.ingredients
+                .add({value.text: ingredientsAmountController[key]!.text});
+          });
+
+          /// 每一步的内容
+          stepContentsController.forEach((key, value) {
+            recipe.stepContents.add(value.text);
+          });
+
+          /// 每一步的图片
+          stepsCover.forEach((key, value) async {
+            recipe.stepImages.add(await FileConverter.xFile2File(value));
+          });
+
+          var resp = await RecipeService.postRecipe(recipe);
+          log(resp.toString());
+          if (!resp.isSuccess()) {
+            Fluttertoast.showToast(msg: "发布失败: ${resp.message}");
+          } else {
+            Fluttertoast.showToast(msg: "发布成功！");
+            Navigator.pop(context);
+          }
         },
       ),
     );
