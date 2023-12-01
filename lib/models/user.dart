@@ -1,7 +1,36 @@
-class UserModel{
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user.g.dart';
+
+@JsonSerializable()
+class User {
+  int? id;
+
   String username;
+
   String password;
+
+  String avatar;
+
+  List<int> likeRecipes;
+
+  List<int> postRecipes;
+
+  List<int> posts;
+
+  @JsonKey(name: "isLogin")
   bool isLoggedIn;
 
-  UserModel(this.username, this.password, this.isLoggedIn);
+  User(
+      this.username,
+      this.password,
+      this.avatar,
+      this.likeRecipes,
+      this.postRecipes,
+      this.posts,
+      this.isLoggedIn);
+
+  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserToJson(this);
 }

@@ -2,9 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
 
 import '../models/user.dart';
+import '../services/user_service.dart';
 
 class UserProvider extends ChangeNotifier{
-  late UserModel _userModel = UserModel("未登录", "未登录", false);
+  late User _user = User("未登录1", "未登录", "未登录",[],[],[],false);
+
+  get isLoggedIn => _user.isLoggedIn;
+
+  String get username => _user.username;
+
 
   void refreshStatus() async {
     await _initializeUserModel();
@@ -14,37 +20,54 @@ class UserProvider extends ChangeNotifier{
   Future<void> _initializeUserModel() async {
     bool isLoggedIn = await SharedPreferencesUtil.getBool("isLoggedIn") ?? false;
     if(isLoggedIn) {
-      _userModel.username = "admin";
-      _userModel.password = "123456";
-      _userModel.isLoggedIn = true;
+      _user.username = await SharedPreferencesUtil.getString("username");
+      _user.password = await SharedPreferencesUtil.getString("password");
+      _user.isLoggedIn = true;
+      print("User is logged in and name is ${_user.username}");
+
     }else{
-      _userModel.username = "未登录";
-      _userModel.password = "未登录";
-      _userModel.isLoggedIn = false;
+      _user.username = "未登录2";
+      _user.password = "未登录";
+      _user.isLoggedIn = false;
     }
   }
 
-  get isLoggedIn => _userModel.isLoggedIn;
 
-  String get username => _userModel.username;
-
-  void loginAdmin(){
-    _userModel.username = "admin";
-    _userModel.password = "123456";
-    _userModel.isLoggedIn = true;
-    SharedPreferencesUtil.setString("username","admin");
-    SharedPreferencesUtil.setString("password","123456");
-    SharedPreferencesUtil.setBool("isLoggedIn", true);
+  Future<void> logout() async{
+    _user.username = "未登录";
+    _user.password = "未登录";
+    _user.isLoggedIn = false;
+    await SharedPreferencesUtil.setString("username","未登录");
+    await SharedPreferencesUtil.setString("password","未登录");
+    await SharedPreferencesUtil.setBool("isLoggedIn", false);
     notifyListeners();
   }
 
-  void logout(){
-    _userModel.username = "未登录";
-    _userModel.password = "未登录";
-    _userModel.isLoggedIn = false;
-    SharedPreferencesUtil.setString("username","未登录");
-    SharedPreferencesUtil.setString("password","未登录");
-    SharedPreferencesUtil.setBool("isLoggedIn", false);
+  Future<void> login(String username,String password) async {
+    /// 先进行请求，然后从请求中拿数据
+    var res =  await UserService.login(username,password);
+    /// 判断是否获取成功
+    if(!res.isSuccess()){
+      throw Exception("登录失败:${res.message}\n${res.code}\n${username+" "+password}");
+    }
+    _user.username = username;
+    _user.password = password;
+    _user.isLoggedIn = true;
+    await SharedPreferencesUtil.setString("username", username);
+    await SharedPreferencesUtil.setString("password", password);
+    await SharedPreferencesUtil.setBool("isLoggedIn", true);
     notifyListeners();
   }
+
+  // Future<User> fetchUser(int id) async {
+  //   /// 先进行请求，然后从请求中拿数据
+  //   var res =  await UserService.login();
+  //   /// 判断是否获取成功
+  //   if(!res.isSuccess()){
+  //     throw Exception("未拿到菜谱数据:${res.message}");
+  //   }
+  //   /// 将数据转换成Model
+  //   _user = User.fromJson(res.data);
+  //   return _user;
+  // }
 }
