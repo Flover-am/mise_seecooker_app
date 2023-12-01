@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/models/user_model.dart';
+import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/login_page.dart';
 
 class PostPage extends StatefulWidget {

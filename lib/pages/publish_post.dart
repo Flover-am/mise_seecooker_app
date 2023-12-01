@@ -1,33 +1,36 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../utils/publish_http.dart';
+import '../service/publish_http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 
-import '../models/user_model.dart';
+import '../models/user.dart';
 import 'login_page.dart';
 
-class IssuePost extends StatefulWidget {
+class PublishPost extends StatefulWidget {
   final String param;
-  const IssuePost({super.key,required this.param});
+  const PublishPost({super.key,required this.param});
 
   @override
-  State<IssuePost> createState() => _IssuePostState();
+  State<PublishPost> createState() => _PublishPostState();
 }
 
-class _IssuePostState extends State<IssuePost> {
+class _PublishPostState extends State<PublishPost> {
   String title='';
   String text='';
   final ImagePicker picker = ImagePicker();
   List<String> _userImage=[];//存放获取到的本地路径
   bool _issueButtonVisible=true;
+  String? _errorInputMessage=null;
+
 
   @override
   Widget build(BuildContext context) {
-    var userModel = Provider.of<UserModel>(context,listen: false);
+    // var userModel = Provider.of<UserModel>(context,listen: false);
     // if (!userModel.isLoggedIn) {
     //   // 如果未登录，则导航到LoginPage
     //   WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -37,6 +40,7 @@ class _IssuePostState extends State<IssuePost> {
     //   });
     //   print(userModel.isLoggedIn);
     // }
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -46,7 +50,6 @@ class _IssuePostState extends State<IssuePost> {
             padding:const EdgeInsets.fromLTRB(8, 8, 8, 8),
             shrinkWrap: true,
             children: <Widget>[
-              //标题？？
               TitleInput(),
               Divider(
                   thickness: 1,
@@ -74,10 +77,45 @@ class _IssuePostState extends State<IssuePost> {
                 child:FloatingActionButton(
                   onPressed: () {
                     if(_userImage.isEmpty){
-                      //TODO:添加确认
+                      showDialog<String>(
+                          context:context,
+                          builder: (context){
+                            return AlertDialog(
+                                title: const Text('未上传图片！'),
+                                content:const Text('请至少上传一张图片。'),
+                                actions:<Widget>[
+                                  TextButton(
+                                    child: const Text('确认'),
+                                    onPressed: (){
+                                      Navigator.of(context).pop();
+                                    },
+                                  )
+                                ]
+                            );
+                          }
+                      );
                     }
                     else if(text.isEmpty){
-                      //TODO:添加确认
+                      showDialog<String>(
+                          context:context,
+                          builder: (context){
+                            return AlertDialog(
+                                title: const Text('帖子内容为空！'),
+                                content:const Text('请输入需要发布的帖子内容。'),
+                                actions:<Widget>[
+                                  TextButton(
+                                    child: const Text('确认'),
+                                    onPressed: (){
+                                      Navigator.of(context).pop();
+                                    },
+                                  )
+                                ]
+                            );
+                          }
+                      );
+                      setState(() {
+                        _errorInputMessage='输入不能为空';
+                      });
                     }
                     else{
                       _issuePost();
@@ -114,22 +152,27 @@ class _IssuePostState extends State<IssuePost> {
           padding: const EdgeInsets.fromLTRB(16,8,16,8),
           child:Focus(
             onFocusChange:(hasFocus){
-            setState(() {
-            _issueButtonVisible=!hasFocus;
-            });
-            },child:TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: '请输入标题(可选)',
+              setState(() {
+                _issueButtonVisible=!hasFocus;
+              });
+            },
+            child: TextField(
+              decoration: const InputDecoration(
+                labelText: '输入标题(可选)',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
               ),
               onChanged: (text){
-                this.title=text;//TODO:标题长度控制
+                this.title=text;
               },
-            )
+              maxLines: null,
+              minLines:1,
+              maxLength: 25,
+          ),
           )
         )
       ]
-
     );
   }
   Widget ImageSelection(BuildContext context){
@@ -160,10 +203,10 @@ class _IssuePostState extends State<IssuePost> {
                             child:InkWell(
                               splashColor: Colors.blue.withAlpha(30),//TODO：更改主题颜色
                               onTap:(){
-                                if(index==_userImage.length){
+                                if(index==_userImage.length){//添加图片按钮的点击逻辑
                                   PictureSource(context);
-                                }else{
-                                  showDetailImage(context,index);
+                                }else{//图片的点击逻辑
+                                  _showDetailedImage(context,_userImage[index],index);
                                 }
                               },
                               child:Hero(
@@ -174,14 +217,14 @@ class _IssuePostState extends State<IssuePost> {
                                       children:
                                       (index<_userImage.length)
                                           ?
-                                      <Widget>[
+                                      <Widget>[//图片组件：返回对应图片的缩略图
                                         Expanded(
                                             child:
                                             Image.file(File(_userImage[index]), fit: BoxFit.cover)
                                         ),
                                       ]
                                           :
-                                      <Widget>[
+                                      <Widget>[//添加图片按钮：返回添加图片的组件
                                         PictureAdder()
                                       ]
                                   )
@@ -196,53 +239,14 @@ class _IssuePostState extends State<IssuePost> {
           )
         );
   }
-  void showDetailImage(BuildContext ctx,int index){
-      OverlayEntry overlayEntry=OverlayEntry(builder: (ctx)=>Container());
-      overlayEntry=OverlayEntry(
-        builder:(ctx)=>Positioned(
-            top:0,
-            left:0,
-          child:Material(
-            color:Colors.black,
-            child:InkWell(
-              onTap: (){
-                overlayEntry.remove();
-              },
-              child:Column(
-                mainAxisSize: MainAxisSize.min,
-                children:[
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children:[
-                      Hero(
-                          tag:'showDetailImage$index',
-                          child:Image.file(
-                            File(_userImage[index]),
-                            fit: BoxFit.contain,
-                            width: MediaQuery.of(ctx).size.width,
-                            height: MediaQuery.of(ctx).size.height,
-                          )
-                      ),
-                    ]
-                  ),
-                  ElevatedButton(onPressed: (){
-                        //TODO:添加确认
-                        setState((){
-                          _userImage.removeAt(index);
-                        });
-                        overlayEntry.remove();
-                      }, child: const Icon(Icons.delete),
-                  )
-
-                  ]
-                )
-              )
-            )
-          )
-      );
-
-      Overlay.of(ctx)?.insert(overlayEntry);
+  void _showDetailedImage(BuildContext context,String path,int index){
+    Navigator.push(context,MaterialPageRoute(
+      builder:(context)=>DetailImagePage(path:path,index:index,deletionCallback:(){
+        setState(() {
+          _userImage.removeAt(index);
+        });
+      })
+    ));
   }
   Widget PictureAdder(){
 
@@ -251,11 +255,10 @@ class _IssuePostState extends State<IssuePost> {
         PictureSource(context);
       },
       child:Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(8.0),
         child:Center(
           child:Image.asset('assets/images/add.png'),
         )
-
       )
     );
 
@@ -274,15 +277,29 @@ class _IssuePostState extends State<IssuePost> {
               });
             },
             child:TextField(
-              maxLines: null,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: '请输入发布内容',
+                labelText: '请输入发布内容',
+                errorText: _errorInputMessage,
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
               ),
               onChanged: (text){
                 this.text=text;
+                if(text.isEmpty){
+                  setState(() {
+                    _errorInputMessage='输入不能为空';
+                  });
+                }else{
+                  setState(() {
+                    _errorInputMessage=null;
+                  });
+                }
               },
-            )
+              maxLines: null,
+              minLines:1,
+              maxLength: 1000,
+            ),
           )
 
         )
@@ -301,6 +318,10 @@ class _IssuePostState extends State<IssuePost> {
       child: const Text('发布'),
     );
   }
+
+  /**
+   * 从相册或相机获取图片
+   */
   void PictureSource(BuildContext ctx){
     showModalBottomSheet(context: ctx, builder: (BuildContext context){
       return Container(
@@ -390,18 +411,100 @@ class _IssuePostState extends State<IssuePost> {
     }
   }
   //发布
-  void _issuePost() async{
+  void _issuePost() async{//TODO: 完成发布逻辑
       print("Issue");
       await sendFormDataRequest(apiUrl, title, text, _userImage,
               (body){
               print(body);
               print("-------------SUCCESS--------------");
             },(body){
-              print(body.toString());
+              print(body);
               print("-------------FAIL--------------");
           }, (err){
             print(err);
             print("-------------ERROR--------------");
           });
+  }
+}
+
+class DetailImagePage extends StatelessWidget{
+
+  final String path;
+  final int index;
+  final deletionCallback;
+
+  DetailImagePage({required this.path,required this.index,required this.deletionCallback});
+  @override
+  Widget build(BuildContext context){
+    void callBack(){
+      deletionCallback();
+      Navigator.of(context).pop();
+    };
+
+    return Scaffold(
+      body:
+        Material(
+        color:Colors.black,
+        child:InkWell(
+            onTap: (){
+              Navigator.of(context).pop();
+            },
+            child:SafeArea(
+              child:Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children:[
+                    Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:[
+                          Hero(
+                              tag:'showDetailImage$index',
+                              child:Image.file(
+                                File(path),
+                                fit: BoxFit.contain,
+                                width: MediaQuery.of(context).size.width,
+                              )
+                          ),
+                        ]
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+                      child: ElevatedButton(
+                          child: const Icon(Icons.delete),
+                          onPressed: (){
+                            showDialog<String>(
+                                context:context,
+                                builder: (context){
+                                  return AlertDialog(
+                                      title: const Text('确认删除图片？'),
+                                      content:const Text('这将从已选图片中删除该图片。'),
+                                      actions:<Widget>[
+                                        TextButton(
+                                          child: const Text('取消'),
+                                          onPressed: (){
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: const Text('确认'),
+                                          onPressed: (){
+                                            callBack();
+                                            Navigator.of(context).pop();
+                                          },
+                                        )
+                                      ]);
+                                }
+                            );
+                          }
+                      ),
+                    )
+
+                  ]
+              )
+            )
+        )
+    )
+    );
   }
 }
