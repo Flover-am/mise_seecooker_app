@@ -21,29 +21,6 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
 
   @override
-  // Widget build(BuildContext context) {
-  //
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: const Text('我的'),
-  //     ),
-  //     body: ListView(
-  //       children: [
-  //         // 个人信息部分
-  //         Consumer<UserProvider>(
-  //           builder: (context, userProvider, child) {
-  //             userProvider.loadLoginStatus();
-  //             return userProvider.isLoggedIn
-  //                 ? _buildLoggedInProfileSection(userProvider)
-  //                 : _buildNotLoggedInProfileSection(context);
-  //           },
-  //         ),
-  //         // 收藏和发布栏目
-  //         _buildTabBarSection(),
-  //       ],
-  //     ),
-  //   );
-  // }
   Widget build(BuildContext context) {
    //  var userProvider = Provider.of<UserProvider>(context);
    //
@@ -53,57 +30,70 @@ class _AccountPageState extends State<AccountPage> {
     return CustomScrollView(
         slivers: [
           SliverAppBar(
+              backgroundColor: Color.fromRGBO(244,164,96, 1),
               pinned: true,
-              expandedHeight: 350,
+              expandedHeight: 240,
               scrolledUnderElevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.only(left: 24, top: 30),
-                expandedTitleScale: 1,
-                title: Column(
-                  children:[
-                   Text('我的', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                  // _buildTabBarSection(),
+        //   bottom: const TabBar(
+        //       tabs: [
+        //       Tab(text: '选项卡1'),
+        //   Tab(text: '选项卡2'),]
+        // ),
+
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.only(left: 200, top: 30),
+              expandedTitleScale: 2.4,
+              title: const Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 14,
+                      backgroundImage: NetworkImage(
+                          'https://example.com/avatar.jpg'), // 你的头像图片地址
+                    )
                   ]
-                ),
-                // title: Text('我的', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                background: Padding(
-
-
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: MediaQuery.of(context).padding.top + 16),
-                        Consumer<UserProvider>(
-                        builder: (context, userProvider, child) {
-                          userProvider.loadLoginStatus();
-                          return userProvider.isLoggedIn
-                              ? _buildLoggedInProfileSection(userProvider)
-                              : _buildNotLoggedInProfileSection(context);
-                            _buildLoggedInProfileSection(userProvider);
-                        },
-                      ),
+              ),
+              background: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFFFE0B2), // 起始颜色
+                      Color(0xFFFFCC80), // 结束颜色
                     ],
                   ),
                 ),
-              ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SearchPage()),
-                    );
-                  },
+                padding: const EdgeInsets.only(left: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: MediaQuery.of(context).padding.top + 16),
+                    Consumer<UserProvider>(
+                      builder: (context, userProvider, child) {
+                        userProvider.loadLoginStatus();
+                        return userProvider.isLoggedIn
+                            ? _buildLoggedInProfileSection(userProvider)
+                            : _buildNotLoggedInProfileSection(context);
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 4),
-              ]
+              ),
+            ),
           ),
+
           SliverToBoxAdapter(
             child:_buildTabBarSection(),
           ),
 
+          // SliverToBoxAdapter(
+          //   child: TabBarView(
+          //     children: [
+          //       _buildTabContent1(),
+          //       _buildTabContent2(),
+          //     ],
+          //   ),
+          // ),
           FutureBuilder(
             future: Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes(),
             builder: (context, snapshot) {
@@ -126,6 +116,56 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
+
+}
+
+Widget _buildTabContent2() {
+  return NestedScrollView(
+    headerSliverBuilder: (context, innerBoxIsScrolled) {
+      return [
+        SliverAppBar(
+          pinned: true,
+          expandedHeight: 200,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Text('选项卡2内容'),
+          ),
+        ),
+      ];
+    },
+    body: ListView.builder(
+      itemCount: 5, // 假设有5个项目
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text('选项卡2 - 项目 $index'),
+        );
+      },
+    ),
+  );
+}
+
+Widget _buildTabContent1() {
+  return NestedScrollView(
+    headerSliverBuilder: (context, innerBoxIsScrolled) {
+      return [
+        SliverAppBar(
+          pinned: true,
+          expandedHeight: 200,
+          flexibleSpace: FlexibleSpaceBar(
+            title: Text('选项卡1内容'),
+          ),
+        ),
+      ];
+    },
+    body: ListView.builder(
+      itemCount: 10, // 假设有10个项目
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text('选项卡1 - 项目 $index'),
+        );
+      },
+    ),
+  );
+}
   Widget _buildSkeleton(BuildContext context) {
     return Column(
       children: [
@@ -152,38 +192,79 @@ class _AccountPageState extends State<AccountPage> {
 
   Widget _buildLoggedInProfileSection(UserProvider userProvider) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage(
-                'https://example.com/avatar.jpg'), // 你的头像图片地址
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 42,
+                backgroundImage: NetworkImage(
+                  'https://example.com/avatar.jpg',
+                ),
+              ),
+              SizedBox(width: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    userProvider.username,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text('用户编号：xxxxxxxxx'), // 替换为用户描述
+                ],
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-                Text(
-            userProvider.username,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+          SizedBox(height: 20),
+          Text(
+            '替换为新的用户描述', // 新的用户描述内容
+            style: TextStyle(
+              fontSize: 16,
             ),
           ),
-          const SizedBox(height: 8),
-          const Text('用户描述或其他信息'),
-
-          // 发布数和获赞数
-          _buildUserStats(),
-
-          // 添加退出登录按钮
-          ElevatedButton(
-            onPressed: () =>{
-              userProvider.logout(),
-              //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const AccountPage())),
-            },
-            child: const Text('退出登录'),
+          SizedBox(height: 8),
+          Row(
+            children: [
+              SizedBox(width: 10),
+              Column(
+                children: [
+                  Text('10', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 4),
+                  Text('发布数', style: TextStyle(fontSize: 12)),
+                ],
+              ),
+              SizedBox(width: 20),
+              Column(
+                children: [
+                  Text('20', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 4),
+                  Text('点赞数', style: TextStyle(fontSize: 12)),
+                ],
+              ),
+              SizedBox(width: 140),
+              ElevatedButton(
+                onPressed: () {
+                  userProvider.logout();
+                  //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const AccountPage())),
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.orange, // 按钮背景色
+                  onPrimary: Colors.white, // 文字颜色
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // 圆角大小
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // 按钮内边距
+                ),
+                child: Text('退出登录'),
+              ),
+            ],
           ),
-
         ],
       ),
     );
@@ -262,10 +343,11 @@ class _AccountPageState extends State<AccountPage> {
           //   child: TabBarView(
           //     children: [
           //       // 收藏页面内容
-          //       _buildFavoriteContent(),
+          //       RecipeList(),
+          //       RecipeList(),
+          //       RecipeList()
           //
           //       // 发布页面内容
-          //       _buildPublishedContent(),
           //     ],
           //   ),
           // ),
@@ -291,7 +373,7 @@ class _AccountPageState extends State<AccountPage> {
       child: Text('发布页面内容'),
     );
   }
-}
+
 
 class RecipeList extends StatelessWidget {
   const RecipeList({super.key});
@@ -302,36 +384,13 @@ class RecipeList extends StatelessWidget {
         builder: (context, provider, child) {
           return SliverList(
               delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  if (index == provider.length - 1) {
-                    provider.fetchMoreRecipes();
-                  }
-                  return TweenAnimationBuilder(
-                    duration: const Duration(milliseconds: 500),
-                    tween: Tween<double>(begin: 0.0, end: 1.0),
-                    curve: Curves.easeOut,
-                    builder: (context, value, child) {
-                      return Opacity(
-                        opacity: value,
-                        child: child,
-                      );
-                    },
-                    child: GestureDetector(
-                      child: RecipeCard(
-                        recipeId: provider.itemAt(index).recipeId,
-                        name: provider.itemAt(index).name,
-                        cover: provider.itemAt(index).cover,
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => RecipeDetail(id: index)));
-                      },
-                    ),
-                  );
-                },
-                childCount: provider.length,
-              )
+          (BuildContext context, int index) {
+            return ListTile(
+              title: Text('Item $index'),
+            );
+          },
+          childCount: 20, // 列表项的数量
+          )
           );
         }
     );
