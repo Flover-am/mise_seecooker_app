@@ -8,16 +8,16 @@ import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/login_page.dart';
 
-class PostPage extends StatefulWidget {
+class PublishRecipe extends StatefulWidget {
   final String param;
 
-  const PostPage({super.key, required this.param});
+  const PublishRecipe({super.key, required this.param});
 
   @override
-  State<PostPage> createState() => _PostPageState();
+  State<PublishRecipe> createState() => _PublishRecipeState();
 }
 
-class _PostPageState extends State<PostPage> {
+class _PublishRecipeState extends State<PublishRecipe> {
   /// 是否有封面
   bool hasCover = false;
   final ImagePicker picker = ImagePicker();

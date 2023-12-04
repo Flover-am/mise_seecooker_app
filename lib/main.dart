@@ -6,9 +6,8 @@ import 'package:seecooker/pages/explore_page.dart';
 import 'package:seecooker/pages/home_page.dart';
 import 'package:seecooker/pages/community_page.dart';
 import 'package:seecooker/pages/login_page.dart';
-import 'package:seecooker/pages/post_page.dart';
+import 'package:seecooker/pages/publish_page.dart';
 import 'package:flutter/material.dart';
-import 'package:seecooker/pages/publish_post.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
@@ -37,7 +36,7 @@ void main() {
     );
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  }
+  };
 }
 
 class MyApp extends StatelessWidget {
@@ -95,7 +94,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
           onPressed: () => {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const PublishPost(param: '111',)),
+              MaterialPageRoute(builder: (context) => const PublishPage(param: '111',)),
             ),
           },
           child: const Icon(Icons.edit),

@@ -120,8 +120,8 @@ class _PublishPostState extends State<PublishPost> {
                     else{
                       _issuePost();
                       Navigator.pop(context);
+                      Navigator.pop(context);
                     }
-
                   },
                   child: const Text("发布"),
                 ),
