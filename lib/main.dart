@@ -8,7 +8,7 @@ import 'package:seecooker/pages/publish/publish_page.dart';
 import 'package:seecooker/pages/recipe/home_page.dart';
 import 'package:seecooker/pages/community/community_page.dart';
 import 'package:seecooker/pages/account/login_page.dart';
-import 'package:seecooker/pages/publish/post_page.dart';
+import 'package:seecooker/pages/publish/publish_recipe.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
