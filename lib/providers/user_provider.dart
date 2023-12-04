@@ -32,7 +32,7 @@ class UserProvider extends ChangeNotifier{
     _userModel.username = "admin";
     _userModel.password = "123456";
     _userModel.isLoggedIn = true;
-    SharedPreferencesUtil.setString("username","admin");
+    SharedPreferencesUtil.setString("username","admin");//
     SharedPreferencesUtil.setString("password","123456");
     SharedPreferencesUtil.setBool("isLoggedIn", true);
     notifyListeners();
