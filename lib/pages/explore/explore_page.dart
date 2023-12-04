@@ -94,7 +94,7 @@ class _ExplorePageState extends State<ExplorePage> {
         margin: const EdgeInsets.fromLTRB(10, 30, 10, 0),
         child: ListView(
           children: [
-            MySearchBar(),
+            const MySearchBar(),
             ChoseLine(title: "挑 选 蔬 菜", dishesFilter: dishesFilter),
             ChoseLine(title: "挑 选 肉 类", dishesFilter: meatFilter),
             SizedBox(
