@@ -2,25 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class RecipeCard extends StatelessWidget {
-  final int id;
-  final String title;
-  final String coverUrl;
-  final String author;
-  final int like;
-  final double rate;
+  final int recipeId;
+  final String name;
+  final String cover;
+  final ValueNotifier<bool> _isFavorite = ValueNotifier(false);
 
-  const RecipeCard({
+  RecipeCard({
     super.key,
-    required this.id,
-    required this.title,
-    required this.coverUrl,
-    required this.author,
-    required this.like,
-    required this.rate,
+    required this.recipeId,
+    required this.name,
+    required this.cover,
   });
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Get if favorite
+    _isFavorite.value = false;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -35,53 +33,50 @@ class RecipeCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: FadeInImage.memoryNetwork(
                       placeholder: kTransparentImage,
-                      image: coverUrl,
+                      image: cover,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 Positioned(
-                  top: 8,
+                  top: 16,
                   left: 16,
                   child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w300),
-                  )
+                    name,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
+                  ),
                 ),
-                Positioned(
-                  left: 16,
-                  bottom: 8,
-                  child: Row(
-                    children: [
-                      const Icon(Icons.favorite_outline_rounded, color: Colors.white, size: 24),
-                      const SizedBox(width: 8),
-                      Text(
-                        '1',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
+                ValueListenableBuilder<bool>(
+                  valueListenable: _isFavorite,
+                  builder: (context, value, child) {
+                    return Positioned(
+                      left: 4,
+                      bottom: 4,
+                      child: IconButton(
+                        icon: value
+                          ? Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary)
+                          : const Icon(Icons.favorite_outline_rounded, color: Colors.white),
+                        onPressed: () => addOrRemoveFavorite(),
                       )
-                    ],
-                  )
+                    );
+                  },
                 )
               ]
             ),
           ),
           const SizedBox(height: 8),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Card(
-              elevation: 0,
-              color: Theme.of(context).colorScheme.surfaceVariant,
-              child: ListTile(
-                leading: CircleAvatar(
-                  radius: 16,
-                  backgroundImage: NetworkImage(coverUrl),
-                ),
-                title: Text(author),
-              ),
-            ),
-          )
         ],
       ),
     );
+  }
+
+  void addOrRemoveFavorite() {
+    if(_isFavorite.value) {
+      // TODO: Remove favorite
+
+    } else {
+      // TODO: Add favorite
+    }
+    _isFavorite.value = !_isFavorite.value;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:seecooker/services/post_service.dart';
 
@@ -11,12 +13,27 @@ class CommunityPostsProvider extends ChangeNotifier {
   Post itemAt(int index) => _list![index];
 
   Future<void> fetchPosts() async {
-    _list = await PostService.getPosts();
+    final res = await PostService.getPosts();
+    if(!res.isSuccess()) {
+      throw Exception('未拿到帖子数据: ${res.message}');
+    }
+    _list = res.data
+      .map((e) => Post.fromJson(e))
+      .toList()
+      .cast<Post>();
     notifyListeners();
   }
 
   Future<void> fetchMorePosts() async {
-    _list?.addAll(await PostService.getPosts());
+    final res = await PostService.getPosts();
+    if(!res.isSuccess()) {
+      throw Exception('未拿到帖子数据: ${res.message}');
+    }
+    _list?.addAll(res.data
+      .map((e) => Post.fromJson(e))
+      .toList()
+      .cast<Post>()
+    );
     notifyListeners();
   }
 }

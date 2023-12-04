@@ -13,16 +13,26 @@ class CommentsProvider extends ChangeNotifier {
   Comment itemAt(int index) => _list![index];
 
   Future<void> fetchComments() async {
-    _list = await CommentService.getComments(_postId);
+    final res = await CommentService.getComments(_postId);
+    if(!res.isSuccess()) {
+      throw Exception('未拿到评论数据: ${res.message}');
+    }
+    _list = res.data
+        .map((e) => Comment.fromJson(e))
+        .toList()
+        .cast<Comment>();
     notifyListeners();
   }
 
-  Future<void> createComment(int commenterId, String content) async {
-    _list ??= await CommentService.getComments(_postId);
-    await CommentService.postComment(commenterId, _postId, content);
-    // TODO: server return new comment
-    //_list.add(await CommentService.postComment(commenterId, _postId, content));
-    _list?.insert(0, Comment('111', '2023-11-26', content, 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'));
+  Future<void> createComment(String content) async {
+    if(_list == null){
+      await fetchComments();
+    }
+    final res = await CommentService.postComment(_postId, content);
+    if(!res.isSuccess()) {
+      throw Exception('发布评论失败: ${res.message}');
+    }
+    _list?.insert(0, Comment.fromJson(res.data));
     notifyListeners();
   }
 }

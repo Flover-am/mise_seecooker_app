@@ -15,9 +15,6 @@ class ExploreService {
           index,
           '五红银耳羹',
           'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-          'author$index',
-          114514,
-          3.2,
         )
     );
   }
@@ -31,9 +28,6 @@ class ExploreService {
           index,
           '黄焖鸡',
           'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-          'author$index',
-          114514,
-          3.2,
         )
     );
   }

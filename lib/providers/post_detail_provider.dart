@@ -11,6 +11,10 @@ class PostDetailProvider with ChangeNotifier{
   PostDetail get model => _model;
 
   Future<void> fetchPostDetail() async {
-    _model = await PostService.getPostDetail(_postId);
+    final res = await PostService.getPostDetail(_postId);
+    if(!res.isSuccess()) {
+      throw Exception('未拿到帖子详情数据: ${res.message}');
+    }
+    _model = PostDetail.fromJson(res.data);
   }
 }
