@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/explore/makeexp_page.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
-import 'package:seecooker/widgets/chose_line.dart';
 import 'package:seecooker/widgets/my_search_bar.dart';
+
+import '../../widgets/chose_page.dart';
+import '../../widgets/chosen_line.dart';
 
 List<String> dishesFilter = [
   "土豆",
