@@ -7,9 +7,9 @@ class RecipeDetailProvider with ChangeNotifier {
   late RecipeModel _model;
 
   RecipeModel get model => _model;
-  RecipeService recipeService = RecipeService();
 
   Future<RecipeModel> fetchRecipeDetail(int id) async {
+    _model = RecipeModel.empty();
     /// 先进行请求，然后从请求中拿数据
     var res =  await RecipeService.getRecipe(id);
     /// 判断是否获取成功
