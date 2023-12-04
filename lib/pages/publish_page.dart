@@ -44,6 +44,7 @@ class _PublishPageState extends State<PublishPage>{
                 child:Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    //包含发布菜谱和发布帖子两个按钮
                     Padding(
                       padding: EdgeInsets.fromLTRB(0,0,16,0),
                       child: ElevatedButton(
@@ -53,6 +54,7 @@ class _PublishPageState extends State<PublishPage>{
                           )),
                         ),
                           onPressed:(){
+                          //将发布菜谱页push进路由
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => PublishRecipe(param: param)),
@@ -81,6 +83,7 @@ class _PublishPageState extends State<PublishPage>{
                             )),
                           ),
                           onPressed:(){
+                            //将发布帖子页push进路由
                             Navigator.push(
                               context,
                               MaterialPageRoute(

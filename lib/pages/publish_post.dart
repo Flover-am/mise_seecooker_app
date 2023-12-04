@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 
-import '../models/user.dart';
 import 'login_page.dart';
 
 class PublishPost extends StatefulWidget {
@@ -142,6 +141,8 @@ class _PublishPostState extends State<PublishPost> {
     }
     return width;
   }
+
+  /// 返回标题输入区组件
   Widget TitleInput(){
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -175,6 +176,8 @@ class _PublishPostState extends State<PublishPost> {
       ]
     );
   }
+
+  /// 返回图片选择区组件
   Widget ImageSelection(BuildContext context){
     final width=_safeAreaWidth(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
     return SizedBox(
@@ -239,6 +242,9 @@ class _PublishPostState extends State<PublishPost> {
           )
         );
   }
+
+  /// 方法：显示图片详情
+  /// context:上下文 path:图片路径 index:图片在列表中的索引
   void _showDetailedImage(BuildContext context,String path,int index){
     Navigator.push(context,MaterialPageRoute(
       builder:(context)=>DetailImagePage(path:path,index:index,deletionCallback:(){
@@ -263,6 +269,7 @@ class _PublishPostState extends State<PublishPost> {
     );
 
   }
+  /// 返回文字发布区组件
   Widget IssueText(){
     return Padding(
       padding: const EdgeInsets.fromLTRB(10,8,10,8),
@@ -307,6 +314,7 @@ class _PublishPostState extends State<PublishPost> {
     );
   }
 
+  /// 返回发布按钮组件
   Widget IssueButton(){
     return ElevatedButton(
       onPressed: () => {
@@ -319,9 +327,7 @@ class _PublishPostState extends State<PublishPost> {
     );
   }
 
-  /**
-   * 从相册或相机获取图片
-   */
+  /// 从相册或相机获取图片
   void PictureSource(BuildContext ctx){
     showModalBottomSheet(context: ctx, builder: (BuildContext context){
       return Container(
@@ -361,7 +367,7 @@ class _PublishPostState extends State<PublishPost> {
     });
   }
 
-  //从相册选择多张图片
+  ///从相册选择多张图片
   Future<void> _pickMultipleImages() async{
     try{
       List<XFile>? pickedFile = await picker.pickMultiImage();
@@ -388,7 +394,8 @@ class _PublishPostState extends State<PublishPost> {
       );
     }
   }
-  //从相机获取单张图片
+
+  ///从相机获取单张图片
   Future<void> _pickImageFromCamera() async{
     try{
       XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -410,7 +417,7 @@ class _PublishPostState extends State<PublishPost> {
       );
     }
   }
-  //发布
+  ///发布
   void _issuePost() async{//TODO: 完成发布逻辑
       print("Issue");
       await sendFormDataRequest(apiUrl, title, text, _userImage,
@@ -427,6 +434,7 @@ class _PublishPostState extends State<PublishPost> {
   }
 }
 
+/// 图片详情页
 class DetailImagePage extends StatelessWidget{
 
   final String path;
