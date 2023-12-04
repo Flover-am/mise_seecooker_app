@@ -1,18 +1,21 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/account_page.dart';
-import 'package:seecooker/pages/explore_page.dart';
-import 'package:seecooker/pages/home_page.dart';
-import 'package:seecooker/pages/community_page.dart';
-import 'package:seecooker/pages/login_page.dart';
-import 'package:seecooker/pages/publish_page.dart';
+
+import 'package:seecooker/pages/account/account_page.dart';
+import 'package:seecooker/pages/explore/explore_page.dart';
+import 'package:seecooker/pages/publish/publish_page.dart';
+import 'package:seecooker/pages/recipe/home_page.dart';
+import 'package:seecooker/pages/community/community_page.dart';
+import 'package:seecooker/pages/account/login_page.dart';
+import 'package:seecooker/pages/publish/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
-import 'package:seecooker/service/recommand_provider.dart';
-import 'package:seecooker/utils/color_schems.dart';
+import 'package:seecooker/providers/recommend_provider.dart';
+import 'package:seecooker/providers/home_recipes_provider.dart';
+import 'package:seecooker/utils/color_schemes.dart';
 
 import 'models/user.dart';
 
@@ -21,8 +24,9 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (context) => ExplorePostProvider()),
         ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
-      ChangeNotifierProvider(create: (context) => UserProvider()),
-        ChangeNotifierProvider(create: (context) => RecommandProvider())
+        ChangeNotifierProvider(create: (context) => HomeRecipesProvider()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => RecommendProvider())
       ],
       child: const MyApp()
     )
@@ -47,12 +51,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'seecooker',
       theme: ThemeData(
-        colorScheme: lightColorScheme,
+        colorScheme: customLightColorScheme,
         useMaterial3: true,
         //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       darkTheme: ThemeData(
-        colorScheme: darkColorScheme,
+        colorScheme: customDarkColorScheme,
         useMaterial3: true,
         //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
@@ -94,7 +98,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
           onPressed: () => {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const PublishPage(param: '111',)),
+              MaterialPageRoute(builder: (context) => const PublishPage(param: "",)),
             ),
           },
           child: const Icon(Icons.edit),

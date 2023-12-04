@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../pages/publish_recipe.dart';
+
+import 'package:seecooker/pages/publish/publish_recipe.dart';
+
 
 class MySearchBar extends StatefulWidget {
   const MySearchBar({super.key});

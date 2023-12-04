@@ -66,10 +66,10 @@ class _LoginFormState extends State<LoginForm> {
 
             // 获取当前上下文中的 UserModel 实例
             final userProvider = Provider.of<UserProvider>(context, listen: false);
+            userProvider.login(username,password);
 
             // 简单的示例：如果用户名和密码都不为空，视为登录成功
-            if (username == 'admin' && password == '123456') {
-              userProvider.loginAdmin();
+            if (userProvider.isLoggedIn) {
               // 登录成功后可以使用 Navigator.pop 或 Navigator.pushReplacement 返回上一个页面
               Navigator.pop(context);
               // 或者你可以进行其他操作

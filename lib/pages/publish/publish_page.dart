@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/publish_post.dart';
-import 'package:seecooker/pages/publish_recipe.dart';
+import 'package:seecooker/pages/publish/publish_post.dart';
+import 'package:seecooker/pages/publish/publish_recipe.dart';
 
 import 'package:seecooker/providers/user_provider.dart';
 

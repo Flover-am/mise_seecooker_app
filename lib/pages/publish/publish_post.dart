@@ -3,12 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../service/publish_http.dart';
+
+import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/services/publish_http.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 
-import 'login_page.dart';
+import '../../models/user.dart';
+import '../account/login_page.dart';
 
 class PublishPost extends StatefulWidget {
   final String param;
@@ -29,7 +33,8 @@ class _PublishPostState extends State<PublishPost> {
 
   @override
   Widget build(BuildContext context) {
-    // var userModel = Provider.of<UserModel>(context,listen: false);
+
+    var userModel = Provider.of<UserProvider>(context,listen: false);
     // if (!userModel.isLoggedIn) {
     //   // 如果未登录，则导航到LoginPage
     //   WidgetsBinding.instance!.addPostFrameCallback((_) {

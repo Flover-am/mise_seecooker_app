@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
-import 'package:seecooker/pages/login_page.dart';
+import 'package:seecooker/pages/account/login_page.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
 
@@ -26,7 +26,7 @@ class _AccountPageState extends State<AccountPage> {
           // 个人信息部分
           Consumer<UserProvider>(
             builder: (context, userProvider, child) {
-              userProvider.refreshStatus();
+              userProvider.loadLoginStatus();
               return userProvider.isLoggedIn
                   ? _buildLoggedInProfileSection(userProvider)
                   : _buildNotLoggedInProfileSection(context);
@@ -72,6 +72,7 @@ class _AccountPageState extends State<AccountPage> {
             },
             child: const Text('退出登录'),
           ),
+
         ],
       ),
     );

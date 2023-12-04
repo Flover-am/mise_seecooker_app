@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/makeexp_page.dart';
+import 'package:seecooker/pages/explore/makeexp_page.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
 import 'package:seecooker/widgets/chose_line.dart';
 import 'package:seecooker/widgets/my_search_bar.dart';
@@ -94,7 +94,7 @@ class _ExplorePageState extends State<ExplorePage> {
         margin: const EdgeInsets.fromLTRB(10, 30, 10, 0),
         child: ListView(
           children: [
-            MySearchBar(),
+            const MySearchBar(),
             ChoseLine(title: "挑 选 蔬 菜", dishesFilter: dishesFilter),
             ChoseLine(title: "挑 选 肉 类", dishesFilter: meatFilter),
             SizedBox(

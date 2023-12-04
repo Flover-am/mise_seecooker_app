@@ -1,42 +1,22 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:seecooker/services/post_service.dart';
 
 import '../models/post.dart';
 
 class CommunityPostsProvider extends ChangeNotifier {
-  final List<PostModel> _list = [];
+  List<Post>? _list;
 
-  int get length => _list.length;
+  int get length => _list?.length ?? 0;
 
-  PostModel itemAt(int index) => _list[index];
+  Post itemAt(int index) => _list![index];
 
   Future<void> fetchPosts() async {
-    // TODO: ADD HTTP GET REQUEST
-    await Future.delayed(const Duration(seconds: 1));
-    _list.addAll(List.generate(
-        5,
-            (index) => PostModel(
-            index,
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-            'author$index',
-            'title$index',
-            'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
-        )
-    ));
+    _list = await PostService.getPosts();
+    notifyListeners();
   }
 
   Future<void> fetchMorePosts() async {
-    // TODO: ADD HTTP GET REQUEST
-    await Future.delayed(const Duration(seconds: 1));
-    _list.addAll(List.generate(
-      5,
-      (index) => PostModel(
-        index,
-        'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        'author$index',
-        'title$index',
-        'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
-      )
-    ));
+    _list?.addAll(await PostService.getPosts());
     notifyListeners();
   }
 }
