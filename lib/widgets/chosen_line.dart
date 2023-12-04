@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
 
-class ChoseLine extends StatelessWidget{
-  const ChoseLine({super.key, required this.title, required this.dishesFilter});
+class ChosenLine extends StatelessWidget{
+  const ChosenLine({super.key, required this.title, required this.dishesFilter});
   final String title;
   final List<String> dishesFilter;
   @override
@@ -12,23 +12,25 @@ class ChoseLine extends StatelessWidget{
     return Consumer<ExplorePostProvider>(
       builder: (context, provider, child){
         return Column(
-            children: [Text(title,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+            children: [
+              Expanded(child: Text(title,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),),
+              Expanded(
+                flex: 4,
+                  child:
               Container(
                   height: MediaQuery.of(context).size.height/4,
-                  width: double.infinity,
+                  width: MediaQuery.of(context).size.width,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    border: Border.all(
-                        width: 3,
-                        color: Theme.of(context).colorScheme.primaryContainer),
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(20)
                   ),
                   child: ListView(children: [Wrap(
                     spacing: 5.0,
                     children: dishesFilter.map((String dish) {
                       return FilterChip(
-                        label: Text(dish),
+                        label: Text(dish,style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
                         selected: provider.contain(dish),
                         onSelected: (bool selected) {
                           if (selected) {
@@ -41,6 +43,8 @@ class ChoseLine extends StatelessWidget{
                     }).toList(),
                   )],)
               )
+              )
+
             ]
         );
       }
