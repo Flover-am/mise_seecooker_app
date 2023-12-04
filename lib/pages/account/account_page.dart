@@ -26,7 +26,7 @@ class _AccountPageState extends State<AccountPage> {
           // 个人信息部分
           Consumer<UserProvider>(
             builder: (context, userProvider, child) {
-              userProvider.refreshStatus();
+              userProvider.loadLoginStatus();
               return userProvider.isLoggedIn
                   ? _buildLoggedInProfileSection(userProvider)
                   : _buildNotLoggedInProfileSection(context);
@@ -72,6 +72,7 @@ class _AccountPageState extends State<AccountPage> {
             },
             child: const Text('退出登录'),
           ),
+
         ],
       ),
     );
