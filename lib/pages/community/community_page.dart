@@ -5,7 +5,6 @@ import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
 
 import '../../widgets/community_card.dart';
-import '../../widgets/my_search_bar.dart';
 
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
@@ -21,7 +20,7 @@ class _CommunityPageState extends State<CommunityPage> {
       children: [
         AppBar(
           scrolledUnderElevation: 0,
-          title: Text('社区'),
+          title: const Text('社区'),
           //centerTitle: true,
           actions: [
             IconButton(
@@ -42,6 +41,7 @@ class _CommunityPageState extends State<CommunityPage> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting){
                 return const Center(
+                  // TODO: build skeleton
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasError) {
@@ -65,35 +65,39 @@ class CommunityWaterfall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<CommunityPostsProvider>(
-        builder: (context, provider, child) {
-          return WaterfallFlow.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            gridDelegate: const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-            itemBuilder: (context, index) {
-              if (index == provider.length - 1) {
-                provider.fetchMorePosts();
-              }
-              return TweenAnimationBuilder(
-                duration: const Duration(milliseconds: 500),
-                tween: Tween<double>(begin: 0.0, end: 1.0),
-                curve: Curves.easeOut,
-                builder: (context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: child,
-                  );
-                },
-                child: CommunityCard(
-                  postId: provider.itemAt(index).postId,
-                  cover: provider.itemAt(index).cover,
-                  posterName: provider.itemAt(index).posterName,
-                  title: provider.itemAt(index).title,
-                  posterAvatar: provider.itemAt(index).posterAvatar
-                ),
-              );
-            },
-            itemCount: provider.length,
-          );
+      builder: (context, provider, child) {
+        return WaterfallFlow.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          gridDelegate: const SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 8,
+          ),
+          itemBuilder: (context, index) {
+            if (index == provider.length - 1) {
+              provider.fetchMorePosts();
+            }
+            return TweenAnimationBuilder(
+              duration: const Duration(milliseconds: 500),
+              tween: Tween<double>(begin: 0.0, end: 1.0),
+              curve: Curves.easeOut,
+              builder: (context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: child,
+                );
+              },
+              child: CommunityCard(
+                postId: provider.itemAt(index).postId,
+                cover: provider.itemAt(index).cover,
+                posterName: provider.itemAt(index).posterName,
+                title: provider.itemAt(index).title,
+                posterAvatar: provider.itemAt(index).posterAvatar
+              ),
+            );
+          },
+          itemCount: provider.length,
+        );
         }
     );
   }

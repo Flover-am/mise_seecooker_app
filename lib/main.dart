@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
         //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       darkTheme: ThemeData(
-        colorScheme: customDarkColorScheme,
+        colorScheme: darkColorScheme,
         useMaterial3: true,
         //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
@@ -93,6 +93,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
       ),
       floatingActionButton: _currentPageIndex == 2
         ? FloatingActionButton(
+          heroTag: UniqueKey(),
           onPressed: () => {
             Navigator.push(
               context,
@@ -103,6 +104,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
         )
         : null,
       bottomNavigationBar: NavigationBar(
+        elevation: 0,
         onDestinationSelected: (int index) {
           setState(() {
             _currentPageIndex = index;

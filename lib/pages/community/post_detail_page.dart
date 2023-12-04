@@ -1,12 +1,17 @@
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/post_detail.dart';
 import 'package:seecooker/models/comment.dart';
 import 'package:seecooker/providers/comments_provider.dart';
 import 'package:seecooker/providers/post_detail_provider.dart';
+import 'package:seecooker/utils/image_util.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:skeletons/skeletons.dart';
 
@@ -91,9 +96,11 @@ class PostDetailPage extends StatelessWidget {
 class PageContent extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _commentSectionTitleKey = GlobalKey();
+  final GlobalKey _repaintBoundaryKey = GlobalKey();
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _textEditingController = TextEditingController();
-  late OverlayEntry _overlayEntry;
+
+  late OverlayEntry _overlayEntry; // 评论输入框弹窗
 
   PageContent({super.key});
 
@@ -110,93 +117,98 @@ class PageContent extends StatelessWidget {
     return Consumer<PostDetailProvider>(
       builder: (context, provider, child) {
         PostDetail model = provider.model;
-        return Scaffold(
-          appBar: AppBar(
-            scrolledUnderElevation: 0,
-            title: Row(
-              children: [
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: ExtendedNetworkImageProvider(
-                    model.posterAvatar,
-                    cache: false,
+        return RepaintBoundary(
+          key: _repaintBoundaryKey,
+          child: Scaffold(
+            appBar: AppBar(
+              scrolledUnderElevation: 0,
+              title: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: ExtendedNetworkImageProvider(
+                      model.posterAvatar,
+                      cache: false,
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Text(
+                      model.posterName,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Text(
-                    model.posterName,
-                    style: Theme.of(context).textTheme.titleMedium,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: IconButton(
+                      onPressed: () async {
+                        try {
+                          await ImageUtil.shareImageData(await _capturePng());
+                        } catch (e) {
+                          Fluttertoast.showToast(msg: "分享失败: $e");
+                        }
+                      },
+                      icon: const Icon(Icons.share_outlined)
                   ),
-                ),
+                )
               ],
             ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: IconButton(
-                    onPressed: () {
-                      Share.share('share content');
-                    },
-                    icon: const Icon(Icons.share_outlined)
+            body: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: ImageCardSwiper(images: model.images),
                 ),
-              )
-            ],
-          ),
-          body: CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverToBoxAdapter(
-                child: ImageCardSwiper(images: model.images),
-              ),
-              SliverToBoxAdapter(
-                child: TextSection(title: model.title, content: model.content),
-              ),
-              SliverToBoxAdapter(
-                key: _commentSectionTitleKey,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('评论区', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                    ],
+                SliverToBoxAdapter(
+                  child: TextSection(title: model.title, content: model.content),
+                ),
+                SliverToBoxAdapter(
+                  key: _commentSectionTitleKey,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('评论区', style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              /* comment section */
-              FutureBuilder(
-                future: Provider.of<CommentsProvider>(context, listen: false).fetchComments(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return SliverToBoxAdapter(
-                      child: SkeletonListTile(
-                        leadingStyle: SkeletonAvatarStyle(
-                          height: 36,
-                          width: 36,
-                          borderRadius: BorderRadius.circular(18)
-                        ),
-                        titleStyle: SkeletonLineStyle(
-                          height: 36,
-                          borderRadius: BorderRadius.circular(12)
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      )
-                    );
-                  } else if (snapshot.hasError) {
-                    return SliverToBoxAdapter(
-                      child: Center(
-                        child: Text('Error: ${snapshot.error}')
-                      )
-                    );
-                  } else {
-                    return Consumer<CommentsProvider>(
-                      builder: (context, provider, child) {
-                        return SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
+                /* comment section */
+                FutureBuilder(
+                  future: Provider.of<CommentsProvider>(context, listen: false).fetchComments(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return SliverToBoxAdapter(
+                        child: SkeletonListTile(
+                          leadingStyle: SkeletonAvatarStyle(
+                            height: 36,
+                            width: 36,
+                            borderRadius: BorderRadius.circular(18)
+                          ),
+                          titleStyle: SkeletonLineStyle(
+                            height: 36,
+                            borderRadius: BorderRadius.circular(12)
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        )
+                      );
+                    } else if (snapshot.hasError) {
+                      return SliverToBoxAdapter(
+                        child: Center(
+                          child: Text('Error: ${snapshot.error}')
+                        )
+                      );
+                    } else {
+                      return Consumer<CommentsProvider>(
+                        builder: (context, provider, child) {
+                          return SliverList(
+                            delegate: SliverChildBuilderDelegate((context, index) {
                               return CommentItem(
                                 comment: provider.itemAt(index),
                                 onTap: (commenter) {
@@ -208,50 +220,52 @@ class PageContent extends StatelessWidget {
                               );
                             },
                             childCount: provider.length
-                          )
+                            )
+                          );
+                        },
                       );
-                      },
-                    );
-                  }
-                }
-              ),
-            ],
-          ),
-          bottomNavigationBar: BottomAppBar(
-            surfaceTintColor: Theme.of(context).colorScheme.primary,
-            child: Row(
-              children: <Widget>[
-                IconButton(
-                  tooltip: '评论',
-                  icon: const Icon(Icons.chat_bubble_outline_rounded),
-                  onPressed: () => Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease),
-                ),
-                Consumer<CommentsProvider>(
-                  builder: (context, provider, child) {
-                    return Text('${provider.length}', style: Theme.of(context).textTheme.titleSmall);
+                    }
                   }
                 ),
-                const SizedBox(width: 16),
-                IconButton(
-                  tooltip: '喜欢',
-                  icon: const Icon(Icons.favorite_outline_rounded),
-                  onPressed: () {},
-                ),
-                Text('${model.like}', style: Theme.of(context).textTheme.titleSmall),
               ],
             ),
+            bottomNavigationBar: BottomAppBar(
+              elevation: 0,
+              surfaceTintColor: Theme.of(context).colorScheme.primary,
+              child: Row(
+                children: <Widget>[
+                  IconButton(
+                    tooltip: '评论',
+                    icon: const Icon(Icons.chat_bubble_outline_rounded),
+                    onPressed: () => Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease),
+                  ),
+                  Consumer<CommentsProvider>(
+                    builder: (context, provider, child) {
+                      return Text('${provider.length}', style: Theme.of(context).textTheme.titleSmall);
+                    }
+                  ),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    tooltip: '喜欢',
+                    icon: const Icon(Icons.favorite_outline_rounded),
+                    onPressed: () {},
+                  ),
+                  Text('1', style: Theme.of(context).textTheme.titleSmall),
+                ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              mini: true,
+              heroTag: UniqueKey(),
+              elevation: 0,
+              onPressed: () {
+                Overlay.of(context).insert(_overlayEntry);
+                _focusNode.requestFocus();
+              },
+              child: const Icon(Icons.edit),
+            ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
           ),
-          floatingActionButton: FloatingActionButton.extended(
-            elevation: 0,
-            onPressed: () {
-              //Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease);
-              Overlay.of(context).insert(_overlayEntry);
-              _focusNode.requestFocus();
-            },
-            icon: const Icon(Icons.edit),
-            label: const Text('评论'),
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
         );
       },
     );
@@ -263,8 +277,7 @@ class PageContent extends StatelessWidget {
         bottom: MediaQuery.of(context).viewInsets.bottom,
         left: 0,
         right: 0,
-        child: Card(
-          elevation: 0,
+        child: Material(
           color: Theme.of(context).colorScheme.surfaceVariant,
           child: ListTile(
             contentPadding: EdgeInsets.zero,
@@ -293,12 +306,11 @@ class PageContent extends StatelessWidget {
               onPressed: () async {
                 if(_textEditingController.text.isNotEmpty) {
                   _overlayEntry.remove();
-                  // TODO: get user id from provider
                   try {
-                    await Provider.of<CommentsProvider>(buildContext, listen: false).createComment(1, _textEditingController.text);
+                    await Provider.of<CommentsProvider>(buildContext, listen: false).createComment(_textEditingController.text);
                     Fluttertoast.showToast(msg: "评论已发送");
                   } catch (e) {
-                    Fluttertoast.showToast(msg: "评论发送失败: $e");
+                    Fluttertoast.showToast(msg: "$e");
                   }
                   _textEditingController.clear();
                 } else {
@@ -312,11 +324,21 @@ class PageContent extends StatelessWidget {
       ),
     );
   }
+
+  Future<Uint8List?> _capturePng() async {
+    RenderRepaintBoundary? boundary = _repaintBoundaryKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
+    var image = await boundary.toImage(pixelRatio: 3.0);
+    ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+    Uint8List? pngBytes = byteData?.buffer.asUint8List();
+    return pngBytes;
+  }
+
 }
 
 class ImageCardSwiper extends StatelessWidget {
   final List<String> images;
-  int _currentIndex = 0;
+  int _currentIndex = 0; // 详情页和图片展示页共用的当前图片索引
+  final ValueNotifier<int> _tipIndex = ValueNotifier(0); // 图片展示页的当前图片索引
 
   ImageCardSwiper({super.key, required this.images});
 
@@ -357,28 +379,7 @@ class ImageCardSwiper extends StatelessWidget {
                       MaterialPageRoute(
                         fullscreenDialog: true,
                         builder: (context) {
-                          return ExtendedImageGesturePageView.builder(
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                padding: const EdgeInsets.all(4),
-                                child: Hero(
-                                  tag: images[index],
-                                  child: ExtendedImage.network(
-                                    images[index],
-                                    fit: BoxFit.contain,
-                                    mode: ExtendedImageMode.gesture,
-                                  ),
-                                ),
-                              );
-                            },
-                            itemCount: images.length,
-                            onPageChanged: (int index) {
-                              _currentIndex = index;
-                            },
-                            controller: ExtendedPageController(
-                              initialPage: _currentIndex,
-                            ),
-                          );
+                          return _buildImagePageView(context);
                         }
                       )
                     );
@@ -412,6 +413,65 @@ class ImageCardSwiper extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildImagePageView(BuildContext context){
+    _tipIndex.value = _currentIndex;
+    return Material(
+      color: Theme.of(context).colorScheme.background,
+      child: InkWell(
+        onTap: () => { Navigator.pop(context) },
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            ExtendedImageGesturePageView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  padding: const EdgeInsets.all(4),
+                  child: Hero(
+                    tag: images[index],
+                    child: ExtendedImage.network(
+                      images[index],
+                      fit: BoxFit.contain,
+                      mode: ExtendedImageMode.gesture,
+                    ),
+                  ),
+                );
+              },
+              itemCount: images.length,
+              onPageChanged: (int index) {
+                _currentIndex = index;
+                _tipIndex.value = index;
+              },
+              controller: ExtendedPageController(
+                initialPage: _currentIndex,
+              ),
+            ),
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 16,
+              child: ValueListenableBuilder<int>(
+                valueListenable: _tipIndex,
+                builder: (context, value, child) => Text('${value + 1}/${images.length}', style: Theme.of(context).textTheme.titleMedium),
+              )
+            ),
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 16,
+              child: ActionChip(
+                label: const Text('保存图片'),
+                onPressed: () async {
+                  try {
+                    await ImageUtil.saveImageToGallery(images[_currentIndex]);
+                    Fluttertoast.showToast(msg: "图片已保存至相册");
+                  } catch (e) {
+                    Fluttertoast.showToast(msg: "图片保存失败：$e");
+                  }
+                },
+              )
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class TextSection extends StatelessWidget {
@@ -431,6 +491,7 @@ class TextSection extends StatelessWidget {
             title,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
+          const SizedBox(height: 8),
           Text(
             content,
             style: Theme.of(context).textTheme.bodyLarge,
@@ -457,6 +518,7 @@ class CommentItem extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 18,
+            backgroundColor: Colors.transparent,
             backgroundImage: NetworkImage(comment.commenterAvatar),
           ),
           const SizedBox(width: 8),
@@ -484,7 +546,7 @@ class CommentItem extends StatelessWidget {
                           children: [
                             TextSpan(
                               text: comment.commentTime,
-                              style: TextStyle(color: Theme.of(context).textTheme.labelSmall?.color?.withOpacity(0.7))
+                              style: TextStyle(color: Theme.of(context).colorScheme.outline)
                             ),
                             TextSpan(text: ' 回复', style: Theme.of(context).textTheme.bodySmall),
                           ]
