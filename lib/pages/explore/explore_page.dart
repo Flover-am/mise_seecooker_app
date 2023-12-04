@@ -2,13 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/explore/makeexp_page.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
-import 'package:seecooker/widgets/chose_page.dart';
-import 'package:seecooker/widgets/chosen_line.dart';
+import 'package:seecooker/widgets/chose_line.dart';
 import 'package:seecooker/widgets/my_search_bar.dart';
 
-import '../../utils/dishes.dart';
-
-
+List<String> dishesFilter = [
+  "土豆",
+  "西红柿",
+  "胡萝卜",
+  "卷心菜",
+  "洋葱",
+  "白菜",
+  "扁豆",
+  "南瓜",
+  "蘑菇",
+  "茄子",
+  "丝瓜",
+  "黄瓜",
+  "玉米",
+  "萝卜",
+  "芹菜",
+  "香菜",
+  "土豆",
+  "豆芽",
+  "西兰花",
+  "婆婆丁"
+];
+List<String> meatFilter = [
+  "鸡蛋",
+  "猪肉",
+  "五花肉",
+  "牛肉",
+  "鸡肉",
+  "羊肉",
+  "鱼肉",
+  "牛排",
+  "猪肝",
+  "腰花",
+  "排骨",
+  "狗肉",
+  "马肉"
+];
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
