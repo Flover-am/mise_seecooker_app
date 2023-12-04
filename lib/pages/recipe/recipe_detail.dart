@@ -31,10 +31,6 @@ class _RecipeDetailState extends State<RecipeDetail> {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
               } else {
                 return Consumer<RecipeDetailProvider>(
                   builder: (BuildContext context, RecipeDetailProvider value,
@@ -42,28 +38,30 @@ class _RecipeDetailState extends State<RecipeDetail> {
                     var model = value.model;
                     return Scaffold(
                       appBar: AppBar(
-                        title: AuthorInfoBar(
-                          authorAvatar: model.authorAvatar,
-                          authorName: model.authorName,
-                        ),
+                        title: !snapshot.hasError
+                            ? AuthorInfoBar(
+                                authorAvatar: model.authorAvatar,
+                                authorName: model.authorName,
+                              )
+                            : Container(),
                       ),
 
                       /// BODY
-                      body: GestureDetector(
-                          onTapDown: (details) {
-                            var x = details.globalPosition.dx; // 获取点击的全局x坐标
-                            var screenWidth =
-                                MediaQuery.of(context).size.width; // 获取屏幕的宽度
-                            if (x < screenWidth / 3) {
-                              swiperController.previous();
-                            } else if (x > screenWidth * 2 / 3) {
-                              swiperController.next();
-                            }
-                          },
-                          child: Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 15),
+                      body: !snapshot.hasError
+                          ? GestureDetector(
+                              onTapDown: (details) {
+                                var x = details.globalPosition.dx; // 获取点击的全局x坐标
+                                var screenWidth = MediaQuery.of(context)
+                                    .size
+                                    .width; // 获取屏幕的宽度
+                                if (x < screenWidth / 3) {
+                                  swiperController.previous();
+                                } else if (x > screenWidth * 2 / 3) {
+                                  swiperController.next();
+                                }
+                              },
                               child: Container(
+                                  child: Container(
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10.0)),
                                 child: Swiper(
@@ -71,30 +69,55 @@ class _RecipeDetailState extends State<RecipeDetail> {
                                   // viewportFraction: 0.8,
                                   scale: 0.8,
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: model.stepContents.length,
+                                  itemCount: model.stepContents.length + 1,
                                   loop: false,
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    return Column(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          child: Image.network(model.stepImages[index]),
-                                        ),
-                                        TextSection(
-                                          content: model.stepContents[index],
-                                          index: index,
-                                          allLength: model.stepContents.length,
-                                        )
-                                      ],
-                                    );
+                                    index = index - 1;
+                                    if (index == -1) {
+                                      return ListView(
+                                        children: [
+                                          ClipRRect(
+                                              child: Image.network(model.cover,
+                                                  fit: BoxFit.fitWidth)),
+                                          RecipeHead(title: model.name,
+                                              introduction: model.introduction),
+                                          Ingredients(
+                                            ingredients: model.ingredients,
+                                          )
+                                        ],
+                                      );
+                                    }
+                                    return Container(
+                                        margin: const EdgeInsets.all(15),
+                                        child: ListView(
+                                          children: [
+                                            ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                child: Image.network(
+                                                    model.stepImages[index],
+                                                    fit: BoxFit.fitWidth)),
+                                            StepContentSection(
+                                              content:
+                                                  model.stepContents[index],
+                                              index: index,
+                                              allLength:
+                                                  model.stepContents.length,
+                                            )
+                                          ],
+                                        ));
                                   },
                                 ),
-                              ))),
+                              )))
+                          : Text("Error:${snapshot.error}",
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 20)),
 
                       /// BAR
-                      bottomNavigationBar: const RecipeBar(),
+                      bottomNavigationBar: !snapshot.hasError
+                          ? const RecipeBar()
+                          : const Text(""),
                     );
                   },
                 );
@@ -105,8 +128,86 @@ class _RecipeDetailState extends State<RecipeDetail> {
   }
 }
 
-class TextSection extends StatelessWidget {
-  const TextSection(
+/// 简介文本块
+class RecipeHead extends StatelessWidget {
+  const RecipeHead(
+      {super.key, required this.introduction, required this.title});
+
+  final String introduction;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,style: const TextStyle(
+            fontSize: 35,
+            fontWeight: FontWeight.bold
+          ),),
+          Text("  $introduction"),
+        ],
+      ),
+    );
+  }
+}
+
+///
+class Ingredients extends StatelessWidget {
+  const Ingredients({super.key, required this.ingredients});
+
+  final List<Map<String, String>> ingredients;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          leading: Text(
+            "用料",
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 23,
+                color: Theme.of(context).textTheme.titleLarge?.color),
+          ),
+        ),
+        Column(
+          children: List.generate(ingredients.length, (index) {
+            return Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(ingredients[index]["name"]!),
+                      Text(ingredients[index]["amount"]!)
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: Theme.of(context).colorScheme.primary.withAlpha(10),
+                  // 线的颜色
+                  thickness: 1.5,
+                  // 线的厚度
+                  height: 20,
+                  indent: 10,
+                  endIndent: 10,
+                )
+              ],
+            );
+          }),
+        )
+      ],
+    );
+  }
+}
+
+class StepContentSection extends StatelessWidget {
+  const StepContentSection(
       {super.key,
       required this.content,
       required this.index,
@@ -127,7 +228,7 @@ class TextSection extends StatelessWidget {
               style: const TextStyle(color: Colors.grey, fontSize: 14)),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 30),
           child: Text(
             content,
             style: const TextStyle(
