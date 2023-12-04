@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
 import 'package:seecooker/models/NewRecipe.dart';
 import 'package:seecooker/models/recipe.dart';
 import 'package:seecooker/models/user.dart';
@@ -14,16 +15,16 @@ import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/services/recipe_service.dart';
 import 'package:seecooker/utils/FileConverter.dart';
 
-class PostPage extends StatefulWidget {
+class PublishRecipe extends StatefulWidget {
   final String param;
 
-  const PostPage({super.key, required this.param});
+  const PublishRecipe({super.key, required this.param});
 
   @override
-  State<PostPage> createState() => _PostPageState();
+  State<PublishRecipe> createState() => _PublishRecipeState();
 }
 
-class _PostPageState extends State<PostPage> {
+class _PublishRecipeState extends State<PublishRecipe> {
   /// 是否有封面
   bool hasCover = false;
   final ImagePicker picker = ImagePicker();
