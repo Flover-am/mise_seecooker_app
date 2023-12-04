@@ -2,46 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/explore/makeexp_page.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
-import 'package:seecooker/widgets/chose_line.dart';
+import 'package:seecooker/widgets/chose_page.dart';
+import 'package:seecooker/widgets/chosen_line.dart';
 import 'package:seecooker/widgets/my_search_bar.dart';
 
-List<String> dishesFilter = [
-  "土豆",
-  "西红柿",
-  "胡萝卜",
-  "卷心菜",
-  "洋葱",
-  "白菜",
-  "扁豆",
-  "南瓜",
-  "蘑菇",
-  "茄子",
-  "丝瓜",
-  "黄瓜",
-  "玉米",
-  "萝卜",
-  "芹菜",
-  "香菜",
-  "土豆",
-  "豆芽",
-  "西兰花",
-  "婆婆丁"
-];
-List<String> meatFilter = [
-  "鸡蛋",
-  "猪肉",
-  "五花肉",
-  "牛肉",
-  "鸡肉",
-  "羊肉",
-  "鱼肉",
-  "牛排",
-  "猪肝",
-  "腰花",
-  "排骨",
-  "狗肉",
-  "马肉"
-];
+import '../../utils/dishes.dart';
+
+
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
@@ -58,12 +25,16 @@ void showCommentSection(BuildContext context, bool autofocus) {
           height: 320,
           child: Column(
             children: [
-              ChoseLine(
-                  title: '您已挑选',
-                  dishesFilter:
-                      Provider.of<ExplorePostProvider>(context, listen: false)
-                          .showlist()),
-              SizedBox(
+              Expanded(
+                flex: 5,
+                  child: ChosenLine(
+                title: '您已挑选',
+                dishesFilter:
+                Provider.of<ExplorePostProvider>(context, listen: false)
+                    .showlist()))
+              ,
+              Expanded(
+                  child: SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
                 height: 45,
                 child: FloatingActionButton(
@@ -71,13 +42,14 @@ void showCommentSection(BuildContext context, bool autofocus) {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 30)),
                     onPressed: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MakeExpPage()),
-                          ),
-                        }),
-              )
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MakeExpPage()),
+                      ),
+                    }),
+              )),
+              SizedBox(height: 20,)
             ],
           ));
     },
@@ -90,23 +62,63 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return Container(
-        margin: const EdgeInsets.fromLTRB(10, 30, 10, 0),
-        child: ListView(
-          children: [
-            MySearchBar(),
-            ChoseLine(title: "挑 选 蔬 菜", dishesFilter: dishesFilter),
-            ChoseLine(title: "挑 选 肉 类", dishesFilter: meatFilter),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 4,
-              height: 45,
-              child: FloatingActionButton(
-                  child: const Text("我 已 挑 选",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-                  onPressed: () => showCommentSection(context, false)),
-            )
-          ],
-        ));
+    return Scaffold(
+      body: Container(
+          margin: const EdgeInsets.fromLTRB(10, 30, 10, 0),
+          child: ListView(
+            children: [
+              MySearchBar(),
+              SizedBox(height: 10,),
+        DefaultTabController(
+          length: 2,
+          child: Column(
+            children: [
+              const TabBar(
+                tabs: [
+                  Tab(text: '蔬菜'),
+                  Tab(text: '肉类'),
+                ],
+                indicatorColor: Colors.blue, // 选项卡指示器颜色
+              ),
+              SizedBox(
+                height: 500, // 适当设置高度
+                child: TabBarView(
+                  children: [
+                    // 收藏页面内容
+                    ChosePage(title: "挑选蔬菜",subtitle: "吃蔬菜打造健康饮食~", dishesFilter: dishesFilter),
+                    ChosePage(title: "挑选肉类",subtitle: "给生活加点蛋白质！", dishesFilter: meatFilter)
+                    // 发布页面内容
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
+            ],
+          )
+      ),
+      floatingActionButton:  FloatingActionButton(
+          child: Icon(Icons.shopping_bag),
+          onPressed: () => showCommentSection(context, false)),
+    );
+
+  }
+  Widget _buildFoodCategoryPage(List<String> foodList) {
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3, // 一行显示三个Chip
+        mainAxisSpacing: 8.0,
+        crossAxisSpacing: 8.0,
+        childAspectRatio: 2.0, // 调整Chip的高度
+      ),
+      itemCount: foodList.length,
+      itemBuilder: (BuildContext context, int index) {
+        return Chip(
+          label: Text(foodList[index]),
+          // 在这里处理点击事件，可以添加选中效果
+          // onPressed: () => handleChipTap(foodList[index]),
+        );
+      },
+    );
   }
 }

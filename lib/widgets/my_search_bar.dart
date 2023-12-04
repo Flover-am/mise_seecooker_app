@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../pages/publish/post_page.dart';
+
+import 'package:seecooker/pages/publish/publish_recipe.dart';
+
+
 
 class MySearchBar extends StatefulWidget {
   const MySearchBar({super.key});
@@ -19,7 +22,7 @@ class _MySearchBarState extends State<MySearchBar> {
       onTap: () {
         Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => PostPage(param: '111'))
+            MaterialPageRoute(builder: (context) => PublishRecipe(param: '111'))
         );
       },
     );
@@ -29,7 +32,7 @@ class _MySearchBarState extends State<MySearchBar> {
       onTap: () {
         Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => PostPage(param: item))
+            MaterialPageRoute(builder: (context) => PublishRecipe(param: item))
         );
       },
     ));
@@ -69,7 +72,7 @@ class _MySearchBarState extends State<MySearchBar> {
           onSubmitted: (text) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => PostPage(param: text))
+              MaterialPageRoute(builder: (context) => PublishRecipe(param: text))
             );
           },
         );
