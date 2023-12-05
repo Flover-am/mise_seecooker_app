@@ -10,6 +10,7 @@ import '../../providers/home_recipes_provider.dart';
 import '../../widgets/recipe_card.dart';
 import '../recipe/recipe_detail.dart';
 import '../search/search_page.dart';
+import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -18,154 +19,100 @@ class AccountPage extends StatefulWidget {
   State<AccountPage> createState() => _AccountPageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class _AccountPageState extends State<AccountPage> with SingleTickerProviderStateMixin{
+  late TabController _tabController;
+  @override
+  void initState() {
+    super.initState();
+    _tabController = new TabController(length: 3, vsync: this);
+  }
 
   @override
-  Widget build(BuildContext context) {
-   //  var userProvider = Provider.of<UserProvider>(context);
-   //
-   // if(!userProvider.isLoggedIn){
-   //   return _buildNotLoggedInProfileSection(context);
-   // }
-    return CustomScrollView(
-        slivers: [
-          SliverAppBar(
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: NestedScrollView(
+        body: buildBodyWidget(context),
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            buildSliverAppBar(),
+          ]; },
+
+      ),
+    );
+  }
+
+  buildBodyWidget(BuildContext context) {
+    return TabBarView(
+      controller: _tabController,
+      children: [
+      _buildFavoriteContent(context),
+      _buildFavoriteContent(context),
+      _buildFavoriteContent(context),
+    ],);
+  }
+
+  buildSliverAppBar() {
+    return SliverAppBar(
               backgroundColor: Color.fromRGBO(244,164,96, 1),
               pinned: true,
-              expandedHeight: 240,
+              expandedHeight: 280,
+              toolbarHeight: 15,
               scrolledUnderElevation: 0,
-        //   bottom: const TabBar(
-        //       tabs: [
-        //       Tab(text: '选项卡1'),
-        //   Tab(text: '选项卡2'),]
-        // ),
-
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 200, top: 30),
-              expandedTitleScale: 2.4,
-              title: const Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 14,
-                      backgroundImage: NetworkImage(
-                          'https://example.com/avatar.jpg'), // 你的头像图片地址
-                    )
-                  ]
-              ),
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFFFFE0B2), // 起始颜色
-                      Color(0xFFFFCC80), // 结束颜色
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 200, top: 18),
+                expandedTitleScale: 2,
+                title: const Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 10,
+                        backgroundImage: NetworkImage(
+                            'https://example.com/avatar.jpg'), // 你的头像图片地址
+                      )
+                    ]
+                ),
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFFFFE0B2), // 起始颜色
+                        Color(0xFFFFCC80), // 结束颜色
+                      ],
+                    ),
+                  ),
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: MediaQuery.of(context).padding.top + 16),
+                      Consumer<UserProvider>(
+                        builder: (context, userProvider, child) {
+                          userProvider.loadLoginStatus();
+                          return userProvider.isLoggedIn
+                              ? _buildLoggedInProfileSection(userProvider)
+                              : _buildNotLoggedInProfileSection(context);
+                        },
+                      ),
                     ],
                   ),
                 ),
-                padding: const EdgeInsets.only(left: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: MediaQuery.of(context).padding.top + 16),
-                    Consumer<UserProvider>(
-                      builder: (context, userProvider, child) {
-                        userProvider.loadLoginStatus();
-                        return userProvider.isLoggedIn
-                            ? _buildLoggedInProfileSection(userProvider)
-                            : _buildNotLoggedInProfileSection(context);
-                      },
-                    ),
-                  ],
-                ),
               ),
-            ),
-          ),
-
-          SliverToBoxAdapter(
-            child:_buildTabBarSection(),
-          ),
-
-          // SliverToBoxAdapter(
-          //   child: TabBarView(
-          //     children: [
-          //       _buildTabContent1(),
-          //       _buildTabContent2(),
-          //     ],
-          //   ),
-          // ),
-          FutureBuilder(
-            future: Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return SliverToBoxAdapter(
-                  child: _buildSkeleton(context),
-                );
-              } else if (snapshot.hasError) {
-                return SliverToBoxAdapter(
-                  child: Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  ),
-                );
-              } else {
-                return const RecipeList();
-              }
-            },
-          ),
-        ]
+            bottom: TabBar(controller: _tabController, tabs: const [
+              Tab(text: '收藏',),
+              Tab(text: '收藏'),
+              Tab(text: '收藏'),
+      ],        labelColor: Colors.black, // 设置选中标签的文本颜色为白色
+                unselectedLabelColor: Colors.grey,
+              ),
     );
   }
 
 
 }
 
-Widget _buildTabContent2() {
-  return NestedScrollView(
-    headerSliverBuilder: (context, innerBoxIsScrolled) {
-      return [
-        SliverAppBar(
-          pinned: true,
-          expandedHeight: 200,
-          flexibleSpace: FlexibleSpaceBar(
-            title: Text('选项卡2内容'),
-          ),
-        ),
-      ];
-    },
-    body: ListView.builder(
-      itemCount: 5, // 假设有5个项目
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text('选项卡2 - 项目 $index'),
-        );
-      },
-    ),
-  );
-}
 
-Widget _buildTabContent1() {
-  return NestedScrollView(
-    headerSliverBuilder: (context, innerBoxIsScrolled) {
-      return [
-        SliverAppBar(
-          pinned: true,
-          expandedHeight: 200,
-          flexibleSpace: FlexibleSpaceBar(
-            title: Text('选项卡1内容'),
-          ),
-        ),
-      ];
-    },
-    body: ListView.builder(
-      itemCount: 10, // 假设有10个项目
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text('选项卡1 - 项目 $index'),
-        );
-      },
-    ),
-  );
-}
+
   Widget _buildSkeleton(BuildContext context) {
     return Column(
       children: [
@@ -270,31 +217,7 @@ Widget _buildTabContent1() {
     );
   }
 
-  Widget _buildUserStats() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildStatItem('发布数', 'X'),
-        const SizedBox(width: 16),
-        _buildStatItem('获赞数', 'Y'),
-      ],
-    );
-  }
 
-  Widget _buildStatItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(label),
-      ],
-    );
-  }
 
   Widget _buildNotLoggedInProfileSection(BuildContext context) {
     return Container(
@@ -325,54 +248,37 @@ Widget _buildTabContent1() {
     );
   }
 
-  Widget _buildTabBarSection() {
-    return const DefaultTabController(
-      length: 3,
-      child: Column(
-        children: [
-          TabBar(
-            tabs: [
-              Tab(text: '收藏菜谱'),
-              Tab(text: '发布菜谱'),
-              Tab(text: '发布帖子'),
-            ],
-            indicatorColor: Colors.blue, // 选项卡指示器颜色
-          ),
-          // SizedBox(
-          //   height: 300, // 适当设置高度
-          //   child: TabBarView(
-          //     children: [
-          //       // 收藏页面内容
-          //       RecipeList(),
-          //       RecipeList(),
-          //       RecipeList()
-          //
-          //       // 发布页面内容
-          //     ],
-          //   ),
-          // ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildFavoriteContent() {
+
+  Widget _buildFavoriteContent(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: List.generate(20, (index) {
-          return ListTile(
-            title: Text('收藏项 $index'),
-          );
-        }),
-      ),
+      // child: Column(
+      //   children: List.generate(20, (index) {
+      //     return ListTile(
+      //       title: Text('收藏项 $index'),
+      //     );
+      //   }),
+      // ),
+
+        child:      FutureBuilder(
+                future: Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return _buildSkeleton(context);
+
+                  } else if (snapshot.hasError) {
+                    return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
+
+                  } else {
+                    return const RecipeList();
+                  }
+                },
+              ),
     );
   }
 
-  Widget _buildPublishedContent() {
-    return const Center(
-      child: Text('发布页面内容'),
-    );
-  }
 
 
 class RecipeList extends StatelessWidget {
@@ -380,19 +286,11 @@ class RecipeList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeRecipesProvider>(
-        builder: (context, provider, child) {
-          return SliverList(
-              delegate: SliverChildBuilderDelegate(
-          (BuildContext context, int index) {
-            return ListTile(
-              title: Text('Item $index'),
-            );
-          },
-          childCount: 20, // 列表项的数量
-          )
-          );
-        }
-    );
+    return Column(
+      children: List.generate(20, (index) {
+        return ListTile(
+          title: Text('收藏项 $index'),
+        );
+      }),);
   }
 }
