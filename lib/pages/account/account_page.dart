@@ -21,24 +21,26 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> with SingleTickerProviderStateMixin{
   late TabController _tabController;
+  bool flag = false;
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+
   }
 
   @override
   Widget build(BuildContext context){
-    return Scaffold(
-      body: NestedScrollView(
+
+
+    return NestedScrollView(
         body: buildBodyWidget(context),
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             buildSliverAppBar(),
           ]; },
+      );
 
-      ),
-    );
   }
 
   buildBodyWidget(BuildContext context) {
@@ -110,7 +112,6 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
 
 
 }
-
 
 
   Widget _buildSkeleton(BuildContext context) {
@@ -218,11 +219,12 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
   }
 
 
-
-  Widget _buildNotLoggedInProfileSection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
+Widget _buildNotLoggedInProfileSection(BuildContext context) {
+  return Container(
+    padding: const EdgeInsets.all(60),
+    child: Center(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
@@ -234,48 +236,55 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => {
+            onPressed: () {
               // 在此处理登录操作，可以跳转到登录页面等
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginPage()),
-              )
+              );
             },
             child: const Text('登录'),
           ),
         ],
       ),
-    );
-  }
-
-
+    ),
+  );
+}
 
   Widget _buildFavoriteContent(BuildContext context) {
-    return SingleChildScrollView(
-      // child: Column(
-      //   children: List.generate(20, (index) {
-      //     return ListTile(
-      //       title: Text('收藏项 $index'),
-      //     );
-      //   }),
-      // ),
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+    if (!userProvider.isLoggedIn) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '请先登录',
+              style: TextStyle(fontSize: 20), // 设置字体大小为24
+            ),
+          ],
+        ),
+      );
+    }
 
-        child:      FutureBuilder(
-                future: Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return _buildSkeleton(context);
-
-                  } else if (snapshot.hasError) {
-                    return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
-
-                  } else {
-                    return const RecipeList();
-                  }
-                },
-              ),
+      return SingleChildScrollView(
+        // child:  FutureBuilder(
+        //         future: Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes(),
+        //         builder: (context, snapshot) {
+        //           if (snapshot.connectionState == ConnectionState.waiting) {
+        //             return _buildSkeleton(context);
+        //
+        //           } else if (snapshot.hasError) {
+        //             return Center(
+        //                 child: Text('Error: ${snapshot.error}'),
+        //               );
+        //
+        //           } else {
+        //             return const RecipeList();
+        //           }
+        //         },
+        //       ),
+        child: const RecipeList(),
     );
   }
 
