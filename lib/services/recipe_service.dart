@@ -6,7 +6,7 @@ class RecipeService {
   /// 测试阶段可以先用apiFox的Mock的url
   static const String baseUrl = 'https://mock.apifox.com/m1/3614939-0-default';
   /// 使用Dio进行网络请求
-  static var dio = Dio();
+  static Dio dio = Dio();
 
   static Future<HttpResult> getRecipes() async {
     String lastUrl = "$baseUrl/recipes";

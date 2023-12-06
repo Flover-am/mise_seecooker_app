@@ -53,7 +53,12 @@ class RecipeListItem extends StatelessWidget {
                   Text(name, style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 8),
                   // TODO: 食谱评分
-                  Text(' 8.6分', style: Theme.of(context).textTheme.labelLarge),
+                  Row(
+                    children: [
+                      const Icon(Icons.star_border_rounded, color: Colors.yellow, size: 18),
+                      Text('8.6分', style: Theme.of(context).textTheme.labelLarge),
+                    ],
+                  ),
                   const SizedBox(height: 8),
                   // TODO: 食谱标签
                   Container(
@@ -71,16 +76,17 @@ class RecipeListItem extends StatelessWidget {
                   ),
                   const Spacer(),
                   Row(
-                    children: <Widget>[
+                    children: [
                       CircleAvatar(
                         radius: 12,
+                        backgroundColor: Theme.of(context).colorScheme.outline,
                         backgroundImage: ExtendedNetworkImageProvider(
                           cover,
                           cache: false,
                         ),
                       ),
-                      const SizedBox(width: 12),  // add some space between the avatar and the text
-                      Text(name, style: Theme.of(context).textTheme.labelLarge),
+                      const SizedBox(width: 8),  // add some space between the avatar and the text
+                      Text(name, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.outline)),
                     ],
                   ),
                   const SizedBox(height: 4),
