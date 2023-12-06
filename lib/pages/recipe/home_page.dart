@@ -157,7 +157,7 @@ class RecipeList extends StatelessWidget {
                 },
                 child: GestureDetector(
                   child: RecipeCard(
-                    recipeId: provider.itemAt(index).recipeId,
+                    recipeId: provider.itemAt(index).id,
                     name: provider.itemAt(index).name,
                     cover: provider.itemAt(index).cover,
                   ),
