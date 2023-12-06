@@ -46,27 +46,36 @@ class SearchResultPage extends StatelessWidget {
             ],
           ),
           body: FutureBuilder(
-            future: Provider.of<SearchResultProvider>(context).fetchSearchResult(),
+            future: Provider.of<SearchResultProvider>(context).fetchSearchResult(query),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting){
                 return Center(child: _buildSkeleton());
               } else if (snapshot.hasError) {
                 return Center(
-                  child: Text('Error: ${snapshot.error}'),
+                  child: SelectableText('Error: ${snapshot.error}'),
                 );
               } else {
                 return Consumer<SearchResultProvider>(
                   builder: (context, provider, child) {
-                    return ListView.builder(
-                      itemBuilder: (context, index) {
-                        return RecipeListItem(
-                          recipeId: provider.itemAt(index).recipeId,
-                          name: provider.itemAt(index).name,
-                          cover: provider.itemAt(index).cover
-                        );
-                      },
-                      itemCount: provider.length,
-                    );
+                    if(provider.length == 0){
+                      return Container(
+                        padding: const EdgeInsets.all(32),
+                        child: Text('呜呜，小助手找不到“$query”的相关结果呢，\n我们再试试其他的关键词吧。( ╯□╰ )')
+                      );
+                    } else {
+                      return ListView.builder(
+                        itemBuilder: (context, index) {
+                          return RecipeListItem(
+                            id: provider.itemAt(index).id,
+                            name: provider.itemAt(index).name,
+                            cover: provider.itemAt(index).cover,
+                            authorName: provider.itemAt(index).authorName,
+                            authorAvatar: provider.itemAt(index).authorAvatar,
+                          );
+                        },
+                        itemCount: provider.length,
+                      );
+                    }
                   }
                 );
               }

@@ -4,15 +4,19 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:seecooker/pages/recipe/recipe_detail.dart';
 
 class RecipeListItem extends StatelessWidget {
-  final int recipeId;
+  final int id;
   final String name;
   final String cover;
+  final String authorName;
+  final String? authorAvatar;
 
   const RecipeListItem({
     super.key,
-    required this.recipeId,
+    required this.id,
     required this.name,
     required this.cover,
+    required this.authorName,
+    required this.authorAvatar
   });
 
   @override
@@ -29,7 +33,7 @@ class RecipeListItem extends StatelessWidget {
           onTap: () {
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => RecipeDetail(id: recipeId)));
+                MaterialPageRoute(builder: (context) => RecipeDetail(id: id)));
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,13 +84,15 @@ class RecipeListItem extends StatelessWidget {
                       CircleAvatar(
                         radius: 12,
                         backgroundColor: Theme.of(context).colorScheme.outline,
-                        backgroundImage: ExtendedNetworkImageProvider(
-                          cover,
+                        backgroundImage: authorAvatar != null
+                        ? ExtendedNetworkImageProvider(
+                          authorAvatar!,
                           cache: false,
-                        ),
+                        )
+                        : null,
                       ),
                       const SizedBox(width: 8),  // add some space between the avatar and the text
-                      Text(name, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.outline)),
+                      Text(authorName, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.outline)),
                     ],
                   ),
                   const SizedBox(height: 4),
