@@ -18,8 +18,13 @@ class User {
 
   List<int> posts;
 
+  String tokenName;
+
+  String tokenValue;
+
   @JsonKey(name: "isLogin")
   bool isLoggedIn;
+
 
   User(
       this.username,
@@ -28,6 +33,8 @@ class User {
       this.likeRecipes,
       this.postRecipes,
       this.posts,
+      this.tokenName,
+      this.tokenValue,
       this.isLoggedIn);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);

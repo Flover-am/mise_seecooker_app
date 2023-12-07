@@ -67,8 +67,10 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                     children: [
                       CircleAvatar(
                         radius: 10,
-                        backgroundImage: NetworkImage(
-                            'https://example.com/avatar.jpg'), // 你的头像图片地址
+                      //   backgroundImage: NetworkImage(
+                      //       'https://example.com/avatar.jpg'), // 你的头像图片地址
+                      // )
+                    backgroundImage: AssetImage('assets/images/tmp/avatar.png'),
                       )
                     ]
                 ),
@@ -148,9 +150,10 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
             children: [
               CircleAvatar(
                 radius: 42,
-                backgroundImage: NetworkImage(
-                  'https://example.com/avatar.jpg',
-                ),
+                // backgroundImage: NetworkImage(
+                //   'https://example.com/avatar.jpg',
+                // ),
+                backgroundImage: AssetImage('assets/images/tmp/avatar.png'),
               ),
               SizedBox(width: 20),
               Column(

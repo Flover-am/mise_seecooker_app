@@ -67,14 +67,14 @@ class _LoginFormState extends State<LoginForm> {
           ),
           const SizedBox(height: 32),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               // 在此处理登录逻辑，例如验证用户输入等
               String username = _usernameController.text;
               String password = _passwordController.text;
 
               // 获取当前上下文中的 UserModel 实例
               final userProvider = Provider.of<UserProvider>(context, listen: false);
-              userProvider.login(username, password);
+              await userProvider.login(username, password);
 
               // 简单的示例：如果用户名和密码都不为空，视为登录成功
               if (userProvider.isLoggedIn) {
