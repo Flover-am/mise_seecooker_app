@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
-import 'package:seecooker/utils/dishes.dart';
+import 'package:seecooker/utils/categoryies.dart';
 
 
 class MySearchBar extends StatefulWidget {
@@ -16,14 +17,10 @@ String FindDish(String dish){
   if(dish=="") {
     return "";
   }
-  for(String veg in dishesFilter) {
-    if(veg.contains(dish)) {
-      return veg;
-    }
-  }
-  for(String veg in meatFilter) {
-    if(veg.contains(dish)) {
-      return veg;
+  for(var category in categories){
+    for(String ingredient in category.ingredients) {
+      if(ingredient==dish)
+        return ingredient;
     }
   }
   return "";
