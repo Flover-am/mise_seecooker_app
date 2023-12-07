@@ -12,6 +12,8 @@ import '../recipe/recipe_detail.dart';
 import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
+import 'modify_page.dart';
+
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
@@ -58,15 +60,15 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               backgroundColor: Color.fromRGBO(244,164,96, 1),
               pinned: true,
               expandedHeight: 280,
-              toolbarHeight: 15,
+              toolbarHeight: 30,
               scrolledUnderElevation: 0,
               flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.only(left: 200, top: 18),
+                titlePadding: const EdgeInsets.only(left: 190, top: 30),
                 expandedTitleScale: 2,
                 title: const Column(
                     children: [
                       CircleAvatar(
-                        radius: 10,
+                        radius: 15,
                       //   backgroundImage: NetworkImage(
                       //       'https://example.com/avatar.jpg'), // 你的头像图片地址
                       // )
@@ -107,8 +109,19 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               Tab(text: '收藏'),
               Tab(text: '收藏'),
       ],        labelColor: Colors.black, // 设置选中标签的文本颜色为白色
-                unselectedLabelColor: Colors.grey,
+                unselectedLabelColor: Colors.black,
               ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ModifyPage()),
+              );
+            },
+          ),
+        ]
     );
   }
 
