@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -122,13 +121,19 @@ class _PublishPostState extends State<PublishPost> {
                       });
                     }
                     else{
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoadingPage()));
-                      HttpResult result=await _issuePost();
+                      Navigator.push(
+                          context,MaterialPageRoute(
+                          builder:(context)=>const LoadingPage(
+                              prompt:"正在将帖子上传至总部..."
+                            )
+                          )
+                      );
+                      HttpResult result = await _issuePost();
 
                       Navigator.pop(context);
-                      if(result.code==200){
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
+
+                      if(result.message=="success"){
+                        Navigator.pop(context);
                         Fluttertoast.showToast(
                             msg: "发布成功！",
                             toastLength: Toast.LENGTH_SHORT,
@@ -143,10 +148,6 @@ class _PublishPostState extends State<PublishPost> {
                             title: const Text('上传失败！'),
                             content:Text(result.message),
                             actions:<Widget>[
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children:<Widget>[
                                   TextButton(
                                     child: const Text('确认'),
                                     onPressed: (){
@@ -154,8 +155,6 @@ class _PublishPostState extends State<PublishPost> {
                                     },
                                   )
                                 ]
-                              )
-                            ]
                         );
                       }
                     }
@@ -292,7 +291,6 @@ class _PublishPostState extends State<PublishPost> {
     ));
   }
   Widget PictureAdder(){
-
     return GestureDetector(
       onTap:(){
         PictureSource(context);
@@ -322,7 +320,7 @@ class _PublishPostState extends State<PublishPost> {
             },
             child:TextField(
               decoration: InputDecoration(
-                labelText: '请输入发布内容',
+                labelText: '输入发布内容',
                 errorText: _errorInputMessage,
                 border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -463,20 +461,23 @@ class _PublishPostState extends State<PublishPost> {
 
 /// 加载页
 class LoadingPage extends StatelessWidget{
-  const LoadingPage({super.key});
+  final String prompt;
+  const LoadingPage({super.key, required this.prompt});
   @override
   Widget build(BuildContext context){
     return Scaffold(
       body:Material(
         color:Colors.grey.withOpacity(0.72),
-        child:const Center(
+        child:Center(
           child:Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(),
+              CircularProgressIndicator(
+
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
-                child:Text('正在将新帖子上传至总部...',style: TextStyle(color: Colors.white),),
+                child:Text(prompt,style: TextStyle(color: Colors.white),),
               )
             ],
           )
@@ -500,7 +501,6 @@ class DetailImagePage extends StatelessWidget{
       deletionCallback();
       Navigator.of(context).pop();
     };
-
     return Scaffold(
       body:
         Material(
