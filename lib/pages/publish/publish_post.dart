@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,14 +6,13 @@ import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:seecooker/providers/user_provider.dart';
-import 'package:seecooker/services/publish_http.dart';
+import 'package:seecooker/services/publish_service.dart';
+import 'package:seecooker/models/http_result.dart';
+import 'package:seecooker/pages/account/login_page.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-
-import '../../models/user.dart';
-import '../account/login_page.dart';
 
 class PublishPost extends StatefulWidget {
   final String param;
@@ -29,7 +29,7 @@ class _PublishPostState extends State<PublishPost> {
   List<String> _userImage=[];//存放获取到的本地路径
   bool _issueButtonVisible=true;
   String? _errorInputMessage=null;
-
+  double _width=0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,7 @@ class _PublishPostState extends State<PublishPost> {
     //   });
     //   print(userModel.isLoggedIn);
     // }
-
+    _width=_safeAreaWidth(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -79,7 +79,7 @@ class _PublishPostState extends State<PublishPost> {
               SizedBox(
                 width:200,
                 child:FloatingActionButton(
-                  onPressed: () {
+                  onPressed: ()async{
                     if(_userImage.isEmpty){
                       showDialog<String>(
                           context:context,
@@ -122,9 +122,42 @@ class _PublishPostState extends State<PublishPost> {
                       });
                     }
                     else{
-                      _issuePost();
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>LoadingPage()));
+                      HttpResult result=await _issuePost();
+
                       Navigator.pop(context);
-                      Navigator.pop(context);
+                      if(result.code==200){
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                        Fluttertoast.showToast(
+                            msg: "发布成功！",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.white,
+                            textColor: Colors.green,
+                            fontSize: 16.0
+                        );
+                      }else{
+                        AlertDialog(
+                            title: const Text('上传失败！'),
+                            content:Text(result.message),
+                            actions:<Widget>[
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children:<Widget>[
+                                  TextButton(
+                                    child: const Text('确认'),
+                                    onPressed: (){
+                                      Navigator.of(context).pop();
+                                    },
+                                  )
+                                ]
+                              )
+                            ]
+                        );
+                      }
                     }
                   },
                   child: const Text("发布"),
@@ -184,9 +217,8 @@ class _PublishPostState extends State<PublishPost> {
 
   /// 返回图片选择区组件
   Widget ImageSelection(BuildContext context){
-    final width=_safeAreaWidth(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
     return SizedBox(
-          width: width,
+          width: _width,
           child:Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
@@ -423,19 +455,34 @@ class _PublishPostState extends State<PublishPost> {
     }
   }
   ///发布
-  void _issuePost() async{//TODO: 完成发布逻辑
+  Future<HttpResult> _issuePost() async{
       print("Issue");
-      await sendFormDataRequest(apiUrl, title, text, _userImage,
-              (body){
-              print(body);
-              print("-------------SUCCESS--------------");
-            },(body){
-              print(body);
-              print("-------------FAIL--------------");
-          }, (err){
-            print(err);
-            print("-------------ERROR--------------");
-          });
+      return PublishService.publishPost('111', title, text, _userImage);
+  }
+}
+
+/// 加载页
+class LoadingPage extends StatelessWidget{
+  const LoadingPage({super.key});
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body:Material(
+        color:Colors.grey.withOpacity(0.72),
+        child:const Center(
+          child:Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+                child:Text('正在将新帖子上传至总部...',style: TextStyle(color: Colors.white),),
+              )
+            ],
+          )
+          ),
+        )
+    );
   }
 }
 
@@ -512,7 +559,6 @@ class DetailImagePage extends StatelessWidget{
                           }
                       ),
                     )
-
                   ]
               )
             )
