@@ -1,4 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:seecooker/providers/user_provider.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:seecooker/utils/FileConverter.dart';
+import 'package:flutter/services.dart' show rootBundle;
+
+import 'login_page.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({Key? key});
@@ -25,14 +35,21 @@ class RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<RegisterForm> {
+  final ImagePicker picker = ImagePicker();
+  late XFile avatar_xfile;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context,listen: false);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        _buildAvatar(),
+
+
         TextField(
           controller: _usernameController,
           decoration: const InputDecoration(
@@ -49,21 +66,36 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
         const SizedBox(height: 32),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             // 在此处理注册逻辑，例如验证用户输入等
             String username = _usernameController.text;
             String password = _passwordController.text;
 
-            // 执行注册操作
-            // ...
+            var avatar = await createTemporaryFileFromAsset('assets/images/tmp/avatar_register.jpeg');
+            // TODO: 使用自选照片
+            //var avatar = convertXFileToFile(avatar_xfile);
 
-            // 注册成功后可以进行其他操作，例如显示成功消息
-            ScaffoldMessenger.of(context).showSnackBar(
+            // 执行注册操作
+            var isRegistered = await userProvider.register(username, password, avatar);
+
+            if (isRegistered) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('注册成功'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+              Navigator.pop(context);
+
+            }
+            else {
+              ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('注册成功'),
+                content: Text('注册失败'),
                 duration: Duration(seconds: 2),
               ),
             );
+            }
           },
           child: const Text('注册'),
         ),
@@ -78,4 +110,38 @@ class _RegisterFormState extends State<RegisterForm> {
     _passwordController.dispose();
     super.dispose();
   }
+
+  Widget _buildAvatar() {
+    return GestureDetector(
+        onTap: () {
+          Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
+          selectAvatar();
+          setState(() {
+          });
+        },
+      child:
+      CircleAvatar(
+        radius: 100,
+        backgroundImage: AssetImage('assets/images/avatar.png'),
+      )
+    );
+  }
+  void selectAvatar() async {
+    XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
+    setState(() {
+      avatar_xfile = image;
+    });
+  }
+}
+
+Future<File> createTemporaryFileFromAsset(String assetPath) async {
+  final byteData = await rootBundle.load(assetPath);
+  final tempDir = await getTemporaryDirectory();
+  final tempFile = File('${tempDir.path}/${assetPath.split('/').last}');
+  await tempFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+  return tempFile;
+}
+
+Future<File> convertXFileToFile(XFile xfile) async {
+  return File(xfile.path);
 }

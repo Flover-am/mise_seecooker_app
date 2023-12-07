@@ -4,6 +4,7 @@ import 'package:seecooker/utils/shared_preferences_util.dart';
 
 import '../models/user.dart';
 import '../services/user_service.dart';
+import 'dart:io';
 
 class UserProvider extends ChangeNotifier{
   late User _user = User("未登录", "未登录", "未登录",[],[],[],"","",false);
@@ -72,21 +73,6 @@ class UserProvider extends ChangeNotifier{
       notifyListeners();
   }
 
-
-  // Future<void> logout() async{
-  //   var res =  await UserService.logout(_user.tokenName);
-  //   if(!res.isSuccess()){
-  //     throw Exception("登出失败:${res.message}");
-  //   }
-  //   _user.username = "未登录";
-  //   _user.password = "未登录";
-  //   _user.isLoggedIn = false;
-  //   SharedPreferencesUtil.setString("username","未登录");
-  //   SharedPreferencesUtil.setString("password","未登录");
-  //   SharedPreferencesUtil.setBool("isLoggedIn", false);
-  //   notifyListeners();
-  // }
-
   Future<User> getUserById(int id) async {
     /// 先进行请求，然后从请求中拿数据
     var res =  await UserService.getUserById(id);
@@ -97,5 +83,17 @@ class UserProvider extends ChangeNotifier{
     /// 将数据转换成Model
     _user = User.fromJson(res.data);
     return _user;
+  }
+
+  Future<bool> register(String username,String password, File avatar) async {
+    /// 先进行请求，然后从请求中拿数据
+    var res =  await UserService.register(username,password,avatar);
+    print(res.code);
+    
+    /// 判断是否获取成功
+    if(!res.isSuccess()){
+      return false;
+    }
+    return true;
   }
 }
