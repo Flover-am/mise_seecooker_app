@@ -86,11 +86,14 @@ class SwipeCardState extends State<SwipeCard>{
                     ),
                      child: ExpRecipeCard(
                     id: index,
-                    title: provider.itemAt(index).title,
-                    coverUrl: provider.itemAt(index).coverUrl,
-                    author: provider.itemAt(index).author,
-                    like: provider.itemAt(index).like,
-                    rate: provider.itemAt(index).rate,
+                    title: provider.itemAt(index).name,
+                    coverUrl: provider.itemAt(index).cover,
+                    author: '111',
+                    like: 5,
+                    rate: 5.6,
+                    // author: provider.itemAt(index).author,
+                    // like: provider.itemAt(index).like,
+                    // rate: provider.itemAt(index).rate,
                   )
                   );
                 },

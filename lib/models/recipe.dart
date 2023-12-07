@@ -1,10 +1,16 @@
-class Recipe {
-  int id;
-  String title;
-  String coverUrl;
-  String author;
-  int like;
-  double rate;
+import 'package:json_annotation/json_annotation.dart';
 
-  Recipe(this.id, this.title, this.coverUrl, this.author, this.like, this.rate);
+part 'recipe.g.dart';
+
+@JsonSerializable()
+class Recipe {
+  int recipeId;
+  String name;
+  String cover;
+
+  Recipe(this.recipeId, this.name, this.cover);
+
+  factory Recipe.fromJson(Map<String, dynamic> json) => _$RecipeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RecipeToJson(this);
 }

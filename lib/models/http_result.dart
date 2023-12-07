@@ -11,7 +11,7 @@ class HttpResult{
   /// 业务返回信息，当code不为0时，message返回错误信息
   late String message;
   /// 返回数据类
-  late Map<String,dynamic> data;
+  late dynamic data;
 
   /// 构造函数
   HttpResult(this.code, this.message, this.data);

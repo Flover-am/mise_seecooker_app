@@ -1,19 +1,26 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/search/search_result_page.dart';
-import 'package:seecooker/providers/search_history_provider.dart';
-import 'package:seecooker/providers/search_recommend_provider.dart';
+import 'package:seecooker/providers/search/search_history_provider.dart';
+import 'package:seecooker/providers/search/search_recommend_provider.dart';
 import 'package:skeletons/skeletons.dart';
 
 class SearchPage extends StatelessWidget {
+  final String? query;
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _textEditingController = TextEditingController();
 
-  SearchPage({super.key});
+  SearchPage({super.key, this.query});
 
   @override
   Widget build(BuildContext context) {
+    if(query != null) {
+      _textEditingController.text = query!;
+    }
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => SearchHistoryProvider()),
@@ -123,6 +130,7 @@ class SearchPage extends StatelessWidget {
                                     label: Text(item, overflow: TextOverflow.ellipsis),
                                     visualDensity: VisualDensity.compact,
                                     onPressed: () {
+                                      _textEditingController.text = item;
                                       goToSearchResult(context, item);
                                     },
                                   )
@@ -191,6 +199,7 @@ class SearchPage extends StatelessWidget {
                                     label: Text(item, overflow: TextOverflow.ellipsis),
                                     visualDensity: VisualDensity.compact,
                                     onPressed: () {
+                                      _textEditingController.text = item;
                                       goToSearchResult(context, item);
                                     },
                                   )

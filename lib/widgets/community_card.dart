@@ -25,13 +25,8 @@ class CommunityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceVariant, // filled card
-      // shape: RoundedRectangleBorder( // outlined card
-      //   side: BorderSide(
-      //     color: Theme.of(context).colorScheme.outline,
-      //   ),
-      //   borderRadius: const BorderRadius.all(Radius.circular(12)),
-      // ),
+      margin: EdgeInsets.zero,
+      color: Theme.of(context).colorScheme.surface,
       child: InkWell(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailPage(postId: postId))),
         borderRadius: BorderRadius.circular(12),
@@ -42,14 +37,12 @@ class CommunityCard extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1.0,
               child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
+                borderRadius: BorderRadius.circular(12),
                 child: ExtendedImage.network(
                   cover,
                   cache: false,
                   fit: BoxFit.cover,
+                  enableLoadState: false,
                 ),
               ),
             ),
