@@ -49,39 +49,42 @@ class _ModifyPageState extends State<ModifyPage> {
       appBar: AppBar(
         title: Text('编辑信息'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildAvatar(),
-            SizedBox(height: 16.0),
-            TextField(
-              decoration: InputDecoration(
-                labelText: '用户名',
+      body: SingleChildScrollView( // 使用SingleChildScrollView包裹内容
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildAvatar(),
+              SizedBox(height: 16.0),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: '用户名',
+                ),
+                onChanged: _updateUsername,
               ),
-              onChanged: _updateUsername,
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              decoration: InputDecoration(
-                labelText: '描述',
+              SizedBox(height: 16.0),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: '描述',
+                ),
+                onChanged: _updateDescription,
               ),
-              onChanged: _updateDescription,
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              decoration: InputDecoration(
-                labelText: '密码',
+              SizedBox(height: 16.0),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: '密码',
+                ),
+                onChanged: _updatePassword,
               ),
-              onChanged: _updatePassword,
-            ),
-            SizedBox(height: 32.0),
-            ElevatedButton(
-              onPressed: _saveChanges,
-              child: Text('保存更改'),
-            ),
-          ],
+              SizedBox(height: 32.0),
+              ElevatedButton(
+                onPressed: _saveChanges,
+                child: Text('保存更改'),
+              ),
+              SizedBox(height: 16.0), // 添加额外的间距以避免底部输入框被键盘遮挡
+            ],
+          ),
         ),
       ),
     );
