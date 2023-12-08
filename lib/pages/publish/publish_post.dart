@@ -455,7 +455,12 @@ class _PublishPostState extends State<PublishPost> {
   ///发布
   Future<HttpResult> _issuePost() async{
       print("Issue");
-      return PublishService.publishPost('111', title, text, _userImage);
+      try{
+        return PublishService.publishPost(title, text, _userImage);
+      }catch(e){
+        return HttpResult(200001,e.toString(),null);
+      }
+
   }
 }
 
