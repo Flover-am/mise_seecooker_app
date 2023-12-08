@@ -1,9 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
 import '../pages/community/post_detail_page.dart';
-import '../providers/post_detail_provider.dart';
 
 class CommunityCard extends StatelessWidget {
   final int postId;

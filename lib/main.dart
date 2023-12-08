@@ -93,18 +93,6 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
         index: _currentPageIndex,
         children: _body,
       ),
-      floatingActionButton: _currentPageIndex == 2
-        ? FloatingActionButton(
-          heroTag: UniqueKey(),
-          onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const PublishPost(param: "",)),
-            ),
-          },
-          child: const Icon(Icons.edit),
-        )
-        : null,
       bottomNavigationBar: NavigationBar(
         elevation: 0,
         onDestinationSelected: (int index) {
@@ -114,24 +102,24 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
         },
         //labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
         selectedIndex: _currentPageIndex,
-        destinations: const <Widget>[
+        destinations: <Widget>[
           NavigationDestination(
-            selectedIcon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home, color: Theme.of(context).colorScheme.surface),
             icon: Icon(Icons.home_outlined),
             label: '首页',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.explore),
+            selectedIcon: Icon(Icons.explore, color: Theme.of(context).colorScheme.surface),
             icon: Icon(Icons.explore_outlined),
             label: '发现',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.camera),
+            selectedIcon: Icon(Icons.camera, color: Theme.of(context).colorScheme.surface),
             icon: Icon(Icons.camera_outlined),
             label: '社区',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.account_circle),
+            selectedIcon: Icon(Icons.account_circle, color: Theme.of(context).colorScheme.surface),
             icon: Icon(Icons.account_circle_outlined),
             label: '我的',
           ),
