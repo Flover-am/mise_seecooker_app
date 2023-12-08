@@ -70,10 +70,10 @@ class SwipeCardState extends State<SwipeCard>{
                 totalNum: provider.length,
                 stackNum: 3,
                 swipeEdge: 2.0,
-                maxWidth: MediaQuery.of(context).size.width +100,
-                maxHeight: MediaQuery.of(context).size.width+400,
-                minWidth: (MediaQuery.of(context).size.width+100) *0.9,
-                minHeight: (MediaQuery.of(context).size.width+400) * 0.9,
+                maxWidth: MediaQuery.of(context).size.width ,
+                maxHeight: MediaQuery.of(context).size.width,
+                minWidth: (MediaQuery.of(context).size.width) *0.9,
+                minHeight: (MediaQuery.of(context).size.width) * 0.9,
                 cardBuilder: (context, index) {
                   if (index == provider.length - 1) {
                     provider.fetchMorePosts();
