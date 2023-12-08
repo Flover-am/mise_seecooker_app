@@ -1,6 +1,3 @@
-
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:seecooker/models/NewRecipe.dart';
 import 'package:seecooker/models/http_result.dart';
@@ -10,13 +7,28 @@ class RecipeService {
   static const String baseUrl = 'http://124.222.18.205:8080/v1';
 
   /// 使用Dio进行网络请求
-  static var dio = Dio();
   static var testOpt =
   Options(headers: {"satoken": "f066c087-1328-4aa7-b8cb-85f6f2cfffeb"});
+  static Dio dio = Dio();
 
   static Future<HttpResult> getRecipes() async {
     String lastUrl = "$baseUrl/recipes";
     final response = await dio.get(lastUrl,options: testOpt);
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
+  }
+
+  static Future<HttpResult> searchRecipes(String query) async {
+    String lastUrl = "$baseUrl/recipes/search";
+    final response = await dio.get(
+      lastUrl,
+      queryParameters: {
+        'query': query
+      }
+    );
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
     } else {

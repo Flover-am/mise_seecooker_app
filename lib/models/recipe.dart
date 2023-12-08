@@ -4,11 +4,13 @@ part 'recipe.g.dart';
 
 @JsonSerializable()
 class Recipe {
-  int recipeId;
+  int id;
   String name;
   String cover;
+  String authorName;
+  String? authorAvatar;
 
-  Recipe(this.recipeId, this.name, this.cover);
+  Recipe(this.id, this.name, this.cover, this.authorName, this.authorAvatar);
 
   factory Recipe.fromJson(Map<String, dynamic> json) => _$RecipeFromJson(json);
 

@@ -1,21 +1,21 @@
 import 'package:seecooker/models/recipe.dart';
+import 'package:seecooker/services/recipe_service.dart';
 
 class SearchResultProvider {
-  final List<Recipe> _list = [];
+  List<Recipe>? _list;
 
-  int get length => _list.length;
+  int get length => _list?.length ?? 0;
 
-  Recipe itemAt(int index) => _list[index];
+  Recipe itemAt(int index) => _list![index];
 
-  Future<void> fetchSearchResult() async {
-    await Future.delayed(const Duration(seconds: 1));
-    _list.addAll(List.generate(
-        5,
-            (index) => Recipe(
-          index,
-          '五红银耳羹',
-          'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-        )
-    ));
+  Future<void> fetchSearchResult(String query) async {
+    final res = await RecipeService.searchRecipes(query);
+    if(!res.isSuccess()) {
+      throw Exception('未拿到菜谱数据: ${res.message}');
+    }
+    _list = res.data
+        .map((e) => Recipe.fromJson(e))
+        .toList()
+        .cast<Recipe>();
   }
 }
