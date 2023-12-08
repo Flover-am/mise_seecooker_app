@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:seecooker/utils/FileConverter.dart';
 
-
 class NewRecipe {
+
   /// 封面
   late File cover;
 
@@ -28,13 +28,18 @@ class NewRecipe {
   NewRecipe.all(this.cover, this.name, this.introduction, this.stepImages,
       this.stepContents, this.ingredients);
 
-  FormData toFormData() {
+  Future<FormData> toFormData() async {
+    List<MultipartFile> s = [];
+    for (int i = 0; i < stepImages.length; i++) {
+      s.add(await FileConverter.file2MultipartFile(stepImages[i]));
+    }
+
     FormData formData = FormData.fromMap({
       'name': name,
       'introduction': introduction,
       'stepContents': stepContents,
-      'cover': FileConverter.file2MultipartFile(cover),
-      'stepImages': stepImages.map((e) => FileConverter.file2MultipartFile(e)),
+      'cover': await FileConverter.file2MultipartFile(cover),
+      'stepImages': s,
     });
     return formData;
   }
