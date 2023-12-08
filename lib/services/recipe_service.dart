@@ -12,6 +12,7 @@ class RecipeService {
   static Dio dio = Dio();
 
   static Future<HttpResult> getRecipes() async {
+    print("dio.get");
     String lastUrl = "$baseUrl/recipes";
     final response = await dio.get(lastUrl,options: testOpt);
     if(response.statusCode == 200) {

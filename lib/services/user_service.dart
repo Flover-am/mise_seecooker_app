@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:seecooker/models/http_result.dart';
 
@@ -37,6 +39,19 @@ class UserService {
     /// 发起get请求，拿到response
     var response = await dio.get(requestUrl);
     /// 将response的data转换为HttpResult返回给上一层
+    return HttpResult.fromJson(response.data);
+  }
+
+  static Future<HttpResult> register(String username,String password, File avatar) async {
+    String requestUrl = "$baseUrl/user";
+    var data =  FormData.fromMap({
+      "username": username,
+      "password": password,
+      "avatar": await MultipartFile.fromFile(avatar.path),
+    });
+    /// 发送请求，拿到 Response
+    var response = await dio.post(requestUrl, data: data);
+    /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }
 }
