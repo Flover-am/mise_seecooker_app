@@ -7,10 +7,14 @@ import '../services/user_service.dart';
 import 'dart:io';
 
 class UserProvider extends ChangeNotifier{
-  late User _user = User("未登录", "未登录", "未登录",[],[],[],"","",false);
+  late User _user = User("未登录", "未登录", "未登录","这是一段用户描述",[],[],[],"","",false);
   late UserLogin _userLogin;
   get isLoggedIn => _user.isLoggedIn;
   String get username => _user.username;
+
+  String get password => _user.password;
+
+  String get description => _user.description;
 
 
   Future<void> loadLoginStatus() async {
@@ -19,6 +23,7 @@ class UserProvider extends ChangeNotifier{
     _user.tokenName = await SharedPreferencesUtil.getString("tokenName");
     _user.tokenValue = await SharedPreferencesUtil.getString("tokenValue");
     _user.isLoggedIn = await SharedPreferencesUtil.getBool("isLoggedIn");
+    _user.description = await SharedPreferencesUtil.getString("description");
     print(_user.tokenName);
     notifyListeners();
   }
@@ -70,6 +75,7 @@ class UserProvider extends ChangeNotifier{
       SharedPreferencesUtil.setBool("isLoggedIn", false);
       SharedPreferencesUtil.setString("tokenName","");
       SharedPreferencesUtil.setString("tokenValue","");
+      SharedPreferencesUtil.setString("description", "用户描述:未登录");
       notifyListeners();
   }
 

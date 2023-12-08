@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
+
+import 'package:seecooker/providers/user_provider.dart';
 
 class ModifyPage extends StatefulWidget {
   @override
@@ -14,7 +17,7 @@ class _ModifyPageState extends State<ModifyPage> {
   late File _avatar_file;
   String _username = '张三';
   String _description = '这是一个用户';
-  String _password = '';
+  String _password = '这是一个密码';
 
   void _updateUsername(String value) {
     setState(() {
@@ -45,6 +48,12 @@ class _ModifyPageState extends State<ModifyPage> {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+    _username = userProvider.username;
+    _description = userProvider.description;
+    _password = userProvider.password;
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text('编辑信息'),
@@ -57,23 +66,26 @@ class _ModifyPageState extends State<ModifyPage> {
             children: [
               _buildAvatar(),
               SizedBox(height: 16.0),
-              TextField(
+              TextFormField(
+                initialValue: _username,
                 decoration: InputDecoration(
                   labelText: '用户名',
                 ),
                 onChanged: _updateUsername,
               ),
               SizedBox(height: 16.0),
-              TextField(
-                decoration: InputDecoration(
+              TextFormField(
+                initialValue: _description,
+                decoration: const InputDecoration(
                   labelText: '描述',
                 ),
                 onChanged: _updateDescription,
               ),
               SizedBox(height: 16.0),
-              TextField(
+              TextFormField(
+                initialValue: _password,
                 decoration: InputDecoration(
-                  labelText: '密码',
+                  labelText: "密码",
                 ),
                 onChanged: _updatePassword,
               ),

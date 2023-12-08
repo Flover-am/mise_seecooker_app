@@ -12,6 +12,8 @@ class User {
 
   String avatar;
 
+  String description;
+
   List<int> likeRecipes;
 
   List<int> postRecipes;
@@ -30,6 +32,7 @@ class User {
       this.username,
       this.password,
       this.avatar,
+      this.description,
       this.likeRecipes,
       this.postRecipes,
       this.posts,

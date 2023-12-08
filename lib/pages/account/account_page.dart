@@ -187,7 +187,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
           ),
           SizedBox(height: 20),
           Text(
-            '替换为新的用户描述', // 新的用户描述内容
+            userProvider.description,
             style: TextStyle(
               fontSize: 16,
             ),
