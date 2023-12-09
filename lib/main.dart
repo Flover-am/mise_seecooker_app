@@ -1,14 +1,10 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-
 import 'package:seecooker/pages/account/account_page.dart';
 import 'package:seecooker/pages/explore/explore_page.dart';
-import 'package:seecooker/pages/publish/publish_page.dart';
 import 'package:seecooker/pages/recipe/home_page.dart';
 import 'package:seecooker/pages/community/community_page.dart';
-import 'package:seecooker/pages/account/login_page.dart';
-import 'package:seecooker/pages/publish/publish_recipe.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
@@ -16,10 +12,12 @@ import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/providers/recommend_provider.dart';
 import 'package:seecooker/providers/home_recipes_provider.dart';
 import 'package:seecooker/utils/color_schemes.dart';
-
-import 'models/user.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() {
+  // WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  // FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ExplorePostProvider()),
@@ -40,7 +38,8 @@ void main() {
     );
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  };
+  }
+  //FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {
