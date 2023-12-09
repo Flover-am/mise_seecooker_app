@@ -12,7 +12,6 @@ import 'package:seecooker/models/comment.dart';
 import 'package:seecooker/providers/comments_provider.dart';
 import 'package:seecooker/providers/post_detail_provider.dart';
 import 'package:seecooker/utils/image_util.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:skeletons/skeletons.dart';
 
 class PostDetailPage extends StatelessWidget {
@@ -54,9 +53,9 @@ class PostDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: SkeletonListTile(
           leadingStyle: SkeletonAvatarStyle(
-              height: 36,
-              width: 36,
-              borderRadius: BorderRadius.circular(18)
+              height: 32,
+              width: 32,
+              borderRadius: BorderRadius.circular(16)
           ),
           titleStyle: const SkeletonLineStyle(
               height: 24,
@@ -496,7 +495,11 @@ class TextSection extends StatelessWidget {
             content,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          const SizedBox(height: 16)
+          const SizedBox(height: 16),
+          Divider(
+            thickness: 1,
+            color: Theme.of(context).colorScheme.primary.withAlpha(10)
+          ),
         ],
       ),
     );
