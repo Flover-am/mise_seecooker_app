@@ -21,12 +21,13 @@ class ChosenLine extends StatelessWidget{
               Container(
                   height: MediaQuery.of(context).size.height/4,
                   width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.outlineVariant,
                       borderRadius: BorderRadius.circular(20)
                   ),
-                  child: ListView(children: [Wrap(
+                  child:
+                  ListView(children: [
+                    Wrap(
                     spacing: 5.0,
                     children: dishesFilter.map((String dish) {
                       return FilterChip(
