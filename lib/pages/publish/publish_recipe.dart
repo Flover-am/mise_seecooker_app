@@ -260,30 +260,39 @@ class _PublishRecipeState extends State<PublishRecipe> {
             Fluttertoast.showToast(msg: "请上传步骤对应的图片哦～");
             return;
           }
-
-          /// 标题
-          recipe.name = titleController.text;
-
-          /// 封面
-          recipe.cover = await FileConverter.xFile2File(cover);
-
           /// 配料
           recipe.introduction = introductionController.text;
           ingredientsNameController.forEach((key, value) {
             recipe.ingredients
                 .add({value.text: ingredientsAmountController[key]!.text});
           });
+          if(!recipe.ingredients.any(
+                  (element) => element.keys.first!=""&& element.values.first!="")
+          ){
+            Fluttertoast.showToast(msg: "配料和用量不要为空～");
+            return;
+          }
+
+          /// 标题
+          recipe.name = titleController.text;
+
+          /// 封面
+          recipe.cover =  FileConverter.xFile2File(cover);
+
 
           /// 每一步的内容
           stepContentsController.forEach((key, value) {
             recipe.stepContents.add(value.text);
           });
 
+          var a = 1;
           /// 每一步的图片
           stepsCover.forEach((key, value) async {
-            recipe.stepImages.add(await FileConverter.xFile2File(value));
-          });
+            File toAdd =  FileConverter.xFile2File(value);
 
+            recipe.stepImages.add(toAdd);
+          });
+          log(recipe.stepImages.length.toString());
           var resp = await RecipeService.postRecipe(recipe);
           log(resp.toString());
           if (!resp.isSuccess()) {

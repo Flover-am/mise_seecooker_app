@@ -2,19 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/explore/makeexp_page.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
-import 'package:seecooker/widgets/chose_page.dart';
 import 'package:seecooker/widgets/chosen_line.dart';
 import 'package:seecooker/widgets/my_search_bar.dart';
-
-import '../../utils/dishes.dart';
-
-
+import 'package:seecooker/models/Category.dart';
+import 'package:seecooker/utils/categoryies.dart';
 
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
 
   @override
   State<ExplorePage> createState() => _ExplorePageState();
+}
+
+class CategoryItem extends StatelessWidget {
+  final Category category;
+  final VoidCallback onPressed;
+
+  CategoryItem({required this.category, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(8.0),
+      child: Padding(
+        padding: EdgeInsets.all(12.0),
+        child:
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                  Text(
+                  category.name,
+                  style: TextStyle(
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                   Text(
+                    category.tagline,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],),
+                SizedBox(width: MediaQuery.of(context).size.width/5,height: MediaQuery.of(context).size.height/16,child:  ElevatedButton(
+                  onPressed: onPressed,
+                  child: Icon(Icons.add),
+                ),)
+              ],
+            ),
+      ),
+    );
+  }
 }
 
 void showCommentSection(BuildContext context, bool autofocus) {
@@ -26,13 +66,15 @@ void showCommentSection(BuildContext context, bool autofocus) {
           child: Column(
             children: [
               Expanded(
-                flex: 5,
+                  flex: 5,
                   child: ChosenLine(
-                title: '您已挑选',
-                dishesFilter:
-                Provider.of<ExplorePostProvider>(context, listen: false)
-                    .showlist()))
-              ,
+                      title: '您已挑选',
+                      dishesFilter: Provider.of<ExplorePostProvider>(context,
+                              listen: false)
+                          .showlist())),
+              SizedBox(
+                height: 10,
+              ),
               Expanded(
                   child: SizedBox(
                 width: MediaQuery.of(context).size.width / 2,
@@ -42,14 +84,16 @@ void showCommentSection(BuildContext context, bool autofocus) {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 30)),
                     onPressed: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MakeExpPage()),
-                      ),
-                    }),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MakeExpPage()),
+                          ),
+                        }),
               )),
-              SizedBox(height: 20,)
+              SizedBox(
+                height: 20,
+              )
             ],
           ));
     },
@@ -59,6 +103,29 @@ void showCommentSection(BuildContext context, bool autofocus) {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
+  void _showCategoryIngredientsDialog(
+      BuildContext context, String name, List<String> ingredients) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              content: Container(
+                  child: ChosenLine(
+                    dishesFilter: ingredients,
+                    title: "挑选$name",
+                  ),
+                  height: MediaQuery.of(context).size.height / 3),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('关闭'),
+                ),
+              ]);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
@@ -68,57 +135,31 @@ class _ExplorePageState extends State<ExplorePage> {
           child: ListView(
             children: [
               MySearchBar(),
-              SizedBox(height: 10,),
-        DefaultTabController(
-          length: 2,
-          child: Column(
-            children: [
-              const TabBar(
-                tabs: [
-                  Tab(text: '蔬菜'),
-                  Tab(text: '肉类'),
-                ],
-                indicatorColor: Colors.blue, // 选项卡指示器颜色
-              ),
-              SizedBox(
-                height: 500, // 适当设置高度
-                child: TabBarView(
-                  children: [
-                    // 收藏页面内容
-                    ChosePage(title: "挑选蔬菜",subtitle: "吃蔬菜打造健康饮食~", dishesFilter: dishesFilter),
-                    ChosePage(title: "挑选肉类",subtitle: "给生活加点蛋白质！", dishesFilter: meatFilter)
-                    // 发布页面内容
-                  ],
+              SizedBox(height: 10),
+              Container(
+                height: MediaQuery.of(context).size.height /
+                    1.4, // Set a fixed or maximum height
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: categories.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return CategoryItem(
+                      category: categories[index],
+                      onPressed: () {
+                        _showCategoryIngredientsDialog(
+                            context,
+                            categories[index].name,
+                            categories[index].ingredients);
+                      },
+                    );
+                  },
                 ),
               ),
             ],
-          ),
-        )
-            ],
-          )
-      ),
-      floatingActionButton:  FloatingActionButton(
+          )),
+      floatingActionButton: FloatingActionButton(
           child: Icon(Icons.shopping_bag),
           onPressed: () => showCommentSection(context, false)),
-    );
-
-  }
-  Widget _buildFoodCategoryPage(List<String> foodList) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, // 一行显示三个Chip
-        mainAxisSpacing: 8.0,
-        crossAxisSpacing: 8.0,
-        childAspectRatio: 2.0, // 调整Chip的高度
-      ),
-      itemCount: foodList.length,
-      itemBuilder: (BuildContext context, int index) {
-        return Chip(
-          label: Text(foodList[index]),
-          // 在这里处理点击事件，可以添加选中效果
-          // onPressed: () => handleChipTap(foodList[index]),
-        );
-      },
     );
   }
 }

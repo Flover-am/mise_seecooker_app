@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/account/account_page.dart';
 import 'package:seecooker/pages/explore/explore_page.dart';
+import 'package:seecooker/pages/publish/publish_post.dart';
 import 'package:seecooker/pages/recipe/home_page.dart';
 import 'package:seecooker/pages/community/community_page.dart';
 import 'package:flutter/material.dart';

@@ -1,23 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:seecooker/services/explore_service.dart';
 
-import '../models/post.dart';
+import '../models/explore_recipe.dart';
 import '../models/recipe.dart';
 
 class RecommendProvider extends ChangeNotifier {
-  List<Recipe> _list = [];
-
+  //从服务端拿到的Recipe
+  List<ExploreRecipe> _list = [];
   int get length => _list.length;
-
-  Recipe itemAt(int index) => _list[index];
+  ExploreRecipe itemAt(int index) => _list[index];
 
   Future<void> fetchPosts() async {
-    _list = await ExploreService.fetchPosts();
+    _list.add(await ExploreService.fetchPosts());
     notifyListeners();
   }
 
   Future<void> fetchMorePosts() async {
-    _list.addAll(await ExploreService.fetchMorePosts());
+    _list.add(await ExploreService.fetchMorePosts());
     notifyListeners();
   }
 }
