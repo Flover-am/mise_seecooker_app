@@ -211,7 +211,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                   Text('点赞数', style: TextStyle(fontSize: 12)),
                 ],
               ),
-              SizedBox(width: 140),
+              SizedBox(width: 120),
               ElevatedButton(
                 onPressed: () {
                   userProvider.logout();

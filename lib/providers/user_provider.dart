@@ -24,7 +24,7 @@ class UserProvider extends ChangeNotifier{
     _user.tokenValue = await SharedPreferencesUtil.getString("tokenValue");
     _user.isLoggedIn = await SharedPreferencesUtil.getBool("isLoggedIn");
     _user.description = await SharedPreferencesUtil.getString("description");
-    print(_user.tokenName);
+    //print(_user.tokenName);
     notifyListeners();
   }
 
@@ -91,9 +91,9 @@ class UserProvider extends ChangeNotifier{
     return _user;
   }
 
-  Future<bool> register(String username,String password, File avatar) async {
+  Future<bool> register(String username,String password, String avatarFile) async {
     /// 先进行请求，然后从请求中拿数据
-    var res =  await UserService.register(username,password,avatar);
+    var res =  await UserService.register(username,password,avatarFile);
     print(res.code);
     
     /// 判断是否获取成功
@@ -102,4 +102,17 @@ class UserProvider extends ChangeNotifier{
     }
     return true;
   }
+
+  Future<bool> modify(String username,String description, String avatarFile) async {
+    /// 先进行请求，然后从请求中拿数据
+    var res =  await UserService.modify(username,description, avatarFile);
+    print(res.code);
+
+    /// 判断是否获取成功
+    if(!res.isSuccess()){
+      return false;
+    }
+    return true;
+  }
+
 }

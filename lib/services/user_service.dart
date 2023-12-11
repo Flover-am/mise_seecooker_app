@@ -42,13 +42,32 @@ class UserService {
     return HttpResult.fromJson(response.data);
   }
 
-  static Future<HttpResult> register(String username,String password, File avatar) async {
+  static Future<HttpResult> register(String username,String password, String avatarFile) async {
     String requestUrl = "$baseUrl/user";
-    var data =  FormData.fromMap({
-      "username": username,
+    final FormData formData =FormData.fromMap(
+{     "username": username,
       "password": password,
-      "avatar": await MultipartFile.fromFile(avatar.path),
     });
+    MultipartFile multipartFile = await MultipartFile.fromFile(avatarFile,filename:avatarFile.split('/').last);
+    formData.files.add(MapEntry("avatar",multipartFile));
+    var data = formData;
+
+    /// 发送请求，拿到 Response
+    var response = await dio.post(requestUrl, data: data);
+    /// 将Response的data转换成封装对象HttpResult
+    return HttpResult.fromJson(response.data);
+  }
+
+  //TODO:wait for server modify
+  static Future<HttpResult> modify(String username, String description, String avatarFile) async {
+    String requestUrl = "$baseUrl/modify";
+    final FormData formData =FormData.fromMap(
+        {  "username": username,
+        });
+    MultipartFile multipartFile = await MultipartFile.fromFile(avatarFile,filename:avatarFile.split('/').last);
+    formData.files.add(MapEntry("avatar",multipartFile));
+    var data = formData;
+
     /// 发送请求，拿到 Response
     var response = await dio.post(requestUrl, data: data);
     /// 将Response的data转换成封装对象HttpResult
