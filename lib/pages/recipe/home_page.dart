@@ -164,7 +164,7 @@ class RecipeList extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => RecipeDetail(id: index)));
+                        MaterialPageRoute(builder: (context) => RecipeDetail(id: provider.itemAt(index).id)));
                   },
                 ),
               );
