@@ -226,6 +226,23 @@ class PageContent extends StatelessWidget {
                     }
                   }
                 ),
+                /* end indicator */
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(10)),
+                        ),
+                        Text(' 没有更多了 ', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.primary.withAlpha(80))),
+                        Expanded(
+                          child: Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(10)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
             bottomNavigationBar: BottomAppBar(

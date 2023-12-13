@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -22,13 +23,14 @@ class PublishPost extends StatefulWidget {
 }
 
 class _PublishPostState extends State<PublishPost> {
-  String title='';
-  String text='';
   final ImagePicker picker = ImagePicker();
-  List<String> _userImage=[];//存放获取到的本地路径
-  bool _issueButtonVisible=true;
-  String? _errorInputMessage=null;
-  double _width=0.0;
+  List<String> _userImage = [];
+  final FocusNode _titleInputFocusNode = FocusNode();
+  final TextEditingController _titleInputController = TextEditingController();
+  final FocusNode _contentInputFocusNode = FocusNode();
+  final TextEditingController _contentInputController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _textInputKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -43,240 +45,194 @@ class _PublishPostState extends State<PublishPost> {
     //   });
     //   print(userModel.isLoggedIn);
     // }
-    _width=_safeAreaWidth(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height);
+
+    _titleInputFocusNode.addListener(() {
+      if (_titleInputFocusNode.hasFocus) {
+        Scrollable.ensureVisible(_textInputKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+      }
+    });
+
+    _contentInputFocusNode.addListener(() {
+      if (_contentInputFocusNode.hasFocus) {
+        Scrollable.ensureVisible(_textInputKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+      }
+    });
+
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: const Text('帖子发布'),
       ),
-      body: ListView(
-            padding:const EdgeInsets.fromLTRB(8, 8, 8, 8),
-            shrinkWrap: true,
-            children: <Widget>[
-              TitleInput(),
-              Divider(
-                  thickness: 1,
-                  color: Theme.of(context).colorScheme.primary.withAlpha(10)),
+      body: Stack(
+        children: [
+          CustomScrollView(
+            controller: _scrollController,
+            slivers: [
               //图片选择区域
-              ImageSelection(context),
-
-              Divider(
-                  thickness: 1,
-                  color: Theme.of(context).colorScheme.primary.withAlpha(10)),
+              SliverToBoxAdapter(child: _buildImagePicker(context)),
               //文字发布区域
-              IssueText(),
+              SliverToBoxAdapter(
+                key: _textInputKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      _buildTitleInput(),
+                      Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(10)),
+                      _buildContentInput(),
+                      Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(10)),
+                    ],
+                  ),
+                ),
+              ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 400),
+              )
             ],
           ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton:
-          _issueButtonVisible
-              ?
-            SafeArea(
-            child:Align(
-              alignment: Alignment.bottomCenter,
-              child:
-              SizedBox(
-                width:200,
-                child:FloatingActionButton(
-                  onPressed: ()async{
-                    if(_userImage.isEmpty){
-                      showDialog<String>(
-                          context:context,
-                          builder: (context){
-                            return AlertDialog(
-                                title: const Text('未上传图片！'),
-                                content:const Text('请至少上传一张图片。'),
-                                actions:<Widget>[
-                                  TextButton(
-                                    child: const Text('确认'),
-                                    onPressed: (){
-                                      Navigator.of(context).pop();
-                                    },
-                                  )
-                                ]
-                            );
-                          }
-                      );
-                    }
-                    else if(text.isEmpty){
-                      showDialog<String>(
-                          context:context,
-                          builder: (context){
-                            return AlertDialog(
-                                title: const Text('帖子内容为空！'),
-                                content:const Text('请输入需要发布的帖子内容。'),
-                                actions:<Widget>[
-                                  TextButton(
-                                    child: const Text('确认'),
-                                    onPressed: (){
-                                      Navigator.of(context).pop();
-                                    },
-                                  )
-                                ]
-                            );
-                          }
-                      );
-                      setState(() {
-                        _errorInputMessage='输入不能为空';
-                      });
-                    }
-                    else{
-                      Navigator.push(
-                          context,MaterialPageRoute(
-                          builder:(context)=>const LoadingPage(
-                              prompt:"正在将帖子上传至总部..."
-                            )
-                          )
-                      );
-                      HttpResult result = await _issuePost();
-
-                      Navigator.pop(context);
-
-                      if(result.message=="success"){
-                        Navigator.pop(context);
-                        Fluttertoast.showToast(
-                            msg: "发布成功！",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.white,
-                            textColor: Colors.green,
-                            fontSize: 16.0
-                        );
-                      }else{
-                        AlertDialog(
-                            title: const Text('上传失败！'),
-                            content:Text(result.message),
-                            actions:<Widget>[
-                                  TextButton(
-                                    child: const Text('确认'),
-                                    onPressed: (){
-                                      Navigator.of(context).pop();
-                                    },
-                                  )
-                                ]
-                        );
-                      }
-                    }
-                  },
-                  child: const Text("发布"),
-                ),
-              )
+          // 底部发布按钮
+          Positioned(
+            bottom: MediaQuery.of(context).padding.bottom + 16,
+            left: 16,
+            right: 16,
+            child: SizedBox(
+              height: 48,
+              child: FilledButton(
+                onPressed: _togglePublishButton,
+                child: Text('发布帖子', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.surface),),
+              ),
             )
           )
-              :
-              null
+        ],
+      ),
     );
   }
 
-  double _safeAreaWidth(double? width,double? height){
-    if(width==null||height==null){
-      return 0;
+  /// 点击发布按钮回调
+  void _togglePublishButton() async {
+    if(_userImage.isEmpty){
+      Fluttertoast.showToast(msg: '请至少上传一张图片');
+    } else if(_titleInputController.text.isEmpty) {
+      Fluttertoast.showToast(msg: '请输入标题');
+    } else if(_contentInputController.text.isEmpty) {
+      Fluttertoast.showToast(msg: '请输入正文');
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context)=>const LoadingPage(prompt: "正在将帖子上传至总部..."))
+      );
+      HttpResult result = await _issuePost();
+
+      Navigator.pop(context);
+
+      if(result.message=="success"){
+        Navigator.pop(context);
+        Fluttertoast.showToast(
+            msg: "发布成功！",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.white,
+            textColor: Colors.green,
+            fontSize: 16.0
+        );
+      }else{
+        AlertDialog(
+            title: const Text('上传失败！'),
+            content:Text(result.message),
+            actions:<Widget>[
+              TextButton(
+                child: const Text('确认'),
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+              )
+            ]
+        );
+      }
     }
-    if(width/height>9/16){
-      return height*9/16;
-    }
-    return width;
   }
 
-  /// 返回标题输入区组件
-  Widget TitleInput(){
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children:[
-        const Text('标题',style: TextStyle(fontSize: 16)),//TODO:更改样式
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16,8,16,8),
-          child:Focus(
-            onFocusChange:(hasFocus){
-              setState(() {
-                _issueButtonVisible=!hasFocus;
-              });
-            },
-            child: TextField(
-              decoration: const InputDecoration(
-                labelText: '输入标题(可选)',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-              ),
-              onChanged: (text){
-                this.title=text;
-              },
-              maxLines: null,
-              minLines:1,
-              maxLength: 25,
+  /// 标题输入框
+  Widget _buildTitleInput(){
+    return TextField(
+      focusNode: _titleInputFocusNode,
+      controller: _titleInputController,
+      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+      decoration: const InputDecoration(
+        hintText: "给帖子加上标题吧 ~",
+        border: InputBorder.none,
+      ),
+    );
+  }
+
+  /// 内容输入框
+  Widget _buildContentInput(){
+    // TODO: fix scroll bar hide bug
+    return Scrollbar(
+      child: SingleChildScrollView(
+        child: TextField(
+          maxLines: 10,
+          focusNode: _contentInputFocusNode,
+          controller: _contentInputController,
+          style: Theme.of(context).textTheme.bodyLarge,
+          decoration: const InputDecoration(
+            hintText: "添加正文",
+            border: InputBorder.none,
           ),
-          )
-        )
-      ]
+        ),
+      ),
     );
   }
 
   /// 返回图片选择区组件
-  Widget ImageSelection(BuildContext context){
-    return SizedBox(
-          width: _width,
-          child:Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children:[
-              const Text('图片选择',style: TextStyle(fontSize: 16)),//TODO:更改样式
-
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(16,16,16,16),
-                  child:GridView.builder(
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 10,
-                    ),
-                    itemCount: _userImage.length<9?_userImage.length+1:9,
-                    shrinkWrap: true,
-                    itemBuilder: (context,index){
-                      return
-                          Card(
-                            clipBehavior: Clip.hardEdge,
-                            child:InkWell(
-                              splashColor: Colors.blue.withAlpha(30),//TODO：更改主题颜色
-                              onTap:(){
-                                if(index==_userImage.length){//添加图片按钮的点击逻辑
-                                  PictureSource(context);
-                                }else{//图片的点击逻辑
-                                  _showDetailedImage(context,_userImage[index],index);
-                                }
-                              },
-                              child:Hero(
-                                  tag:'showDetailImage$index',
-                                  child:Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children:
-                                      (index<_userImage.length)
-                                          ?
-                                      <Widget>[//图片组件：返回对应图片的缩略图
-                                        Expanded(
-                                            child:
-                                            Image.file(File(_userImage[index]), fit: BoxFit.cover)
-                                        ),
-                                      ]
-                                          :
-                                      <Widget>[//添加图片按钮：返回添加图片的组件
-                                        PictureAdder()
-                                      ]
-                                  )
-                              )
-                            )
-
-                          );
-                    },
-                  )
+  Widget _buildImagePicker(BuildContext context){
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: GridView.builder(
+        padding: EdgeInsets.zero,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+        ),
+        itemCount: min(_userImage.length + 1, 9),
+        shrinkWrap: true,
+        itemBuilder: (context,index) {
+          // TODO: border
+          return Card(
+            clipBehavior: Clip.hardEdge,
+            margin: EdgeInsets.zero,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8)
+            ),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+            child: InkWell(
+              onTap:(){
+                if(index==_userImage.length){//添加图片按钮的点击逻辑
+                  pictureSource(context);
+                }else{//图片的点击逻辑
+                  _showDetailedImage(context,_userImage[index],index);
+                }
+              },
+              onLongPress: () {
+                // 删除
+              },
+              child: Hero(
+                tag:'showDetailImage$index',
+                child: (index < _userImage.length)
+                  //图片组件：返回对应图片的缩略图
+                  ? Image.file(File(_userImage[index]), fit: BoxFit.cover)
+                  //添加图片按钮：返回添加图片的组件
+                  : _buildImageAdder()
               )
-            ]
-          )
-        );
+            )
+          );
+        },
+      )
+    );
   }
 
   /// 方法：显示图片详情
@@ -290,80 +246,20 @@ class _PublishPostState extends State<PublishPost> {
       })
     ));
   }
-  Widget PictureAdder(){
+
+  /// 图片添加占位
+  Widget _buildImageAdder(){
     return GestureDetector(
       onTap:(){
-        PictureSource(context);
+        pictureSource(context);
       },
-      child:Padding(
-        padding: const EdgeInsets.all(8.0),
-        child:Center(
-          child:Image.asset('assets/images/add.png'),
-        )
-      )
+      child: const Icon(Icons.add_rounded)
     );
 
-  }
-  /// 返回文字发布区组件
-  Widget IssueText(){
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(10,8,10,8),
-      child:SingleChildScrollView(
-        child:Container(
-          height:200,
-          padding: const EdgeInsets.fromLTRB(8,8,8,8),
-          child:Focus(
-            onFocusChange:(hasFocus){
-              setState(() {
-                _issueButtonVisible=!hasFocus;
-              });
-            },
-            child:TextField(
-              decoration: InputDecoration(
-                labelText: '输入发布内容',
-                errorText: _errorInputMessage,
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-              ),
-              onChanged: (text){
-                this.text=text;
-                if(text.isEmpty){
-                  setState(() {
-                    _errorInputMessage='输入不能为空';
-                  });
-                }else{
-                  setState(() {
-                    _errorInputMessage=null;
-                  });
-                }
-              },
-              maxLines: null,
-              minLines:1,
-              maxLength: 1000,
-            ),
-          )
-
-        )
-      )
-    );
-  }
-
-  /// 返回发布按钮组件
-  Widget IssueButton(){
-    return ElevatedButton(
-      onPressed: () => {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        ),
-      },
-      child: const Text('发布'),
-    );
   }
 
   /// 从相册或相机获取图片
-  void PictureSource(BuildContext ctx){
+  void pictureSource(BuildContext ctx){
     showModalBottomSheet(context: ctx, builder: (BuildContext context){
       return Container(
         height: 120,
@@ -402,65 +298,45 @@ class _PublishPostState extends State<PublishPost> {
     });
   }
 
-  ///从相册选择多张图片
+  /// 从相册选择多张图片
   Future<void> _pickMultipleImages() async{
     try{
-      List<XFile>? pickedFile = await picker.pickMultiImage();
-      if(pickedFile!=null){
-        setState(() {
-          for(var i=0;i<pickedFile.length;i++){
-            _userImage.add(pickedFile[i].path);
-          }
-          if(_userImage.length>9){
-            _userImage=_userImage.sublist(0,9);
-            Fluttertoast.showToast(msg: "最多选择9张图片。");
-          }
-        });
-      }
-    }catch(e){
-      Fluttertoast.showToast(
-        msg: e.toString(),
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.white,
-        textColor: Colors.red,
-        fontSize: 16.0
-      );
+      List<XFile> pickedFile = await picker.pickMultiImage();
+      setState(() {
+        for(var i = 0;i < pickedFile.length;i++){
+          _userImage.add(pickedFile[i].path);
+        }
+        if(_userImage.length > 9){
+          _userImage=_userImage.sublist(0,9);
+          Fluttertoast.showToast(msg: "最多选择9张图片。");
+        }
+      });
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
-  ///从相机获取单张图片
+  /// 从相机获取单张图片
   Future<void> _pickImageFromCamera() async{
-    try{
+    try {
       XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
-      print(pickedFile?.path);
       if(pickedFile!=null){
         setState(() {
           _userImage.add(pickedFile.path);
         });
       }
-    }catch(e){
-      Fluttertoast.showToast(
-          msg: e.toString(),
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.white,
-          textColor: Colors.red,
-          fontSize: 16.0
-      );
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
-  ///发布
-  Future<HttpResult> _issuePost() async{
-      print("Issue");
-      try{
-        return PublishService.publishPost(title, text, _userImage);
-      }catch(e){
-        return HttpResult(200001,e.toString(),null);
-      }
 
+  /// 发布
+  Future<HttpResult> _issuePost() async{
+      try {
+        return PublishService.publishPost(_titleInputController.text, _contentInputController.text, _userImage);
+      } catch (e) {
+        return HttpResult(200001, e.toString(), null);
+      }
   }
 }
 

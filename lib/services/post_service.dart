@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:seecooker/models/http_result.dart';
 
 class PostService {
-  static const String baseUrl = 'https://mock.apifox.com/m1/3614939-0-default';
+  static const String baseUrl = 'http://124.222.18.205:8080/v1';
 
   static Dio dio = Dio();
 
@@ -17,6 +17,7 @@ class PostService {
   }
 
   static Future<HttpResult> getPostDetail(int postId) async {
+    print(postId);
     String lastUrl = '$baseUrl/post/$postId';
     final response = await dio.get(lastUrl);
     if(response.statusCode == 200) {

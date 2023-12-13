@@ -1,5 +1,5 @@
 // import 'package:flutter/material.dart';
-// import 'package:seecooker/widgets/community_card.dart';
+// import 'package:seecooker/widgets/post_card.dart';
 // import 'package:waterfall_flow/waterfall_flow.dart';
 //
 // class CommunityWaterfall extends StatefulWidget {

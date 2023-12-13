@@ -5,7 +5,7 @@ import 'package:seecooker/pages/account/account_page.dart';
 import 'package:seecooker/pages/explore/explore_page.dart';
 import 'package:seecooker/pages/publish/publish_post.dart';
 import 'package:seecooker/pages/recipe/home_page.dart';
-import 'package:seecooker/pages/community/community_page.dart';
+import 'package:seecooker/pages/post/posts_page.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
@@ -53,12 +53,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: customLightColorScheme,
         useMaterial3: true,
-        //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       darkTheme: ThemeData(
         colorScheme: darkColorScheme,
         useMaterial3: true,
-        //visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity, vertical: VisualDensity.minimumDensity)
       ),
       home: const MainPage(),
     );
@@ -78,8 +76,8 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
   final List<Widget> _body = [
     const HomePage(),
     const ExplorePage(),
-    const CommunityPage(),
-    const AccountPage(),
+    const PostsPage(),
+    const HomePage(),
   ];
 
   @override
@@ -100,7 +98,6 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
             _currentPageIndex = index;
           });
         },
-        //labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
         selectedIndex: _currentPageIndex,
         destinations: <Widget>[
           NavigationDestination(
