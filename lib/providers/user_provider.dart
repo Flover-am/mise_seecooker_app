@@ -3,12 +3,14 @@ import 'package:seecooker/models/user_login.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
 
 import '../models/user.dart';
+import '../models/user_info.dart';
 import '../services/user_service.dart';
 import 'dart:io';
 
 class UserProvider extends ChangeNotifier{
-  late User _user = User("未登录", "未登录", "未登录","这是一段用户描述",[],[],[],"","",false);
+  late User _user = User("未登录", "未登录", "未登录","请填写一段用户描述",[],[],[],999,999,"","",false);
   late UserLogin _userLogin;
+  late UserInfo _userInfo;
   get isLoggedIn => _user.isLoggedIn;
   String get username => _user.username;
 
@@ -16,15 +18,22 @@ class UserProvider extends ChangeNotifier{
 
   String get description => _user.description;
 
+  int get postNum => _user.postNum;
+
+  int get getLikedNum => _user.getLikedNum;
+
+  String get avatar => _user.avatar;
+
 
   Future<void> loadLoginStatus() async {
     _user.username = await SharedPreferencesUtil.getString("username");
     _user.password = await SharedPreferencesUtil.getString("password");
-    _user.tokenName = await SharedPreferencesUtil.getString("tokenName");
-    _user.tokenValue = await SharedPreferencesUtil.getString("tokenValue");
-    _user.isLoggedIn = await SharedPreferencesUtil.getBool("isLoggedIn");
-    _user.description = await SharedPreferencesUtil.getString("description");
-    print(_user.tokenName);
+    // _user.tokenName = await SharedPreferencesUtil.getString("tokenName");
+    // _user.tokenValue = await SharedPreferencesUtil.getString("tokenValue");
+    // _user.isLoggedIn = await SharedPreferencesUtil.getBool("isLoggedIn");
+    // _user.description = await SharedPreferencesUtil.getString("description");
+    //print(_user.tokenName);
+    login(username, password);
     notifyListeners();
   }
 
@@ -61,6 +70,8 @@ class UserProvider extends ChangeNotifier{
     await SharedPreferencesUtil.setString("tokenName", tempTokenName);
     await SharedPreferencesUtil.setString("tokenValue", tempTokenValue);
 
+    getUser();
+
     notifyListeners();
   }
 
@@ -75,7 +86,7 @@ class UserProvider extends ChangeNotifier{
       SharedPreferencesUtil.setBool("isLoggedIn", false);
       SharedPreferencesUtil.setString("tokenName","");
       SharedPreferencesUtil.setString("tokenValue","");
-      SharedPreferencesUtil.setString("description", "用户描述:未登录");
+      SharedPreferencesUtil.setString("description", "请填写一段用户描述");
       notifyListeners();
   }
 
@@ -91,10 +102,27 @@ class UserProvider extends ChangeNotifier{
     return _user;
   }
 
-  Future<bool> register(String username,String password, File avatar) async {
+  Future<void> getUser() async {
     /// 先进行请求，然后从请求中拿数据
-    var res =  await UserService.register(username,password,avatar);
-    print(res.code);
+    var res =  await UserService.getUser();
+    /// 判断是否获取成功
+    if(!res.isSuccess()){
+      throw Exception("未成功获取用户:${res.message}");
+    }
+    /// 将数据转换成Model
+    _userInfo = UserInfo.fromJson(res.data);
+    _user.username = _userInfo.username;
+    _user.postNum = _userInfo.postNum;
+    _user.getLikedNum = _userInfo.getLikedNum;
+    _user.avatar = _userInfo.avatar;
+    notifyListeners();
+
+  }
+
+  Future<bool> register(String username,String password, String avatarFile) async {
+    /// 先进行请求，然后从请求中拿数据
+    var res =  await UserService.register(username,password,avatarFile);
+    print("返回的注册信息： "+res.message);
     
     /// 判断是否获取成功
     if(!res.isSuccess()){
@@ -102,4 +130,32 @@ class UserProvider extends ChangeNotifier{
     }
     return true;
   }
+
+  Future<bool> modify(String username,String description, String avatarFile) async {
+    /// 先进行请求，然后从请求中拿数据
+    var res =  await UserService.modify(username,description, avatarFile);
+
+    /// 判断是否获取成功
+    if(!res.isSuccess()){
+      return false;
+    }
+    return true;
+  }
+
+  Future<bool> modifyUsername(String username,String newname) async {
+    /// 先进行请求，然后从请求中拿数据
+    var res =  await UserService.modifyUsername(username,newname);
+    print(username);
+    print(newname);
+    print("res的code： "+res.code.toString());
+    print("res的message： "+res.message.toString());
+
+    /// 判断是否获取成功
+    if(!res.isSuccess()){
+      return false;
+    }
+    getUser();
+    return true;
+  }
+
 }

@@ -13,6 +13,7 @@ import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
 import 'modify_page.dart';
+import 'settings_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -28,18 +29,19 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-
+    UserProvider userProvider = Provider.of<UserProvider>(context,listen: false);
+    userProvider.loadLoginStatus();
   }
 
   @override
   Widget build(BuildContext context){
-
+    UserProvider userProvider = Provider.of<UserProvider>(context);
 
     return NestedScrollView(
         body: buildBodyWidget(context),
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
-            buildSliverAppBar(),
+            buildSliverAppBar(userProvider),
           ]; },
       );
 
@@ -55,7 +57,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
     ],);
   }
 
-  buildSliverAppBar() {
+  buildSliverAppBar(UserProvider userProvider) {
     return SliverAppBar(
               backgroundColor: Color.fromRGBO(244,164,96, 1),
               pinned: true,
@@ -94,9 +96,8 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                       SizedBox(height: MediaQuery.of(context).padding.top + 16),
                       Consumer<UserProvider>(
                         builder: (context, userProvider, child) {
-                          userProvider.loadLoginStatus();
                           return userProvider.isLoggedIn
-                              ? _buildLoggedInProfileSection(userProvider)
+                              ? _buildLoggedInProfileSection(userProvider,context)
                               : _buildNotLoggedInProfileSection(context);
                         },
                       ),
@@ -113,12 +114,21 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.settings),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ModifyPage()),
-              );
+              if(userProvider.isLoggedIn) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                );
+              }else{
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('请先登录'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
             },
           ),
         ]
@@ -129,31 +139,10 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
 }
 
 
-  Widget _buildSkeleton(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 8),
-        SkeletonLine(
-          style: SkeletonLineStyle(
-              height: MediaQuery.of(context).size.width - 48,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              borderRadius: BorderRadius.circular(12)
-          ),
-        ),
-        const SizedBox(height: 24),
-        SkeletonLine(
-          style: SkeletonLineStyle(
-              height: 368,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              borderRadius: BorderRadius.circular(12)
-          ),
-        ),
-      ],
-    );
-  }
 
 
-  Widget _buildLoggedInProfileSection(UserProvider userProvider) {
+
+Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -166,7 +155,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                 // backgroundImage: NetworkImage(
                 //   'https://example.com/avatar.jpg',
                 // ),
-                backgroundImage: AssetImage('assets/images/tmp/avatar.png'),
+                backgroundImage: NetworkImage(userProvider.avatar),
               ),
               SizedBox(width: 20),
               Column(
@@ -198,7 +187,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               SizedBox(width: 10),
               Column(
                 children: [
-                  Text('10', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
                   Text('发布数', style: TextStyle(fontSize: 12)),
                 ],
@@ -206,16 +195,19 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               SizedBox(width: 20),
               Column(
                 children: [
-                  Text('20', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(userProvider.getLikedNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
                   Text('点赞数', style: TextStyle(fontSize: 12)),
                 ],
               ),
-              SizedBox(width: 140),
+              SizedBox(width: 120),
               ElevatedButton(
                 onPressed: () {
-                  userProvider.logout();
-                  //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const AccountPage())),
+                  //userProvider.logout();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ModifyPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.orange, // 按钮背景色
@@ -225,7 +217,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // 按钮内边距
                 ),
-                child: Text('退出登录'),
+                child: Text('编辑信息'),
               ),
             ],
           ),
@@ -267,7 +259,8 @@ Widget _buildNotLoggedInProfileSection(BuildContext context) {
   );
 }
 
-  Widget _buildFavoriteContent(BuildContext context) {
+
+Widget _buildFavoriteContent(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     if (!userProvider.isLoggedIn) {
       return const Center(
@@ -282,32 +275,14 @@ Widget _buildNotLoggedInProfileSection(BuildContext context) {
         ),
       );
     }
-
-      return SingleChildScrollView(
-        // child:  FutureBuilder(
-        //         future: Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes(),
-        //         builder: (context, snapshot) {
-        //           if (snapshot.connectionState == ConnectionState.waiting) {
-        //             return _buildSkeleton(context);
-        //
-        //           } else if (snapshot.hasError) {
-        //             return Center(
-        //                 child: Text('Error: ${snapshot.error}'),
-        //               );
-        //
-        //           } else {
-        //             return const RecipeList();
-        //           }
-        //         },
-        //       ),
-        child: const RecipeList(),
+      return const SingleChildScrollView(
+        child: UserInfoList(),
     );
   }
 
 
-
-class RecipeList extends StatelessWidget {
-  const RecipeList({super.key});
+class UserInfoList extends StatelessWidget {
+  const UserInfoList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -318,4 +293,27 @@ class RecipeList extends StatelessWidget {
         );
       }),);
   }
+}
+
+Widget _buildSkeleton(BuildContext context) {
+  return Column(
+    children: [
+      const SizedBox(height: 8),
+      SkeletonLine(
+        style: SkeletonLineStyle(
+            height: MediaQuery.of(context).size.width - 48,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            borderRadius: BorderRadius.circular(12)
+        ),
+      ),
+      const SizedBox(height: 24),
+      SkeletonLine(
+        style: SkeletonLineStyle(
+            height: 368,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            borderRadius: BorderRadius.circular(12)
+        ),
+      ),
+    ],
+  );
 }

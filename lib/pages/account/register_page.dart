@@ -37,14 +37,18 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final ImagePicker picker = ImagePicker();
   late XFile avatar_xfile;
+  late File avatar_file;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool hasNewAvatar = false;
+
 
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context,listen: false);
 
-    return Column(
+    return SingleChildScrollView(
+        child:Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         _buildAvatar(),
@@ -71,12 +75,8 @@ class _RegisterFormState extends State<RegisterForm> {
             String username = _usernameController.text;
             String password = _passwordController.text;
 
-            var avatar = await createTemporaryFileFromAsset('assets/images/tmp/avatar_register.jpeg');
-            // TODO: 使用自选照片
-            //var avatar = convertXFileToFile(avatar_xfile);
-
             // 执行注册操作
-            var isRegistered = await userProvider.register(username, password, avatar);
+            var isRegistered = await userProvider.register(username, password, avatar_xfile.path);
 
             if (isRegistered) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -100,6 +100,7 @@ class _RegisterFormState extends State<RegisterForm> {
           child: const Text('注册'),
         ),
       ],
+    ),
     );
   }
 
@@ -112,6 +113,7 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _buildAvatar() {
+    ImageProvider defaultImageProvider = AssetImage('assets/images/tmp/avatar.png');
     return GestureDetector(
         onTap: () {
           Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
@@ -120,16 +122,28 @@ class _RegisterFormState extends State<RegisterForm> {
           });
         },
       child:
+          hasNewAvatar
+              ?
+          CircleAvatar(
+            radius: 100, // 设置圆形头像的半径
+            child: ClipOval(
+              child: Image.file(File(avatar_xfile.path),
+                  fit: BoxFit.fitWidth)
+            ),
+          )
+              :
       CircleAvatar(
         radius: 100,
-        backgroundImage: AssetImage('assets/images/avatar.png'),
+        backgroundImage: defaultImageProvider,
       )
     );
   }
   void selectAvatar() async {
     XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
-    setState(() {
+    setState((){
+      hasNewAvatar = true;
       avatar_xfile = image;
+      avatar_file = convertXFileToFile(avatar_xfile);
     });
   }
 }
@@ -142,6 +156,6 @@ Future<File> createTemporaryFileFromAsset(String assetPath) async {
   return tempFile;
 }
 
-Future<File> convertXFileToFile(XFile xfile) async {
+File convertXFileToFile(XFile xfile) {
   return File(xfile.path);
 }
