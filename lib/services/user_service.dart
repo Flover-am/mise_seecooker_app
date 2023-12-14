@@ -129,7 +129,7 @@ class UserService {
     final FormData formData =FormData.fromMap(
         {  "username": username,
           "password":password,
-          "newpassword":newPassword,
+          "newPassword":newPassword,
         });
 
     var data = formData;
