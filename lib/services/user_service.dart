@@ -80,26 +80,6 @@ class UserService {
     return HttpResult.fromJson(response.data);
   }
 
-  //TODO:wait for server modify
-  static Future<HttpResult> modify(String username, String description, String avatarFile) async {
-    String requestUrl = "$baseUrl/modify";
-    Options testOpt = Options(headers: {
-      await SharedPreferencesUtil.getString("tokenName"):
-      await SharedPreferencesUtil.getString("tokenValue")
-    });
-
-    final FormData formData =FormData.fromMap(
-        {  "username": username,
-        });
-    MultipartFile multipartFile = await MultipartFile.fromFile(avatarFile,filename:avatarFile.split('/').last);
-    formData.files.add(MapEntry("avatar",multipartFile));
-    var data = formData;
-
-    /// 发送请求，拿到 Response
-    var response = await dio.post(requestUrl, data: data,options: testOpt);
-    /// 将Response的data转换成封装对象HttpResult
-    return HttpResult.fromJson(response.data);
-  }
 
   static Future<HttpResult> modifyUsername(String username,String newname) async {
     String requestUrl = "$baseUrl/modify/username";
@@ -118,6 +98,44 @@ class UserService {
 
     /// 发送请求，拿到 Response
     var response = await dio.post(requestUrl, data: data,options: testOpt);
+    /// 将Response的data转换成封装对象HttpResult
+    return HttpResult.fromJson(response.data);
+  }
+
+  static Future<HttpResult> modifyAvatar(String username,String avatar) async {
+    String requestUrl = "$baseUrl/modify/avatar";
+    Options testOpt = Options(headers: {
+      await SharedPreferencesUtil.getString("tokenName"):
+      await SharedPreferencesUtil.getString("tokenValue")
+    });
+
+    final FormData formData =FormData.fromMap(
+        {  "username": username,
+        });
+    MultipartFile multipartFile = await MultipartFile.fromFile(avatar,filename:avatar.split('/').last);
+    formData.files.add(MapEntry("avatar",multipartFile));
+    var data = formData;
+
+    /// 发送请求，拿到 Response
+    var response = await dio.post(requestUrl, data: data,options: testOpt);
+    /// 将Response的data转换成封装对象HttpResult
+    return HttpResult.fromJson(response.data);
+  }
+
+  static Future<HttpResult> modifyPassword(String username,String password, String newPassword) async {
+    String requestUrl = "$baseUrl/modify/password";
+
+
+    final FormData formData =FormData.fromMap(
+        {  "username": username,
+          "password":password,
+          "newpassword":newPassword,
+        });
+
+    var data = formData;
+
+    /// 发送请求，拿到 Response
+    var response = await dio.post(requestUrl, data: data);
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }

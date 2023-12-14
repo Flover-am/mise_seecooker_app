@@ -13,7 +13,7 @@ import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
 import 'modify_page.dart';
-import 'settings_page.dart';
+import 'settings/settings_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
