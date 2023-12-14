@@ -1,40 +1,37 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
-import 'package:seecooker/models/comment.dart';
 
-import '../models/recipe.dart';
+import '../models/explore_recipe.dart';
 
 class ExploreService {
 
-  static Future<List<Recipe>> fetchPosts() async {
-    await Future.delayed(const Duration(seconds: 1));
-    return List.generate(
-        5,
-            (index) => Recipe(
-          index,
-          '五红银耳羹',
-          'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-          'authorName',
-          'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
-        ),
-    );
+  static const String baseUrl ="https://mock.apifox.com/m1/3730356-0-default";
+  static Dio dio = Dio();
+  static Future<ExploreRecipe> fetchPosts() async {
+    String lastUrl = '$baseUrl/explore';
+
+    final response = await dio.get(lastUrl);
+    if(response.statusCode == 200) {
+      return ExploreRecipe.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
+
   }
 
-  static Future<List<Recipe>> fetchMorePosts() async {
-    // TODO: ADD HTTP GET REQUEST
-    await Future.delayed(const Duration(seconds: 1));
-    return List.generate(
-        5,
-            (index) => Recipe(
-          index,
-          '黄焖鸡',
-          'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-          'authorName',
-          'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
-        )
-    );
+  static Future<ExploreRecipe> fetchMorePosts() async {
+    String lastUrl = '$baseUrl/explore';
+    final response = await dio.get(lastUrl);
+    if(response.statusCode == 200) {
+      return ExploreRecipe.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
   }
-
+  static void addToFavorite(int index) {
+    print("I like $index");
+  }
 
 }
