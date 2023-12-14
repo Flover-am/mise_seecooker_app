@@ -1,25 +1,32 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:seecooker/models/http_result.dart';
 
+import '../utils/shared_preferences_util.dart';
+
 
 class UserService {
   /// 测试阶段可以先用apiFox的Mock的url
   static const String baseUrl =
-      'https://mock.apifox.com/m1/3614939-0-default';
+      "http://124.222.18.205:8080/v1";
   /// 使用Dio进行网络请求
   static var dio = Dio();
 
-  static Future<HttpResult> login(String username,String password) async {
+  static Future<HttpResult> login(String username, String password) async {
     String requestUrl = "$baseUrl/session";
-    var data =  FormData.fromMap({
+
+
+    Map<String, dynamic> requestData = {
       "username": username,
       "password": password,
-    });
-    /// 发送请求，拿到 Response
-    var response = await dio.post(requestUrl, data: data);
-    /// 将Response的data转换成封装对象HttpResult
+    };
+
+    dio.options.headers['Content-Type'] = 'application/json'; // Set the request content type to JSON
+
+    var response = await dio.post(requestUrl, data: jsonEncode(requestData));
+
     return HttpResult.fromJson(response.data);
   }
 
@@ -36,8 +43,23 @@ class UserService {
 
   static Future<HttpResult> getUserById(int id) async {
     String requestUrl = "$baseUrl/user/$id";
+
+
     /// 发起get请求，拿到response
     var response = await dio.get(requestUrl);
+    /// 将response的data转换为HttpResult返回给上一层
+    return HttpResult.fromJson(response.data);
+  }
+
+  static Future<HttpResult> getUser() async {
+    String requestUrl = "$baseUrl/user";
+    Options testOpt = Options(headers: {
+      await SharedPreferencesUtil.getString("tokenName"):
+      await SharedPreferencesUtil.getString("tokenValue")
+    });
+
+    /// 发起get请求，拿到response
+    var response = await dio.get(requestUrl,options: testOpt);
     /// 将response的data转换为HttpResult返回给上一层
     return HttpResult.fromJson(response.data);
   }
@@ -73,4 +95,6 @@ class UserService {
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }
+
+
 }

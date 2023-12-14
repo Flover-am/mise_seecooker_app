@@ -3,18 +3,26 @@ import 'package:seecooker/models/user_login.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
 
 import '../models/user.dart';
+import '../models/user_info.dart';
 import '../services/user_service.dart';
 import 'dart:io';
 
 class UserProvider extends ChangeNotifier{
-  late User _user = User("未登录", "未登录", "未登录","这是一段用户描述",[],[],[],"","",false);
+  late User _user = User("未登录", "未登录", "未登录","这是一段用户描述",[],[],[],999,999,"","",false);
   late UserLogin _userLogin;
+  late UserInfo _userInfo;
   get isLoggedIn => _user.isLoggedIn;
   String get username => _user.username;
 
   String get password => _user.password;
 
   String get description => _user.description;
+
+  int get postNum => _user.postNum;
+
+  int get getLikedNum => _user.getLikedNum;
+
+  String get avatar => _user.avatar;
 
 
   Future<void> loadLoginStatus() async {
@@ -61,6 +69,7 @@ class UserProvider extends ChangeNotifier{
     await SharedPreferencesUtil.setString("tokenName", tempTokenName);
     await SharedPreferencesUtil.setString("tokenValue", tempTokenValue);
 
+
     notifyListeners();
   }
 
@@ -91,10 +100,27 @@ class UserProvider extends ChangeNotifier{
     return _user;
   }
 
+  Future<void> getUser() async {
+    /// 先进行请求，然后从请求中拿数据
+    var res =  await UserService.getUser();
+    /// 判断是否获取成功
+    if(!res.isSuccess()){
+      throw Exception("未成功获取用户:${res.message}");
+    }
+    /// 将数据转换成Model
+    _userInfo = UserInfo.fromJson(res.data);
+    _user.username = _userInfo.username;
+    _user.postNum = _userInfo.postNum;
+    _user.getLikedNum = _userInfo.getLikedNum;
+    _user.avatar = _userInfo.avatar;
+    notifyListeners();
+
+  }
+
   Future<bool> register(String username,String password, String avatarFile) async {
     /// 先进行请求，然后从请求中拿数据
     var res =  await UserService.register(username,password,avatarFile);
-    print(res.code);
+    print("返回的注册信息： "+res.message);
     
     /// 判断是否获取成功
     if(!res.isSuccess()){

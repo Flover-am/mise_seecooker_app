@@ -166,7 +166,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                 // backgroundImage: NetworkImage(
                 //   'https://example.com/avatar.jpg',
                 // ),
-                backgroundImage: AssetImage('assets/images/tmp/avatar.png'),
+                backgroundImage: NetworkImage(userProvider.avatar),
               ),
               SizedBox(width: 20),
               Column(
@@ -198,7 +198,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               SizedBox(width: 10),
               Column(
                 children: [
-                  Text('10', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
                   Text('发布数', style: TextStyle(fontSize: 12)),
                 ],
@@ -206,7 +206,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               SizedBox(width: 20),
               Column(
                 children: [
-                  Text('20', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(userProvider.getLikedNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
                   Text('点赞数', style: TextStyle(fontSize: 12)),
                 ],

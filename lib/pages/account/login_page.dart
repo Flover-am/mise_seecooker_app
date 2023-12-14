@@ -75,6 +75,7 @@ class _LoginFormState extends State<LoginForm> {
               // 获取当前上下文中的 UserModel 实例
               final userProvider = Provider.of<UserProvider>(context, listen: false);
               await userProvider.login(username, password);
+              await userProvider.getUser();
 
               // 简单的示例：如果用户名和密码都不为空，视为登录成功
               if (userProvider.isLoggedIn) {
