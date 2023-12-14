@@ -83,6 +83,11 @@ class UserService {
   //TODO:wait for server modify
   static Future<HttpResult> modify(String username, String description, String avatarFile) async {
     String requestUrl = "$baseUrl/modify";
+    Options testOpt = Options(headers: {
+      await SharedPreferencesUtil.getString("tokenName"):
+      await SharedPreferencesUtil.getString("tokenValue")
+    });
+
     final FormData formData =FormData.fromMap(
         {  "username": username,
         });
@@ -91,7 +96,28 @@ class UserService {
     var data = formData;
 
     /// 发送请求，拿到 Response
-    var response = await dio.post(requestUrl, data: data);
+    var response = await dio.post(requestUrl, data: data,options: testOpt);
+    /// 将Response的data转换成封装对象HttpResult
+    return HttpResult.fromJson(response.data);
+  }
+
+  static Future<HttpResult> modifyUsername(String username,String newname) async {
+    String requestUrl = "$baseUrl/modify/username";
+    Options testOpt = Options(headers: {
+      await SharedPreferencesUtil.getString("tokenName"):
+      await SharedPreferencesUtil.getString("tokenValue")
+    });
+
+
+    final FormData formData =FormData.fromMap(
+        {     "username": username,
+              "newname": newname,
+        });
+
+    var data = formData;
+
+    /// 发送请求，拿到 Response
+    var response = await dio.post(requestUrl, data: data,options: testOpt);
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }

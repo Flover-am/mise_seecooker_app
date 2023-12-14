@@ -15,36 +15,28 @@ class _ModifyPageState extends State<ModifyPage> {
   final ImagePicker picker = ImagePicker();
   late XFile avatar_xfile;
   late File _avatar_file;
+  late String avatar;
   String _username = '张三';
-  String _oldUserName = '';
+  String defaultUserName = '';
   String _description = '这是一个用户';
-  String _oldDescription  = '';
+  String defaultDescription  = '';
+  String defaultAvatar = '';
   bool hasNewAvatar = false;
   bool hasModified = false;
+  late UserProvider userProvider;
 
-  void _updateUsername(String value) {
-    setState(() {
-      _oldUserName = _username;
-      _username = value;
-      hasModified = true;
-    });
-  }
 
-  void _updateDescription(String value) {
-    setState(() {
-      _oldDescription = _description;
-      _description = value;
-      hasModified = true;
-    });
-  }
+
 
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider = Provider.of<UserProvider>(context);
+    userProvider = Provider.of<UserProvider>(context,listen: false);
     _username = userProvider.username;
-    _oldUserName = _username;
+    defaultUserName = _username;
     _description = userProvider.description;
-    _oldDescription = _description;
+    defaultDescription = _description;
+    avatar = userProvider.avatar;
+    defaultAvatar = avatar;
 
     return Scaffold(
       appBar: AppBar(
@@ -77,36 +69,46 @@ class _ModifyPageState extends State<ModifyPage> {
               SizedBox(height: 32.0),
               ElevatedButton(
                 onPressed: () async {
-
-                  if (hasModified) {
-                    var hasModifiedSuccess = await userProvider.modify(_username, _description, avatar_xfile.path);
-
-                    if(hasModifiedSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('修改成功!'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                      hasModified = false;
-                      Navigator.pop(context);
-                    }else{
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('错误:修改失败'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    }
-
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('抱歉，用户信息未改动'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                  print(_username);
+                  userProvider.modifyUsername(defaultUserName,_username);
+                  if(defaultUserName != _username) {
+                      var hasUsernameModified = await userProvider.modifyUsername(defaultUserName,_username);
+                      if(!hasUsernameModified){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('错误:修改失败'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                      }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('修改用户名成功!'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                            Navigator.pop(context);
+                      }
                   }
+                  // if(hasNewAvatar){
+                  //   var hasUsernameModified = await userProvider.modifyUsername(defaultUserName,_username);
+                  //   if(!hasUsernameModified){
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(
+                  //         content: Text('错误:修改失败'),
+                  //         duration: Duration(seconds: 2),
+                  //       ),
+                  //     );
+                  //   }else{
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(
+                  //         content: Text('修改头像成功!'),
+                  //         duration: Duration(seconds: 2),
+                  //       ),
+                  //     );
+                  //     Navigator.pop(context);
+                  //   }
+                  // }
                 },
                 child: Text('保存更改'),
               ),
@@ -118,9 +120,17 @@ class _ModifyPageState extends State<ModifyPage> {
     );
   }
 
+  void _updateUsername(String value) {
+    _username = value;
+  }
+
+  void _updateDescription(String value) {
+    _description = value;
+  }
+
   Widget _buildAvatar() {
     ImageProvider defaultImageProvider =
-    AssetImage('assets/images/tmp/avatar.png');
+    NetworkImage(avatar);
 
     return GestureDetector(
       onTap: () {

@@ -8,7 +8,7 @@ import '../services/user_service.dart';
 import 'dart:io';
 
 class UserProvider extends ChangeNotifier{
-  late User _user = User("未登录", "未登录", "未登录","这是一段用户描述",[],[],[],999,999,"","",false);
+  late User _user = User("未登录", "未登录", "未登录","请填写一段用户描述",[],[],[],999,999,"","",false);
   late UserLogin _userLogin;
   late UserInfo _userInfo;
   get isLoggedIn => _user.isLoggedIn;
@@ -86,7 +86,7 @@ class UserProvider extends ChangeNotifier{
       SharedPreferencesUtil.setBool("isLoggedIn", false);
       SharedPreferencesUtil.setString("tokenName","");
       SharedPreferencesUtil.setString("tokenValue","");
-      SharedPreferencesUtil.setString("description", "用户描述:未登录");
+      SharedPreferencesUtil.setString("description", "请填写一段用户描述");
       notifyListeners();
   }
 
@@ -134,12 +134,27 @@ class UserProvider extends ChangeNotifier{
   Future<bool> modify(String username,String description, String avatarFile) async {
     /// 先进行请求，然后从请求中拿数据
     var res =  await UserService.modify(username,description, avatarFile);
-    print(res.code);
 
     /// 判断是否获取成功
     if(!res.isSuccess()){
       return false;
     }
+    return true;
+  }
+
+  Future<bool> modifyUsername(String username,String newname) async {
+    /// 先进行请求，然后从请求中拿数据
+    var res =  await UserService.modifyUsername(username,newname);
+    print(username);
+    print(newname);
+    print("res的code： "+res.code.toString());
+    print("res的message： "+res.message.toString());
+
+    /// 判断是否获取成功
+    if(!res.isSuccess()){
+      return false;
+    }
+    getUser();
     return true;
   }
 
