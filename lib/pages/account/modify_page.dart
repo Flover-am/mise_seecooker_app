@@ -69,10 +69,30 @@ class _ModifyPageState extends State<ModifyPage> {
               SizedBox(height: 32.0),
               ElevatedButton(
                 onPressed: () async {
-                  print(_username);
-                  userProvider.modifyUsername(defaultUserName,_username);
+                  bool hasUsernameModified = false;
+                  bool hasAvatarModified = false;
+                  if(hasNewAvatar){
+                    hasAvatarModified = await userProvider.modifyAvatar(defaultUserName,_avatar_file.path);
+                    if(!hasAvatarModified){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('错误:修改失败'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }else{
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('修改头像成功!'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      hasNewAvatar = false;
+
+                    }
+                  }
                   if(defaultUserName != _username) {
-                      var hasUsernameModified = await userProvider.modifyUsername(defaultUserName,_username);
+                      hasUsernameModified = await userProvider.modifyUsername(defaultUserName,_username);
                       if(!hasUsernameModified){
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -87,28 +107,12 @@ class _ModifyPageState extends State<ModifyPage> {
                                 duration: Duration(seconds: 2),
                               ),
                             );
-                            Navigator.pop(context);
                       }
                   }
-                  // if(hasNewAvatar){
-                  //   var hasUsernameModified = await userProvider.modifyUsername(defaultUserName,_username);
-                  //   if(!hasUsernameModified){
-                  //     ScaffoldMessenger.of(context).showSnackBar(
-                  //       const SnackBar(
-                  //         content: Text('错误:修改失败'),
-                  //         duration: Duration(seconds: 2),
-                  //       ),
-                  //     );
-                  //   }else{
-                  //     ScaffoldMessenger.of(context).showSnackBar(
-                  //       const SnackBar(
-                  //         content: Text('修改头像成功!'),
-                  //         duration: Duration(seconds: 2),
-                  //       ),
-                  //     );
-                  //     Navigator.pop(context);
-                  //   }
-                  // }
+                  if(hasUsernameModified || hasAvatarModified){
+                    Navigator.pop(context);
+                  }
+
                 },
                 child: Text('保存更改'),
               ),
