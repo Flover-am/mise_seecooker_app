@@ -28,11 +28,12 @@ class UserProvider extends ChangeNotifier{
   Future<void> loadLoginStatus() async {
     _user.username = await SharedPreferencesUtil.getString("username");
     _user.password = await SharedPreferencesUtil.getString("password");
-    _user.tokenName = await SharedPreferencesUtil.getString("tokenName");
-    _user.tokenValue = await SharedPreferencesUtil.getString("tokenValue");
-    _user.isLoggedIn = await SharedPreferencesUtil.getBool("isLoggedIn");
-    _user.description = await SharedPreferencesUtil.getString("description");
+    // _user.tokenName = await SharedPreferencesUtil.getString("tokenName");
+    // _user.tokenValue = await SharedPreferencesUtil.getString("tokenValue");
+    // _user.isLoggedIn = await SharedPreferencesUtil.getBool("isLoggedIn");
+    // _user.description = await SharedPreferencesUtil.getString("description");
     //print(_user.tokenName);
+    login(username, password);
     notifyListeners();
   }
 
@@ -69,6 +70,7 @@ class UserProvider extends ChangeNotifier{
     await SharedPreferencesUtil.setString("tokenName", tempTokenName);
     await SharedPreferencesUtil.setString("tokenValue", tempTokenValue);
 
+    getUser();
 
     notifyListeners();
   }

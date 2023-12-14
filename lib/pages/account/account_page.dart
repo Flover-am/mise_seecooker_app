@@ -28,13 +28,12 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-
+    UserProvider userProvider = Provider.of<UserProvider>(context,listen: false);
+    userProvider.loadLoginStatus();
   }
 
   @override
   Widget build(BuildContext context){
-
-
     return NestedScrollView(
         body: buildBodyWidget(context),
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -94,7 +93,6 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                       SizedBox(height: MediaQuery.of(context).padding.top + 16),
                       Consumer<UserProvider>(
                         builder: (context, userProvider, child) {
-                          userProvider.loadLoginStatus();
                           return userProvider.isLoggedIn
                               ? _buildLoggedInProfileSection(userProvider)
                               : _buildNotLoggedInProfileSection(context);
