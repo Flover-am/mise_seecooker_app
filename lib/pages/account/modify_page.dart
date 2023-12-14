@@ -15,55 +15,40 @@ class _ModifyPageState extends State<ModifyPage> {
   final ImagePicker picker = ImagePicker();
   late XFile avatar_xfile;
   late File _avatar_file;
+  late String avatar;
   String _username = '张三';
+  String defaultUserName = '';
   String _description = '这是一个用户';
-  String _password = '这是一个密码';
+  String defaultDescription  = '';
+  String defaultAvatar = '';
+  bool hasNewAvatar = false;
+  bool hasModified = false;
+  late UserProvider userProvider;
 
-  void _updateUsername(String value) {
-    setState(() {
-      _username = value;
-    });
-  }
 
-  void _updateDescription(String value) {
-    setState(() {
-      _description = value;
-    });
-  }
 
-  void _updatePassword(String value) {
-    setState(() {
-      _password = value;
-    });
-  }
-
-  void _saveChanges() {
-    // 将更改保存到服务器或执行必要的操作
-    // 为了简单起见，这里只打印更新后的值
-    print('用户名：$_username');
-    print('描述：$_description');
-    print('密码：$_password');
-    // 您可以返回到上一个屏幕或执行其他所需操作
-  }
 
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider = Provider.of<UserProvider>(context);
+    userProvider = Provider.of<UserProvider>(context,listen: false);
     _username = userProvider.username;
+    defaultUserName = _username;
     _description = userProvider.description;
-    _password = userProvider.password;
-
+    defaultDescription = _description;
+    avatar = userProvider.avatar;
+    defaultAvatar = avatar;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('编辑信息'),
       ),
-      body: SingleChildScrollView( // 使用SingleChildScrollView包裹内容
+      body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(height: 50.0),
               _buildAvatar(),
               SizedBox(height: 16.0),
               TextFormField(
@@ -81,20 +66,53 @@ class _ModifyPageState extends State<ModifyPage> {
                 ),
                 onChanged: _updateDescription,
               ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                initialValue: _password,
-                decoration: InputDecoration(
-                  labelText: "密码",
-                ),
-                onChanged: _updatePassword,
-              ),
               SizedBox(height: 32.0),
               ElevatedButton(
-                onPressed: _saveChanges,
+                onPressed: () async {
+                  print(_username);
+                  userProvider.modifyUsername(defaultUserName,_username);
+                  if(defaultUserName != _username) {
+                      var hasUsernameModified = await userProvider.modifyUsername(defaultUserName,_username);
+                      if(!hasUsernameModified){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('错误:修改失败'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                      }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('修改用户名成功!'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                            Navigator.pop(context);
+                      }
+                  }
+                  // if(hasNewAvatar){
+                  //   var hasUsernameModified = await userProvider.modifyUsername(defaultUserName,_username);
+                  //   if(!hasUsernameModified){
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(
+                  //         content: Text('错误:修改失败'),
+                  //         duration: Duration(seconds: 2),
+                  //       ),
+                  //     );
+                  //   }else{
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(
+                  //         content: Text('修改头像成功!'),
+                  //         duration: Duration(seconds: 2),
+                  //       ),
+                  //     );
+                  //     Navigator.pop(context);
+                  //   }
+                  // }
+                },
                 child: Text('保存更改'),
               ),
-              SizedBox(height: 16.0), // 添加额外的间距以避免底部输入框被键盘遮挡
+              SizedBox(height: 16.0),
             ],
           ),
         ),
@@ -102,30 +120,43 @@ class _ModifyPageState extends State<ModifyPage> {
     );
   }
 
+  void _updateUsername(String value) {
+    _username = value;
+  }
+
+  void _updateDescription(String value) {
+    _description = value;
+  }
+
   Widget _buildAvatar() {
+    ImageProvider defaultImageProvider =
+    NetworkImage(avatar);
+
     return GestureDetector(
-        onTap: () {
-          Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
-          selectAvatar();
-          setState(() {
-          });
-        },
-        child:
-        CircleAvatar(
-          radius: 100,
-          backgroundImage: AssetImage('assets/images/tmp/avatar.png'),
-        )
+      onTap: () {
+        selectAvatar();
+        setState(() {});
+      },
+      child: hasNewAvatar
+          ? CircleAvatar(
+        radius: 100,
+        child: ClipOval(
+          child: Image.file(File(avatar_xfile.path), fit: BoxFit.fitWidth),
+        ),
+      )
+          : CircleAvatar(
+        radius: 100,
+        backgroundImage: defaultImageProvider,
+      ),
     );
   }
+
   void selectAvatar() async {
     XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
-    setState(() async {
+    setState(() {
       avatar_xfile = image;
-      _avatar_file = await convertXFileToFile(avatar_xfile);
+      _avatar_file = File(avatar_xfile.path);
+      hasNewAvatar = true;
     });
   }
-  Future<File> convertXFileToFile(XFile xfile) async {
-    return File(xfile.path);
-  }
 }
-

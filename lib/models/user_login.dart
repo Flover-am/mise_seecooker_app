@@ -9,24 +9,24 @@ class UserLogin {
   String tokenValue;
 
   @JsonKey(name: "isLogin")
-  String isLoggedIn;
+  bool isLoggedIn;
 
   @JsonKey(name: "loginId")
   String loginId;
 
   String loginType;
 
-  DateTime tokenTimeout;
+  int tokenTimeout;
 
-  DateTime sessionTimeout;
+  int sessionTimeout;
 
-  DateTime tokenSessionTimeout;
+  int tokenSessionTimeout;
 
-  DateTime tokenActiveTimeout;
+  int tokenActiveTimeout;
 
   String loginDevice;
 
-  String tag;
+  String? tag;
 
   UserLogin(
       this.tokenName,
