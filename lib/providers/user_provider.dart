@@ -8,7 +8,8 @@ import '../services/user_service.dart';
 import 'dart:io';
 
 class UserProvider extends ChangeNotifier{
-  late User _user = User("未登录", "未登录", "https://seecooker.oss-cn-shanghai.aliyuncs.com/avatar/ecff12a2-2986-4bd9-a393-cf8f1065397f.webp","请填写一段用户描述",[],[],[],999,999,"","",false);
+  var defaultAvatar = "https://seecooker.oss-cn-shanghai.aliyuncs.com/avatar/ecff12a2-2986-4bd9-a393-cf8f1065397f.webp";
+  late User _user = User("未登录", "未登录", defaultAvatar,"请填写一段用户描述",[],[],[],999,999,"","",false);
   late UserLogin _userLogin;
   late UserInfo _userInfo;
   get isLoggedIn => _user.isLoggedIn;
@@ -28,11 +29,6 @@ class UserProvider extends ChangeNotifier{
   Future<void> loadLoginStatus() async {
     _user.username = await SharedPreferencesUtil.getString("username");
     _user.password = await SharedPreferencesUtil.getString("password");
-    // _user.tokenName = await SharedPreferencesUtil.getString("tokenName");
-    // _user.tokenValue = await SharedPreferencesUtil.getString("tokenValue");
-    // _user.isLoggedIn = await SharedPreferencesUtil.getBool("isLoggedIn");
-    // _user.description = await SharedPreferencesUtil.getString("description");
-    //print(_user.tokenName);
     login(username, password);
     notifyListeners();
   }
@@ -40,14 +36,10 @@ class UserProvider extends ChangeNotifier{
   Future<void> login(String username,String password) async {
     /// 先进行请求，然后从请求中拿数据
     var res =  await UserService.login(username,password);
-    print(username);
     /// 判断是否获取成功
     if(!res.isSuccess()){
       throw Exception("登录失败:${res.message}");
     }
-
-    print(res.data.toString());
-
     _userLogin = UserLogin.fromJson(res.data);
 
 
@@ -82,6 +74,7 @@ class UserProvider extends ChangeNotifier{
       _user.isLoggedIn = false;
       _user.tokenName = "";
       _user.tokenValue = "";
+      _user.avatar = defaultAvatar;
       SharedPreferencesUtil.setString("username","未登录");
       SharedPreferencesUtil.setString("password","未登录");
       SharedPreferencesUtil.setBool("isLoggedIn", false);
@@ -132,16 +125,6 @@ class UserProvider extends ChangeNotifier{
     return true;
   }
 
-  // Future<bool> modify(String username,String description, String avatarFile) async {
-  //   /// 先进行请求，然后从请求中拿数据
-  //   var res =  await UserService.modify(username,description, avatarFile);
-  //
-  //   /// 判断是否获取成功
-  //   if(!res.isSuccess()){
-  //     return false;
-  //   }
-  //   return true;
-  // }
 
   Future<bool> modifyUsername(String username,String newname) async {
     /// 先进行请求，然后从请求中拿数据

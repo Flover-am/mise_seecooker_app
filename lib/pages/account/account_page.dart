@@ -68,14 +68,14 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: const EdgeInsets.only(left: 190, top: 30),
                 expandedTitleScale: 2,
-                title: const Column(
+                title: Column(
                     children: [
                       CircleAvatar(
                         radius: 15,
                       //   backgroundImage: NetworkImage(
                       //       'https://example.com/avatar.jpg'), // 你的头像图片地址
                       // )
-                    backgroundImage: AssetImage('assets/images/tmp/avatar.png'),
+                    backgroundImage: NetworkImage(userProvider.avatar),
                       )
                     ]
                 ),
