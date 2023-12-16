@@ -1,17 +1,19 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:seecooker/providers/post/posts_provider.dart';
 import 'package:seecooker/services/post_service.dart';
 
-import '../models/post.dart';
+import '../../models/post.dart';
 
-class CommunityPostsProvider extends ChangeNotifier {
+class CommunityPostsProvider with ChangeNotifier implements PostsProvider{
   List<Post>? _list;
 
-  int get length => _list?.length ?? 0;
+  @override
+  int get count => _list?.length ?? 0;
 
+  @override
   Post itemAt(int index) => _list![index];
 
+  @override
   Future<void> fetchPosts() async {
     final res = await PostService.getPosts();
     if(!res.isSuccess()) {
@@ -24,6 +26,7 @@ class CommunityPostsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
   Future<void> fetchMorePosts() async {
     final res = await PostService.getPosts();
     if(!res.isSuccess()) {

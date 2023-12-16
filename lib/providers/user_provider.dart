@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:seecooker/models/user_login.dart';
+import 'package:seecooker/utils/sa_token_util.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
 
 import '../models/user.dart';
@@ -69,6 +70,8 @@ class UserProvider extends ChangeNotifier{
 
     await SharedPreferencesUtil.setString("tokenName", tempTokenName);
     await SharedPreferencesUtil.setString("tokenValue", tempTokenValue);
+
+    SaTokenUtil.refreshToken();
 
     getUser();
 

@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/account/account_page.dart';
 import 'package:seecooker/pages/explore/explore_page.dart';
-import 'package:seecooker/pages/publish/publish_post.dart';
+import 'package:seecooker/pages/publish/publish_post_page.dart';
 import 'package:seecooker/pages/recipe/home_page.dart';
 import 'package:seecooker/pages/post/posts_page.dart';
 import 'package:flutter/material.dart';
-import 'package:seecooker/providers/community_posts_provider.dart';
+import 'package:seecooker/providers/post/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/providers/recommend_provider.dart';
@@ -77,7 +77,7 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
     const HomePage(),
     const ExplorePage(),
     const PostsPage(),
-    const HomePage(),
+    const AccountPage(),
   ];
 
   @override

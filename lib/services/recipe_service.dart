@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:seecooker/models/NewRecipe.dart';
 import 'package:seecooker/models/http_result.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
+import 'package:seecooker/utils/sa_token_util.dart';
 
 class RecipeService {
   /// 测试阶段可以先用apiFox的Mock的url
@@ -54,5 +55,20 @@ class RecipeService {
 
     /// 将response的data转换为HttpResult返回给上一层
     return HttpResult.fromJson(response.data);
+  }
+
+  /// 收藏或取消收藏菜谱
+  static Future<HttpResult> favorRecipe(int id) async {
+    String lastUrl = '$baseUrl/recipe/favorite/$id';
+    Options options = Options(headers: {
+      await SaTokenUtil.getTokenName():
+      await SaTokenUtil.getTokenValue()
+    });
+    final response = await dio.put(lastUrl, options: options);
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
   }
 }

@@ -14,15 +14,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 
-class PublishPost extends StatefulWidget {
+class PublishPostPage extends StatefulWidget {
   final String param;
-  const PublishPost({super.key,required this.param});
+  const PublishPostPage({super.key,required this.param});
 
   @override
-  State<PublishPost> createState() => _PublishPostState();
+  State<PublishPostPage> createState() => _PublishPostPageState();
 }
 
-class _PublishPostState extends State<PublishPost> {
+class _PublishPostPageState extends State<PublishPostPage> {
   final ImagePicker picker = ImagePicker();
   List<String> _userImage = [];
   final FocusNode _titleInputFocusNode = FocusNode();
@@ -62,34 +62,37 @@ class _PublishPostState extends State<PublishPost> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        title: const Text('帖子发布'),
+        title: const Text('发布帖子'),
       ),
       body: Stack(
         children: [
-          CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              //图片选择区域
-              SliverToBoxAdapter(child: _buildImagePicker(context)),
-              //文字发布区域
-              SliverToBoxAdapter(
-                key: _textInputKey,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      _buildTitleInput(),
-                      Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(10)),
-                      _buildContentInput(),
-                      Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(10)),
-                    ],
+          Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 40),
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                //图片选择区域
+                SliverToBoxAdapter(child: _buildImagePicker(context)),
+                //文字发布区域
+                SliverToBoxAdapter(
+                  key: _textInputKey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        _buildTitleInput(),
+                        Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(20)),
+                        _buildContentInput(),
+                        Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(20)),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 400),
-              )
-            ],
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: 400),
+                )
+              ],
+            ),
           ),
           // 底部发布按钮
           Positioned(
@@ -159,6 +162,7 @@ class _PublishPostState extends State<PublishPost> {
     return TextField(
       focusNode: _titleInputFocusNode,
       controller: _titleInputController,
+      cursorRadius: const Radius.circular(2),
       style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
       decoration: const InputDecoration(
         hintText: "给帖子加上标题吧 ~",
@@ -174,9 +178,11 @@ class _PublishPostState extends State<PublishPost> {
       child: SingleChildScrollView(
         child: TextField(
           maxLines: 10,
+          maxLength: 1000,
           focusNode: _contentInputFocusNode,
           controller: _contentInputController,
           style: Theme.of(context).textTheme.bodyLarge,
+          cursorRadius: const Radius.circular(2),
           decoration: const InputDecoration(
             hintText: "添加正文",
             border: InputBorder.none,
@@ -212,13 +218,13 @@ class _PublishPostState extends State<PublishPost> {
             child: InkWell(
               onTap:(){
                 if(index==_userImage.length){//添加图片按钮的点击逻辑
-                  pictureSource(context);
+                  _selectImageSource(context);
                 }else{//图片的点击逻辑
-                  _showDetailedImage(context,_userImage[index],index);
+                  _showDetailedImage(context, _userImage[index], index);
                 }
               },
               onLongPress: () {
-                // 删除
+                // TODO: 删除图片
               },
               child: Hero(
                 tag:'showDetailImage$index',
@@ -238,12 +244,20 @@ class _PublishPostState extends State<PublishPost> {
   /// 方法：显示图片详情
   /// context:上下文 path:图片路径 index:图片在列表中的索引
   void _showDetailedImage(BuildContext context,String path,int index){
-    Navigator.push(context,MaterialPageRoute(
-      builder:(context)=>DetailImagePage(path:path,index:index,deletionCallback:(){
-        setState(() {
-          _userImage.removeAt(index);
-        });
-      })
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return DetailImagePage(
+            path: path,
+            index: index,
+            onDelete:() {
+              setState(() {
+                _userImage.removeAt(index);
+              });
+            }
+          );
+        }
     ));
   }
 
@@ -251,7 +265,7 @@ class _PublishPostState extends State<PublishPost> {
   Widget _buildImageAdder(){
     return GestureDetector(
       onTap:(){
-        pictureSource(context);
+        _selectImageSource(context);
       },
       child: const Icon(Icons.add_rounded)
     );
@@ -259,43 +273,57 @@ class _PublishPostState extends State<PublishPost> {
   }
 
   /// 从相册或相机获取图片
-  void pictureSource(BuildContext ctx){
-    showModalBottomSheet(context: ctx, builder: (BuildContext context){
-      return Container(
-        height: 120,
-        child:Wrap(
-          children: <Widget>[
-            SizedBox(
-              height: 60,
-              child:Align(
-                alignment: Alignment.centerLeft,
-                child:ListTile(
-                  title: const Text('相册'),
-                  onTap:(){
-                    _pickMultipleImages();
-                    Navigator.pop(context);
-                  },
+  void _selectImageSource(BuildContext ctx){
+    showModalBottomSheet(
+      context: ctx,
+      elevation: 0,
+      showDragHandle: true,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200,
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 60,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: ListTile(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)
+                    ),
+                    leading: const Icon(Icons.image_outlined),
+                    title: Text('相册', style: Theme.of(context).textTheme.titleMedium),
+                    onTap:(){
+                      _pickMultipleImages();
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-                height: 60,
-                child:Align(
-                  alignment: Alignment.centerLeft,
-                    child:ListTile(
-                      title: const Text('相机'),
-                      onTap:(){
-                        _pickImageFromCamera();
-                        Navigator.pop(context);
-                      },
-                    )
-                )
-            )
-
-          ],
-        )
-      );
-    });
+              Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(20)),
+              SizedBox(
+                  height: 60,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                      child:ListTile(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)
+                        ),
+                        leading: const Icon(Icons.camera_alt_outlined),
+                        title: Text('拍摄', style: Theme.of(context).textTheme.titleMedium),
+                        onTap:(){
+                          _pickImageFromCamera();
+                          Navigator.pop(context);
+                        },
+                      )
+                  )
+              ),
+            ],
+          )
+        );
+      }
+    );
   }
 
   /// 从相册选择多张图片
@@ -373,76 +401,68 @@ class DetailImagePage extends StatelessWidget{
 
   final String path;
   final int index;
-  final deletionCallback;
+  final void Function() onDelete;
 
-  DetailImagePage({required this.path,required this.index,required this.deletionCallback});
+  const DetailImagePage({super.key, required this.path, required this.index, required this.onDelete});
+
   @override
   Widget build(BuildContext context){
-    void callBack(){
-      deletionCallback();
-      Navigator.of(context).pop();
-    };
     return Scaffold(
       body:
         Material(
-        color:Colors.black,
-        child:InkWell(
-            onTap: (){
-              Navigator.of(context).pop();
-            },
-            child:SafeArea(
-              child:Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children:[
-                    Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children:[
-                          Hero(
-                              tag:'showDetailImage$index',
-                              child:Image.file(
-                                File(path),
-                                fit: BoxFit.contain,
-                                width: MediaQuery.of(context).size.width,
-                              )
+        color: Theme.of(context).colorScheme.background,
+        child: InkWell(
+          onTap: () => Navigator.of(context).pop(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children:[
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height - 200
+                ),
+                child: Hero(
+                  tag:'showDetailImage$index',
+                  child: Image.file(
+                    File(path),
+                    fit: BoxFit.contain,
+                    width: MediaQuery.of(context).size.width,
+                  )
+                ),
+              ),
+              const SizedBox(height: 16),
+              ActionChip(
+                label: const Text('删除图片'),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context){
+                      return AlertDialog(
+                        elevation: 0,
+                        // TODO: 修改文字提示
+                        title: const Text('确认删除图片？'),
+                        content: const Text('这将从已选图片中删除该图片。'),
+                        actions:<Widget>[
+                          // TODO: 修改按钮样式
+                          TextButton(
+                            child: const Text('取消'),
+                            onPressed: () => Navigator.of(context).pop(),
                           ),
+                          TextButton(
+                            child: const Text('确认'),
+                            onPressed: (){
+                              onDelete();
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          )
                         ]
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
-                      child: ElevatedButton(
-                          child: const Icon(Icons.delete),
-                          onPressed: (){
-                            showDialog<String>(
-                                context:context,
-                                builder: (context){
-                                  return AlertDialog(
-                                      title: const Text('确认删除图片？'),
-                                      content:const Text('这将从已选图片中删除该图片。'),
-                                      actions:<Widget>[
-                                        TextButton(
-                                          child: const Text('取消'),
-                                          onPressed: (){
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                        TextButton(
-                                          child: const Text('确认'),
-                                          onPressed: (){
-                                            callBack();
-                                            Navigator.of(context).pop();
-                                          },
-                                        )
-                                      ]);
-                                }
-                            );
-                          }
-                      ),
-                    )
-                  ]
-              )
-            )
+                      );
+                    }
+                  );
+                },
+              ),
+            ]
+          )
         )
     )
     );

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -23,7 +24,7 @@ class PostDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => PostDetailProvider(postId)),
+        Provider(create: (context) => PostDetailProvider(postId)),
         ChangeNotifierProvider(create: (context) => CommentsProvider(postId)),
       ],
       builder: (context, child) {
@@ -35,9 +36,7 @@ class PostDetailPage extends StatelessWidget {
             } else if (snapshot.hasError) {
               return Scaffold(
                 appBar: AppBar(),
-                body: Center(
-                    child: Text('Error: ${snapshot.error}')
-                ),
+                body: Center(child: Text('Error: ${snapshot.error}')),
               );
             } else {
               return PageContent();
@@ -92,21 +91,45 @@ class PostDetailPage extends StatelessWidget {
   }
 }
 
-class PageContent extends StatelessWidget {
+class PageContent extends StatefulWidget {
+
+  const PageContent({super.key});
+
+  @override
+  State<PageContent> createState() => _PageContentState();
+}
+
+class _PageContentState extends State<PageContent> {
+  /// 页面滑动控制器
   final ScrollController _scrollController = ScrollController();
+
+  /// 评论区标题
   final GlobalKey _commentSectionTitleKey = GlobalKey();
+
+  /// 快照区域
   final GlobalKey _repaintBoundaryKey = GlobalKey();
+
+  /// 评论输入框焦点
   final FocusNode _focusNode = FocusNode();
+
+  /// 评论输入框文本编辑控制器
   final TextEditingController _textEditingController = TextEditingController();
 
-  late OverlayEntry _overlayEntry; // 评论输入框弹窗
+  /// 点赞数
+  late ValueNotifier<int> _likeNum;
 
-  PageContent({super.key});
+  /// 是否点赞
+  late ValueNotifier<bool> _like;
+
+  /// 评论输入框弹窗
+  late OverlayEntry _overlayEntry;
 
   @override
   Widget build(BuildContext context) {
+    // 提前构建弹窗
     _overlayEntry = _buildOverlayEntry(context);
 
+    // 添加监听器，失焦后关闭弹窗
     _focusNode.addListener(() {
       if (!_focusNode.hasFocus) {
         _overlayEntry.remove();
@@ -116,6 +139,11 @@ class PageContent extends StatelessWidget {
     return Consumer<PostDetailProvider>(
       builder: (context, provider, child) {
         PostDetail model = provider.model;
+
+        // 初始化点赞数据
+        _likeNum = ValueNotifier(model.likeNum);
+        _like = ValueNotifier(model.like);
+
         return RepaintBoundary(
           key: _repaintBoundaryKey,
           child: Scaffold(
@@ -128,7 +156,7 @@ class PageContent extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     backgroundImage: ExtendedNetworkImageProvider(
                       model.posterAvatar,
-                      cache: false,
+                      cache: true,
                     ),
                   ),
                   Padding(
@@ -144,27 +172,41 @@ class PageContent extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: IconButton(
-                      onPressed: () async {
-                        try {
-                          await ImageUtil.shareImageData(await _capturePng());
-                        } catch (e) {
-                          Fluttertoast.showToast(msg: "分享失败: $e");
-                        }
-                      },
-                      icon: const Icon(Icons.share_outlined)
+                    onPressed: () async {
+                      // 分享屏幕快照
+                      try {
+                        await ImageUtil.shareImageData(await _capturePng());
+                      } catch (e) {
+                        Fluttertoast.showToast(msg: "分享失败: $e");
+                      }
+                    },
+                    icon: const Icon(Icons.share),
                   ),
-                )
+                ),
               ],
             ),
             body: CustomScrollView(
               controller: _scrollController,
               slivers: [
+                // 图片
                 SliverToBoxAdapter(
                   child: ImageCardSwiper(images: model.images),
                 ),
+                // 文本
                 SliverToBoxAdapter(
                   child: TextSection(title: model.title, content: model.content),
                 ),
+                // 分隔线
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Divider(
+                      thickness: 1,
+                      color: Theme.of(context).colorScheme.primary.withAlpha(20)
+                    ),
+                  ),
+                ),
+                // 评论区标题
                 SliverToBoxAdapter(
                   key: _commentSectionTitleKey,
                   child: Padding(
@@ -178,7 +220,7 @@ class PageContent extends StatelessWidget {
                     ),
                   ),
                 ),
-                /* comment section */
+                // 评论区
                 FutureBuilder(
                   future: Provider.of<CommentsProvider>(context, listen: false).fetchComments(),
                   builder: (context, snapshot) {
@@ -226,18 +268,18 @@ class PageContent extends StatelessWidget {
                     }
                   }
                 ),
-                /* end indicator */
+                // 底部分隔线
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                     child: Row(
                       children: [
                         Expanded(
-                          child: Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(10)),
+                          child: Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(20)),
                         ),
                         Text(' 没有更多了 ', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.primary.withAlpha(80))),
                         Expanded(
-                          child: Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(10)),
+                          child: Divider(thickness: 1, color: Theme.of(context).colorScheme.primary.withAlpha(20)),
                         ),
                       ],
                     ),
@@ -253,6 +295,7 @@ class PageContent extends StatelessWidget {
                   IconButton(
                     tooltip: '评论',
                     icon: const Icon(Icons.chat_bubble_outline_rounded),
+                    // 滑动至评论区
                     onPressed: () => Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease),
                   ),
                   Consumer<CommentsProvider>(
@@ -263,10 +306,29 @@ class PageContent extends StatelessWidget {
                   const SizedBox(width: 16),
                   IconButton(
                     tooltip: '喜欢',
-                    icon: const Icon(Icons.favorite_outline_rounded),
-                    onPressed: () {},
+                    icon: ValueListenableBuilder<bool>(
+                      valueListenable: _like,
+                      builder: (context, value, child) {
+                        return value
+                          ? Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary)
+                          : const Icon(Icons.favorite_outline_rounded);
+                      },
+                    ),
+                    onPressed: () async {
+                      try {
+                        _like.value = await provider.likePost();
+                        _likeNum.value += (_like.value ? 1 : -1);
+                      } catch (e) {
+                        Fluttertoast.showToast(msg: '$e');
+                      }
+                    },
                   ),
-                  Text('1', style: Theme.of(context).textTheme.titleSmall),
+                  ValueListenableBuilder<int>(
+                    valueListenable: _likeNum,
+                    builder: (context, value, child) {
+                      return Text('$value', style: Theme.of(context).textTheme.titleSmall);
+                    }
+                  ),
                 ],
               ),
             ),
@@ -275,6 +337,7 @@ class PageContent extends StatelessWidget {
               heroTag: UniqueKey(),
               elevation: 0,
               onPressed: () {
+                // 弹出弹窗
                 Overlay.of(context).insert(_overlayEntry);
                 _focusNode.requestFocus();
               },
@@ -294,46 +357,55 @@ class PageContent extends StatelessWidget {
         left: 0,
         right: 0,
         child: Material(
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(12),
+            topLeft: Radius.circular(12),
+          ),
           color: Theme.of(context).colorScheme.surfaceVariant,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            horizontalTitleGap: 0,
-            leading: IconButton(
-              onPressed: () {
-                _overlayEntry.remove();
-                _textEditingController.clear();
-              },
-              icon: const Icon(Icons.clear_rounded),
-            ),
-            title: TextField(
-              focusNode: _focusNode,
-              controller: _textEditingController,
-              cursorRadius: const Radius.circular(2),
-              maxLength: 100,
-              maxLines: 3,
-              decoration: InputDecoration(
-                hintText: '在此输入你的评论',
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-            trailing: IconButton(
-              onPressed: () async {
-                if(_textEditingController.text.isNotEmpty) {
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              horizontalTitleGap: 0,
+              leading: IconButton(
+                onPressed: () {
+                  // 返回
                   _overlayEntry.remove();
-                  try {
-                    await Provider.of<CommentsProvider>(buildContext, listen: false).createComment(_textEditingController.text);
-                    Fluttertoast.showToast(msg: "评论已发送");
-                  } catch (e) {
-                    Fluttertoast.showToast(msg: "$e");
-                  }
                   _textEditingController.clear();
-                } else {
-                  Fluttertoast.showToast(msg: "请输入内容");
-                }
-              },
-              icon: const Icon(Icons.done_rounded),
+                },
+                icon: const Icon(Icons.clear_rounded),
+              ),
+              title: TextField(
+                focusNode: _focusNode,
+                controller: _textEditingController,
+                cursorRadius: const Radius.circular(2),
+                maxLength: 100,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: '在此输入你的评论',
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              trailing: IconButton(
+                onPressed: () async {
+                  if(_textEditingController.text.isNotEmpty) {
+                    // 发送评论
+                    _overlayEntry.remove();
+                    try {
+                      await Provider.of<CommentsProvider>(buildContext, listen: false).createComment(_textEditingController.text);
+                      Fluttertoast.showToast(msg: "评论已发送");
+                    } catch (e) {
+                      Fluttertoast.showToast(msg: "$e");
+                    }
+                    _textEditingController.clear();
+                  } else {
+                    Fluttertoast.showToast(msg: "请输入内容");
+                  }
+                },
+                icon: const Icon(Icons.done_rounded),
+              ),
             ),
           ),
         ),
@@ -341,6 +413,7 @@ class PageContent extends StatelessWidget {
     );
   }
 
+  /// 捕捉屏幕快照
   Future<Uint8List?> _capturePng() async {
     RenderRepaintBoundary? boundary = _repaintBoundaryKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
     var image = await boundary.toImage(pixelRatio: 3.0);
@@ -348,21 +421,33 @@ class PageContent extends StatelessWidget {
     Uint8List? pngBytes = byteData?.buffer.asUint8List();
     return pngBytes;
   }
-
 }
 
-class ImageCardSwiper extends StatelessWidget {
+class ImageCardSwiper extends StatefulWidget {
+  /// 展示的图片
   final List<String> images;
-  int _currentIndex = 0; // 详情页和图片展示页共用的当前图片索引
-  final ValueNotifier<int> _tipIndex = ValueNotifier(0); // 图片展示页的当前图片索引
 
-  ImageCardSwiper({super.key, required this.images});
 
+  const ImageCardSwiper({super.key, required this.images});
+
+  @override
+  State<ImageCardSwiper> createState() => _ImageCardSwiperState();
+}
+
+class _ImageCardSwiperState extends State<ImageCardSwiper> {
+  /// 详情页和图片展示页共用的当前图片索引
+  int _currentIndex = 0;
+
+  /// 图片展示页的当前图片索引
+  final ValueNotifier<int> _tipIndex = ValueNotifier(0);
+
+  /// 图片滑动控制器
   final SwiperController _controller = SwiperController();
 
   @override
   Widget build(BuildContext context) {
-    for(var image in images) {
+    // 图片预加载
+    for(var image in widget.images) {
       precacheImage(ExtendedNetworkImageProvider(image), context);
     }
 
@@ -380,9 +465,9 @@ class ImageCardSwiper extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: const EdgeInsets.only(
-                left: 16,
-                right: 16,
-                bottom: 32
+              left: 16,
+              right: 16,
+              bottom: 32,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -402,9 +487,9 @@ class ImageCardSwiper extends StatelessWidget {
                     _controller.move(_currentIndex);
                   },
                   child: Hero(
-                    tag: images[index],
+                    tag: widget.images[index],
                     child: ExtendedImage.network(
-                      images[index],
+                      widget.images[index],
                       cache: true,
                       enableLoadState: false,
                       fit: BoxFit.cover,
@@ -415,14 +500,11 @@ class ImageCardSwiper extends StatelessWidget {
             )
           );
         },
-        itemCount: images.length,
+        itemCount: widget.images.length,
         pagination: SwiperPagination(
             builder: DotSwiperPaginationBuilder(
               color: Colors.grey,
-              activeColor: Theme
-                  .of(context)
-                  .colorScheme
-                  .primary,
+              activeColor: Theme.of(context).colorScheme.primary,
             )
         ),
         control: null,
@@ -435,7 +517,7 @@ class ImageCardSwiper extends StatelessWidget {
     return Material(
       color: Theme.of(context).colorScheme.background,
       child: InkWell(
-        onTap: () => { Navigator.pop(context) },
+        onTap: () => Navigator.pop(context),
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
@@ -444,16 +526,16 @@ class ImageCardSwiper extends StatelessWidget {
                 return Container(
                   padding: const EdgeInsets.all(4),
                   child: Hero(
-                    tag: images[index],
+                    tag: widget.images[index],
                     child: ExtendedImage.network(
-                      images[index],
+                      widget.images[index],
                       fit: BoxFit.contain,
                       mode: ExtendedImageMode.gesture,
                     ),
                   ),
                 );
               },
-              itemCount: images.length,
+              itemCount: widget.images.length,
               onPageChanged: (int index) {
                 _currentIndex = index;
                 _tipIndex.value = index;
@@ -466,7 +548,7 @@ class ImageCardSwiper extends StatelessWidget {
               top: MediaQuery.of(context).padding.top + 16,
               child: ValueListenableBuilder<int>(
                 valueListenable: _tipIndex,
-                builder: (context, value, child) => Text('${value + 1}/${images.length}', style: Theme.of(context).textTheme.titleMedium),
+                builder: (context, value, child) => Text('${value + 1}/${widget.images.length}', style: Theme.of(context).textTheme.titleMedium),
               )
             ),
             Positioned(
@@ -475,7 +557,7 @@ class ImageCardSwiper extends StatelessWidget {
                 label: const Text('保存图片'),
                 onPressed: () async {
                   try {
-                    await ImageUtil.saveImageToGallery(images[_currentIndex]);
+                    await ImageUtil.saveImageToGallery(widget.images[_currentIndex]);
                     Fluttertoast.showToast(msg: "图片已保存至相册");
                   } catch (e) {
                     Fluttertoast.showToast(msg: "图片保存失败：$e");
@@ -491,7 +573,10 @@ class ImageCardSwiper extends StatelessWidget {
 }
 
 class TextSection extends StatelessWidget {
+  /// 标题
   final String title;
+
+  /// 正文
   final String content;
 
   const TextSection({super.key, required this.title, required this.content});
@@ -503,20 +588,9 @@ class TextSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
+          Text(title, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 8),
-          Text(
-            content,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: 16),
-          Divider(
-            thickness: 1,
-            color: Theme.of(context).colorScheme.primary.withAlpha(10)
-          ),
+          Text(content, style: Theme.of(context).textTheme.bodyLarge),
         ],
       ),
     );
@@ -524,7 +598,10 @@ class TextSection extends StatelessWidget {
 }
 
 class CommentItem extends StatelessWidget {
+  /// 评论内容
   final Comment comment;
+
+  /// 点击时回调
   final void Function(String author) onTap;
 
   const CommentItem({super.key, required this.comment, required this.onTap});
@@ -559,7 +636,6 @@ class CommentItem extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(comment.content, style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 6),
-                      //Text('${comment.date}', style: Theme.of(context).textTheme.labelSmall),
                       Text.rich(
                         TextSpan(
                           style: Theme.of(context).textTheme.labelMedium,
@@ -570,8 +646,8 @@ class CommentItem extends StatelessWidget {
                             ),
                             TextSpan(text: ' 回复', style: Theme.of(context).textTheme.bodySmall),
                           ]
-                        )
-                      )
+                        ),
+                      ),
                     ],
                   ),
                 ),
