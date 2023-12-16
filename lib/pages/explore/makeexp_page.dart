@@ -5,7 +5,7 @@ import 'package:seecooker/providers/recommend_provider.dart';
 import 'package:seecooker/services/explore_service.dart';
 import 'package:seecooker/widgets/tinder_card.dart';
 
-import 'package:seecooker/widgets/community_card.dart';
+import 'package:seecooker/widgets/post_card.dart';
 import 'package:tcard/tcard.dart';
 
 import '../../widgets/exp_recipe_card.dart';
