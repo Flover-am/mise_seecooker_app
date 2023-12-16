@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
@@ -12,8 +13,8 @@ import '../recipe/recipe_detail.dart';
 import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
-import 'modify_page.dart';
-import 'settings_page.dart';
+import 'modify/modify_page.dart';
+import 'settings/settings_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -67,14 +68,14 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: const EdgeInsets.only(left: 190, top: 30),
                 expandedTitleScale: 2,
-                title: const Column(
+                title: Column(
                     children: [
                       CircleAvatar(
                         radius: 15,
                       //   backgroundImage: NetworkImage(
                       //       'https://example.com/avatar.jpg'), // 你的头像图片地址
                       // )
-                    backgroundImage: AssetImage('assets/images/tmp/avatar.png'),
+                    backgroundImage: NetworkImage(userProvider.avatar),
                       )
                     ]
                 ),
@@ -122,11 +123,14 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                   MaterialPageRoute(builder: (context) => SettingsPage()),
                 );
               }else{
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('请先登录'),
-                    duration: Duration(seconds: 2),
-                  ),
+                Fluttertoast.showToast(
+                  msg: "请先登录账号",
+                  toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                  gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                  backgroundColor: Colors.black, // Toast背景颜色
+                  textColor: Colors.white, // Toast文本颜色
+                  fontSize: 16.0,
+                  //timeInSecForIosWeb: 1,// Toast文本字体大小
                 );
               }
             },

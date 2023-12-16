@@ -75,26 +75,75 @@ class _RegisterFormState extends State<RegisterForm> {
             String username = _usernameController.text;
             String password = _passwordController.text;
 
-            // 执行注册操作
-            var isRegistered = await userProvider.register(username, password, avatar_xfile.path);
-
-            if (isRegistered) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('注册成功'),
-                  duration: Duration(seconds: 2),
-                ),
+            if(!hasNewAvatar){
+              Fluttertoast.showToast(
+                msg: "头像不能为空",
+                toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                backgroundColor: Colors.black, // Toast背景颜色
+                textColor: Colors.white, // Toast文本颜色
+                fontSize: 16.0,
+                //timeInSecForIosWeb: 1,// Toast文本字体大小
               );
-              Navigator.pop(context);
+            }else if(username == ""){
+              Fluttertoast.showToast(
+                msg: "用户名不能为空",
+                toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                backgroundColor: Colors.black, // Toast背景颜色
+                textColor: Colors.white, // Toast文本颜色
+                fontSize: 16.0,
+                //timeInSecForIosWeb: 1,// Toast文本字体大小
+              );
+            }else if(password == ""){
+              Fluttertoast.showToast(
+                msg: "密码不能为空",
+                toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                backgroundColor: Colors.black, // Toast背景颜色
+                textColor: Colors.white, // Toast文本颜色
+                fontSize: 16.0,
+                //timeInSecForIosWeb: 1,// Toast文本字体大小
+              );
+            }else if (!isPasswordValid(password)){
 
             }
             else {
-              ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('注册失败'),
-                duration: Duration(seconds: 2),
-              ),
-            );
+              // 执行注册操作
+              var isRegistered = await userProvider.register(
+                  username, password, avatar_xfile.path);
+
+              if (isRegistered) {
+                Fluttertoast.showToast(
+                  msg: "账号注册成功！",
+                  toastLength: Toast.LENGTH_SHORT,
+                  // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                  gravity: ToastGravity.BOTTOM,
+                  // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                  backgroundColor: Colors.black,
+                  // Toast背景颜色
+                  textColor: Colors.white,
+                  // Toast文本颜色
+                  fontSize: 16.0,
+                  timeInSecForIosWeb: 2, // Toast文本字体大小
+                );
+                Navigator.pop(context);
+              }
+              else {
+                Fluttertoast.showToast(
+                  msg: "用户名已被使用",
+                  toastLength: Toast.LENGTH_SHORT,
+                  // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                  gravity: ToastGravity.BOTTOM,
+                  // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                  backgroundColor: Colors.black,
+                  // Toast背景颜色
+                  textColor: Colors.white,
+                  // Toast文本颜色
+                  fontSize: 16.0,
+                  timeInSecForIosWeb: 2, // Toast文本字体大小
+                );
+              }
             }
           },
           child: const Text('注册'),
@@ -126,10 +175,7 @@ class _RegisterFormState extends State<RegisterForm> {
               ?
           CircleAvatar(
             radius: 100, // 设置圆形头像的半径
-            child: ClipOval(
-              child: Image.file(File(avatar_xfile.path),
-                  fit: BoxFit.fitWidth)
-            ),
+            backgroundImage: FileImage(File(avatar_xfile.path)),
           )
               :
       CircleAvatar(
@@ -145,6 +191,43 @@ class _RegisterFormState extends State<RegisterForm> {
       avatar_xfile = image;
       avatar_file = convertXFileToFile(avatar_xfile);
     });
+  }
+
+  bool isPasswordValid(String password) {
+    if(!isPasswordContainNumAndLetter(password)){
+      Fluttertoast.showToast(
+          msg: "密码必须同时包含字母和数字",
+          toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+          gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+          backgroundColor: Colors.black, // Toast背景颜色
+          textColor: Colors.white, // Toast文本颜色
+          fontSize: 16.0 // Toast文本字体大小
+      );
+      return false;
+    }else if(password.length < 6 || password.length > 56){
+      Fluttertoast.showToast(
+          msg: "密码长度必须在 6-56 之间",
+          toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+          gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+          backgroundColor: Colors.black, // Toast背景颜色
+          textColor: Colors.white, // Toast文本颜色
+          fontSize: 16.0 // Toast文本字体大小
+      );
+      return false;
+    }
+
+
+    return true;
+  }
+  bool isPasswordContainNumAndLetter(String password) {
+    // 判断密码是否同时包含字母和数字
+    RegExp digitRegex = RegExp(r'\d');
+    RegExp letterRegex = RegExp(r'[a-zA-Z]');
+
+    bool containsDigit = digitRegex.hasMatch(password);
+    bool containsLetter = letterRegex.hasMatch(password);
+
+    return containsDigit && containsLetter;
   }
 }
 
