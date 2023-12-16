@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/account/modify_password_page.dart';
+import 'package:seecooker/pages/account/modify/modify_password_page.dart';
 import 'package:seecooker/pages/account/settings/settings_account_page.dart';
 import 'package:seecooker/providers/user_provider.dart';
 
