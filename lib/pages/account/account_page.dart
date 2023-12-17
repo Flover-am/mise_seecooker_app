@@ -285,9 +285,14 @@ Widget _buildFavoriteContent(BuildContext context) {
   }
 
 
-class UserInfoList extends StatelessWidget {
+class UserInfoList extends StatefulWidget {
   const UserInfoList({super.key});
 
+  @override
+  State<UserInfoList> createState() => _UserInfoListState();
+}
+
+class _UserInfoListState extends State<UserInfoList> with AutomaticKeepAliveClientMixin{
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -297,6 +302,10 @@ class UserInfoList extends StatelessWidget {
         );
       }),);
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
 Widget _buildSkeleton(BuildContext context) {
