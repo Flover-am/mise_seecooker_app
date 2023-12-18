@@ -17,3 +17,8 @@ MISE course project.
 
 1. [Install flutter.](https://flutter.cn/docs/get-started/install)
 2. [Use a mirror site.](https://flutter.cn/community/china)
+
+## quickstart
+
+1. run `dart run build_runner build`
+2. run `dart run flutter_native_splash:create --path=flutter_native_splash.yaml`
