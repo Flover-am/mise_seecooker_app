@@ -5,9 +5,11 @@ import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
+import 'package:seecooker/widgets/posts_waterfall.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../../providers/home_recipes_provider.dart';
+import '../../providers/post/community_posts_provider.dart';
 import '../../widgets/recipe_card.dart';
 import '../recipe/recipe_detail.dart';
 import '../search/search_page.dart';
@@ -26,25 +28,45 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> with SingleTickerProviderStateMixin{
   late TabController _tabController;
   bool flag = false;
+  ScrollController _scrollController = ScrollController();
+  bool isPinned = true;
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     UserProvider userProvider = Provider.of<UserProvider>(context,listen: false);
     userProvider.loadLoginStatus();
+
+    _scrollController.addListener(() {
+      setState(() {
+        isPinned = _scrollController.offset > 0;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context){
     UserProvider userProvider = Provider.of<UserProvider>(context);
 
-    return NestedScrollView(
+    return Scaffold(
+      body: NestedScrollView(
+        controller: _scrollController,
         body: buildBodyWidget(context),
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             buildSliverAppBar(userProvider),
           ]; },
-      );
+      ),
+      floatingActionButton: isPinned ? FloatingActionButton(
+        onPressed: () {
+          // 处理悬浮按钮点击事件
+          _scrollController.jumpTo(0);
+        },
+        child: Icon(Icons.rocket),
+      ) : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
+    );
 
   }
 
@@ -68,16 +90,20 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: const EdgeInsets.only(left: 190, top: 30),
                 expandedTitleScale: 2,
-                title: Column(
+                title:GestureDetector(
+                  onTap: () {
+                    // 在此处执行点击标题后的逻辑操作
+                    // 示例：打印一条消息
+                    _scrollController.jumpTo(0);
+                  },
+                  child: Column(
                     children: [
                       CircleAvatar(
                         radius: 15,
-                      //   backgroundImage: NetworkImage(
-                      //       'https://example.com/avatar.jpg'), // 你的头像图片地址
-                      // )
-                    backgroundImage: NetworkImage(userProvider.avatar),
-                      )
-                    ]
+                        backgroundImage: NetworkImage(userProvider.avatar),
+                      ),
+                    ],
+                  ),
                 ),
                 background: Container(
                   decoration: const BoxDecoration(
@@ -279,9 +305,8 @@ Widget _buildFavoriteContent(BuildContext context) {
         ),
       );
     }
-      return const SingleChildScrollView(
-        child: UserInfoList(),
-    );
+      return UserInfoList();
+
   }
 
 
@@ -293,14 +318,16 @@ class UserInfoList extends StatefulWidget {
 }
 
 class _UserInfoListState extends State<UserInfoList> with AutomaticKeepAliveClientMixin{
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(20, (index) {
-        return ListTile(
-          title: Text('收藏项 $index'),
-        );
-      }),);
+    // return Column(
+    //   children: List.generate(20, (index) {
+    //     return ListTile(
+    //       title: Text('收藏项 $index'),
+    //     );
+    //   }),);
+    return PostsWaterfall<CommunityPostsProvider>();
   }
 
   @override
