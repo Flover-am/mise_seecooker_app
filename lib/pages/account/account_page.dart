@@ -143,22 +143,10 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              if(userProvider.isLoggedIn) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
-                );
-              }else{
-                Fluttertoast.showToast(
-                  msg: "请先登录账号",
-                  toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
-                  gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
-                  backgroundColor: Colors.black, // Toast背景颜色
-                  textColor: Colors.white, // Toast文本颜色
-                  fontSize: 16.0,
-                  //timeInSecForIosWeb: 1,// Toast文本字体大小
-                );
-              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
             },
           ),
         ]
