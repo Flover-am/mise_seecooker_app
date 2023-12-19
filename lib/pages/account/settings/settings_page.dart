@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/account/settings/settings_aboutUs_page.dart';
 import 'package:seecooker/pages/account/settings/settings_account_page.dart';
@@ -11,6 +12,7 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('设置'),
@@ -21,10 +23,22 @@ class SettingsPage extends StatelessWidget {
             title: const Text('账号与安全'),
             leading: const Icon(Icons.lock_outline),
             onTap: () {
+              if(userProvider.isLoggedIn) {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => SettingsAccountPage()),
               );
+              }else{
+                Fluttertoast.showToast(
+                  msg: "请先登录账号",
+                  toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                  gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                  backgroundColor: Colors.black, // Toast背景颜色
+                  textColor: Colors.white, // Toast文本颜色
+                  fontSize: 16.0,
+                  //timeInSecForIosWeb: 1,// Toast文本字体大小
+                );
+              }
             },
           ),
           ListTile(
@@ -65,9 +79,21 @@ class SettingsPage extends StatelessWidget {
             leading: const Icon(Icons.exit_to_app_outlined),
             onTap: () {
               // 处理退出登录的逻辑
-              UserProvider userProvider = Provider.of<UserProvider>(context,listen: false);
-              userProvider.logout();
-              Navigator.pop(context);
+
+              if(userProvider.isLoggedIn) {
+                userProvider.logout();
+                Navigator.pop(context);
+              }else{
+                Fluttertoast.showToast(
+                  msg: "请先登录账号",
+                  toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                  gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                  backgroundColor: Colors.black, // Toast背景颜色
+                  textColor: Colors.white, // Toast文本颜色
+                  fontSize: 16.0,
+                  //timeInSecForIosWeb: 1,// Toast文本字体大小
+                );
+              }
             },
           ),
         ],
