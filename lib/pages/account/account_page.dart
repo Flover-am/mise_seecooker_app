@@ -321,13 +321,14 @@ class _UserInfoListState extends State<UserInfoList> with AutomaticKeepAliveClie
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     // return Column(
     //   children: List.generate(20, (index) {
     //     return ListTile(
     //       title: Text('收藏项 $index'),
     //     );
     //   }),);
-    return PostsWaterfall<CommunityPostsProvider>();
+    return const PostsWaterfall<CommunityPostsProvider>();
   }
 
   @override
