@@ -34,8 +34,10 @@ class RecipeService {
   static Future<HttpResult> postRecipe(NewRecipe recipe) async {
     String lastUrl = '$baseUrl/recipe';
     Options testOpt = Options(headers: {
-      await SharedPreferencesUtil.getString("tokenName"):
-      await SharedPreferencesUtil.getString("tokenValue")
+      // await SharedPreferencesUtil.getString("tokenName"):
+      // await SharedPreferencesUtil.getString("tokenValue")
+      await SaTokenUtil.getTokenName():
+      await SaTokenUtil.getTokenValue()
     });
     /// 将Recipe转换成FormData
     FormData data = await recipe.toFormData();

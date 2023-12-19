@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:seecooker/models/http_result.dart';
+import 'package:seecooker/utils/sa_token_util.dart';
 
 import '../utils/shared_preferences_util.dart';
 
@@ -54,8 +55,10 @@ class UserService {
   static Future<HttpResult> getUser() async {
     String requestUrl = "$baseUrl/user";
     Options testOpt = Options(headers: {
-      await SharedPreferencesUtil.getString("tokenName"):
-      await SharedPreferencesUtil.getString("tokenValue")
+      // await SharedPreferencesUtil.getString("tokenName"):
+      // await SharedPreferencesUtil.getString("tokenValue")
+      await SaTokenUtil.getTokenName():
+      await SaTokenUtil.getTokenValue()
     });
 
     /// 发起get请求，拿到response
@@ -84,8 +87,10 @@ class UserService {
   static Future<HttpResult> modifyUsername(String username,String newname) async {
     String requestUrl = "$baseUrl/modify/username";
     Options testOpt = Options(headers: {
-      await SharedPreferencesUtil.getString("tokenName"):
-      await SharedPreferencesUtil.getString("tokenValue")
+      // await SharedPreferencesUtil.getString("tokenName"):
+      // await SharedPreferencesUtil.getString("tokenValue")
+      await SaTokenUtil.getTokenName():
+      await SaTokenUtil.getTokenValue()
     });
 
 
@@ -105,8 +110,11 @@ class UserService {
   static Future<HttpResult> modifyAvatar(String username,String avatar) async {
     String requestUrl = "$baseUrl/modify/avatar";
     Options testOpt = Options(headers: {
-      await SharedPreferencesUtil.getString("tokenName"):
-      await SharedPreferencesUtil.getString("tokenValue")
+      // await SharedPreferencesUtil.getString("tokenName"):
+      // await SharedPreferencesUtil.getString("tokenValue")
+      await SaTokenUtil.getTokenName():
+          await SaTokenUtil.getTokenValue()
+
     });
 
     final FormData formData =FormData.fromMap(
