@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
+import 'package:seecooker/widgets/posts_waterfall.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../../providers/home_recipes_provider.dart';
+import '../../providers/post/community_posts_provider.dart';
 import '../../widgets/recipe_card.dart';
 import '../recipe/recipe_detail.dart';
 import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
-import 'modify_page.dart';
+import 'modify/modify_page.dart';
+import 'settings/settings_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -24,24 +28,45 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> with SingleTickerProviderStateMixin{
   late TabController _tabController;
   bool flag = false;
+  ScrollController _scrollController = ScrollController();
+  bool isPinned = true;
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    UserProvider userProvider = Provider.of<UserProvider>(context,listen: false);
+    userProvider.loadLoginStatus();
 
+    _scrollController.addListener(() {
+      setState(() {
+        isPinned = _scrollController.offset > 0;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context){
+    UserProvider userProvider = Provider.of<UserProvider>(context);
 
-
-    return NestedScrollView(
+    return Scaffold(
+      body: NestedScrollView(
+        controller: _scrollController,
         body: buildBodyWidget(context),
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
-            buildSliverAppBar(),
+            buildSliverAppBar(userProvider),
           ]; },
-      );
+      ),
+      floatingActionButton: isPinned ? FloatingActionButton(
+        onPressed: () {
+          // 处理悬浮按钮点击事件
+          _scrollController.jumpTo(0);
+        },
+        child: Icon(Icons.rocket),
+      ) : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
+    );
 
   }
 
@@ -55,7 +80,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
     ],);
   }
 
-  buildSliverAppBar() {
+  buildSliverAppBar(UserProvider userProvider) {
     return SliverAppBar(
               backgroundColor: Color.fromRGBO(244,164,96, 1),
               pinned: true,
@@ -65,16 +90,20 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: const EdgeInsets.only(left: 190, top: 30),
                 expandedTitleScale: 2,
-                title: const Column(
+                title:GestureDetector(
+                  onTap: () {
+                    // 在此处执行点击标题后的逻辑操作
+                    // 示例：打印一条消息
+                    _scrollController.jumpTo(0);
+                  },
+                  child: Column(
                     children: [
                       CircleAvatar(
                         radius: 15,
-                      //   backgroundImage: NetworkImage(
-                      //       'https://example.com/avatar.jpg'), // 你的头像图片地址
-                      // )
-                    backgroundImage: AssetImage('assets/images/tmp/avatar.png'),
-                      )
-                    ]
+                        backgroundImage: NetworkImage(userProvider.avatar),
+                      ),
+                    ],
+                  ),
                 ),
                 background: Container(
                   decoration: const BoxDecoration(
@@ -94,9 +123,8 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                       SizedBox(height: MediaQuery.of(context).padding.top + 16),
                       Consumer<UserProvider>(
                         builder: (context, userProvider, child) {
-                          userProvider.loadLoginStatus();
                           return userProvider.isLoggedIn
-                              ? _buildLoggedInProfileSection(userProvider)
+                              ? _buildLoggedInProfileSection(userProvider,context)
                               : _buildNotLoggedInProfileSection(context);
                         },
                       ),
@@ -113,11 +141,11 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ModifyPage()),
+                MaterialPageRoute(builder: (context) => SettingsPage()),
               );
             },
           ),
@@ -129,31 +157,10 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
 }
 
 
-  Widget _buildSkeleton(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 8),
-        SkeletonLine(
-          style: SkeletonLineStyle(
-              height: MediaQuery.of(context).size.width - 48,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              borderRadius: BorderRadius.circular(12)
-          ),
-        ),
-        const SizedBox(height: 24),
-        SkeletonLine(
-          style: SkeletonLineStyle(
-              height: 368,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              borderRadius: BorderRadius.circular(12)
-          ),
-        ),
-      ],
-    );
-  }
 
 
-  Widget _buildLoggedInProfileSection(UserProvider userProvider) {
+
+Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -166,7 +173,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                 // backgroundImage: NetworkImage(
                 //   'https://example.com/avatar.jpg',
                 // ),
-                backgroundImage: AssetImage('assets/images/tmp/avatar.png'),
+                backgroundImage: NetworkImage(userProvider.avatar),
               ),
               SizedBox(width: 20),
               Column(
@@ -198,7 +205,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               SizedBox(width: 10),
               Column(
                 children: [
-                  Text('10', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
                   Text('发布数', style: TextStyle(fontSize: 12)),
                 ],
@@ -206,16 +213,19 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               SizedBox(width: 20),
               Column(
                 children: [
-                  Text('20', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(userProvider.getLikedNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
                   Text('点赞数', style: TextStyle(fontSize: 12)),
                 ],
               ),
-              SizedBox(width: 140),
+              SizedBox(width: 120),
               ElevatedButton(
                 onPressed: () {
-                  userProvider.logout();
-                  //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const AccountPage())),
+                  //userProvider.logout();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ModifyPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.orange, // 按钮背景色
@@ -225,7 +235,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // 按钮内边距
                 ),
-                child: Text('退出登录'),
+                child: Text('编辑信息'),
               ),
             ],
           ),
@@ -267,7 +277,8 @@ Widget _buildNotLoggedInProfileSection(BuildContext context) {
   );
 }
 
-  Widget _buildFavoriteContent(BuildContext context) {
+
+Widget _buildFavoriteContent(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     if (!userProvider.isLoggedIn) {
       return const Center(
@@ -282,40 +293,56 @@ Widget _buildNotLoggedInProfileSection(BuildContext context) {
         ),
       );
     }
+      return UserInfoList();
 
-      return SingleChildScrollView(
-        // child:  FutureBuilder(
-        //         future: Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes(),
-        //         builder: (context, snapshot) {
-        //           if (snapshot.connectionState == ConnectionState.waiting) {
-        //             return _buildSkeleton(context);
-        //
-        //           } else if (snapshot.hasError) {
-        //             return Center(
-        //                 child: Text('Error: ${snapshot.error}'),
-        //               );
-        //
-        //           } else {
-        //             return const RecipeList();
-        //           }
-        //         },
-        //       ),
-        child: const RecipeList(),
-    );
   }
 
 
+class UserInfoList extends StatefulWidget {
+  const UserInfoList({super.key});
 
-class RecipeList extends StatelessWidget {
-  const RecipeList({super.key});
+  @override
+  State<UserInfoList> createState() => _UserInfoListState();
+}
+
+class _UserInfoListState extends State<UserInfoList> with AutomaticKeepAliveClientMixin{
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(20, (index) {
-        return ListTile(
-          title: Text('收藏项 $index'),
-        );
-      }),);
+    super.build(context);
+    // return Column(
+    //   children: List.generate(20, (index) {
+    //     return ListTile(
+    //       title: Text('收藏项 $index'),
+    //     );
+    //   }),);
+    return const PostsWaterfall<CommunityPostsProvider>();
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
+}
+
+Widget _buildSkeleton(BuildContext context) {
+  return Column(
+    children: [
+      const SizedBox(height: 8),
+      SkeletonLine(
+        style: SkeletonLineStyle(
+            height: MediaQuery.of(context).size.width - 48,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            borderRadius: BorderRadius.circular(12)
+        ),
+      ),
+      const SizedBox(height: 24),
+      SkeletonLine(
+        style: SkeletonLineStyle(
+            height: 368,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            borderRadius: BorderRadius.circular(12)
+        ),
+      ),
+    ],
+  );
 }

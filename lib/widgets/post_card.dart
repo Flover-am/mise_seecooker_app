@@ -1,15 +1,16 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import '../pages/community/post_detail_page.dart';
+import 'package:skeletons/skeletons.dart';
+import 'package:seecooker/pages/post/post_detail_page.dart';
 
-class CommunityCard extends StatelessWidget {
+class PostCard extends StatelessWidget {
   final int postId;
   final String cover;
   final String posterName;
   final String title;
   final String posterAvatar;
 
-  const CommunityCard({
+  const PostCard({
     super.key,
     required this.postId,
     required this.cover,
@@ -76,4 +77,41 @@ class CommunityCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class PostCardSkeleton extends StatelessWidget {
+  const PostCardSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        SkeletonLine(
+            style: SkeletonLineStyle(
+                height: 172,
+                borderRadius: BorderRadius.circular(12)
+            )
+        ),
+        const SkeletonLine(
+            style: SkeletonLineStyle(
+              height: 24,
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+            )
+        ),
+        SkeletonListTile(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          leadingStyle: SkeletonAvatarStyle(
+            height: 24,
+            width: 24,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          titleStyle: const SkeletonLineStyle(
+            height: 20,
+            width: 72,
+          ),
+        ),
+      ],
+    );
+  }
+
 }

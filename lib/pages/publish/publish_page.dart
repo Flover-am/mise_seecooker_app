@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/publish/publish_post.dart';
+import 'package:seecooker/pages/publish/publish_post_page.dart';
 import 'package:seecooker/pages/publish/publish_recipe.dart';
 
 import 'package:seecooker/providers/user_provider.dart';
@@ -87,7 +87,7 @@ class _PublishPageState extends State<PublishPage>{
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => PublishPost(param: param)),
+                                  builder: (context) => PublishPostPage(param: param)),
                             );
                           },
                           child:const SizedBox(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:seecooker/models/comment.dart';
 import 'package:seecooker/services/comment_service.dart';
@@ -28,6 +30,8 @@ class CommentsProvider extends ChangeNotifier {
     if(_list == null){
       await fetchComments();
     }
+    log("$_postId");
+    log(content);
     final res = await CommentService.postComment(_postId, content);
     if(!res.isSuccess()) {
       throw Exception('发布评论失败: ${res.message}');
