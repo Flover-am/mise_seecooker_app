@@ -46,6 +46,14 @@ class _PublishRecipeState extends State<PublishRecipe> {
   /// 步骤介绍的监听
   Map<int, TextEditingController> stepContentsController = {};
 
+  // @override
+  // void initState() {
+  //   setState(() {
+  //     titleController.text = "1";
+  //     introductionController.text = "1";
+  //   });
+  // }
+
   /// 主页面
   @override
   Widget build(BuildContext context) {
@@ -260,15 +268,15 @@ class _PublishRecipeState extends State<PublishRecipe> {
             Fluttertoast.showToast(msg: "请上传步骤对应的图片哦～");
             return;
           }
+
           /// 配料
           recipe.introduction = introductionController.text;
           ingredientsNameController.forEach((key, value) {
             recipe.ingredients
                 .add({value.text: ingredientsAmountController[key]!.text});
           });
-          if(!recipe.ingredients.any(
-                  (element) => element.keys.first!=""&& element.values.first!="")
-          ){
+          if (!recipe.ingredients.any((element) =>
+              element.keys.first != "" && element.values.first != "")) {
             Fluttertoast.showToast(msg: "配料和用量不要为空～");
             return;
           }
@@ -277,8 +285,7 @@ class _PublishRecipeState extends State<PublishRecipe> {
           recipe.name = titleController.text;
 
           /// 封面
-          recipe.cover =  FileConverter.xFile2File(cover);
-
+          recipe.cover = FileConverter.xFile2File(cover);
 
           /// 每一步的内容
           stepContentsController.forEach((key, value) {
@@ -286,14 +293,21 @@ class _PublishRecipeState extends State<PublishRecipe> {
           });
 
           var a = 1;
+
           /// 每一步的图片
           stepsCover.forEach((key, value) async {
-            File toAdd =  FileConverter.xFile2File(value);
+            File toAdd = FileConverter.xFile2File(value);
 
             recipe.stepImages.add(toAdd);
           });
           log(recipe.stepImages.length.toString());
-          var resp = await RecipeService.postRecipe(recipe);
+          var resp = await RecipeService.postRecipe(recipe).then((s) {
+            return s;
+          }, onError: (e) {
+            log(e.toString());
+            Fluttertoast.showToast(msg: "发布失败:${e.toString().split(":")[1]}");
+          });
+          ;
           log(resp.toString());
           if (!resp.isSuccess()) {
             Fluttertoast.showToast(msg: "发布失败: ${resp.message}");

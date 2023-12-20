@@ -20,7 +20,7 @@ class RecipeBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                  IgnorePointer(
-                   ignoring: model.isMarked,
+                   ignoring: model.isMarked!,
                    child:  Row(
                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                      crossAxisAlignment: CrossAxisAlignment.center,
@@ -36,14 +36,14 @@ class RecipeBar extends StatelessWidget {
                              onPressed: () {
                                value.changeStarAmount(index);
                              },
-                             icon: Icon(index > value.model.starAmount
+                             icon: Icon(index > value.model.starAmount!
                                  ? Icons.favorite_border
                                  : Icons.favorite)),
                        );
                      }),
                    ),
                  ),
-                  !model.isMarked ?IconButton(
+                  !model.isMarked! ?IconButton(
                       highlightColor: Colors.transparent,
                       splashColor: Colors.transparent,
                       onPressed:value.sendMark,
