@@ -165,7 +165,6 @@ class _RegisterFormState extends State<RegisterForm> {
     ImageProvider defaultImageProvider = AssetImage('assets/images/tmp/avatar.png');
     return GestureDetector(
         onTap: () {
-          Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
           selectAvatar();
           setState(() {
           });

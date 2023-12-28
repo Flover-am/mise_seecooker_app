@@ -98,10 +98,13 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                   },
                   child: Column(
                     children: [
+                      userProvider.isLoggedIn
+                          ?
                       CircleAvatar(
                         radius: 15,
                         backgroundImage: NetworkImage(userProvider.avatar),
-                      ),
+                      )
+                          : Container(),
                     ],
                   ),
                 ),
@@ -134,8 +137,8 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               ),
             bottom: TabBar(controller: _tabController, tabs: const [
               Tab(text: '收藏',),
-              Tab(text: '收藏'),
-              Tab(text: '收藏'),
+              Tab(text: '帖子发布'),
+              Tab(text: '我的菜谱'),
       ],        labelColor: Colors.black, // 设置选中标签的文本颜色为白色
                 unselectedLabelColor: Colors.black,
               ),
