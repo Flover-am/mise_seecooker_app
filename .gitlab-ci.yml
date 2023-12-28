@@ -36,5 +36,5 @@ deploy-job:      # This job runs in the deploy stage.
   environment: production
   script:
     - echo "Deploying application..."
-    - curl -u 211250179@nju.edu.cn:Ysh2372993 -T build/app/outputs/flutter-apk/app-release.apk 'https://box.nju.edu.cn/seafdav/%E5%AD%A6%E4%B9%A0/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E4%BA%92%E8%81%94%E7%BD%91/'
+    - curl -u "$WEBDAV_USER":"$WEBDAV_PASSWORD" -T build/app/outputs/flutter-apk/app-release.apk 'https://box.nju.edu.cn/seafdav/%E5%AD%A6%E4%B9%A0/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E4%BA%92%E8%81%94%E7%BD%91/'
     - echo "Application successfully deployed."
