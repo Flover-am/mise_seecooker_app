@@ -13,37 +13,55 @@ import 'package:seecooker/models/comment.dart';
 import 'package:seecooker/providers/comments_provider.dart';
 import 'package:seecooker/providers/post_detail_provider.dart';
 import 'package:seecooker/utils/image_util.dart';
+import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:skeletons/skeletons.dart';
 
-class PostDetailPage extends StatelessWidget {
+class PostDetailPage extends StatefulWidget {
   final int postId;
 
-  const PostDetailPage({super.key, required this.postId});
+  /// 是否为个人发布的帖子
+  final bool private;
 
+  const PostDetailPage({super.key, required this.postId, this.private = false});
+
+  @override
+  State<PostDetailPage> createState() => _PostDetailPageState();
+}
+
+class _PostDetailPageState extends State<PostDetailPage> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        Provider(create: (context) => PostDetailProvider(postId)),
-        ChangeNotifierProvider(create: (context) => CommentsProvider(postId)),
-      ],
-      builder: (context, child) {
-        return FutureBuilder(
-          future: Provider.of<PostDetailProvider>(context, listen: false).fetchPostDetail(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return _buildSkeleton();
-            } else if (snapshot.hasError) {
-              return Scaffold(
-                appBar: AppBar(),
-                body: Center(child: Text('Error: ${snapshot.error}')),
-              );
-            } else {
-              return PageContent();
-            }
-          },
-        );
-      }
+        providers: [
+          Provider(create: (context) => PostDetailProvider(widget.postId)),
+          ChangeNotifierProvider(create: (context) => CommentsProvider(widget.postId)),
+        ],
+        builder: (context, child) {
+          Future future = Provider.of<PostDetailProvider>(context, listen: false).fetchPostDetail();
+          return FutureBuilder(
+            future: future,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _buildSkeleton();
+              } else if (snapshot.hasError) {
+                log('${snapshot.error}');
+                return Scaffold(
+                  appBar: AppBar(),
+                  body: RefreshPlaceholder(
+                    message: '网络出现了一点小故障，待会再来看看吧',
+                    onRefresh: () {
+                      setState(() {
+                        future = Provider.of<PostDetailProvider>(context, listen: false).fetchPostDetail();
+                      });
+                    },
+                  ),
+                );
+              } else {
+                return PageContent(private: widget.private);
+              }
+            },
+          );
+        }
     );
   }
 
@@ -57,8 +75,8 @@ class PostDetailPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(16)
           ),
           titleStyle: const SkeletonLineStyle(
-              height: 24,
-              width: 72,
+            height: 24,
+            width: 72,
           ),
         ),
       ),
@@ -66,9 +84,9 @@ class PostDetailPage extends StatelessWidget {
         children: [
           SkeletonLine(
             style: SkeletonLineStyle(
-              height: 368,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              borderRadius: BorderRadius.circular(12)
+                height: 368,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                borderRadius: BorderRadius.circular(12)
             ),
           ),
           const SizedBox(height: 32),
@@ -92,8 +110,9 @@ class PostDetailPage extends StatelessWidget {
 }
 
 class PageContent extends StatefulWidget {
+  final bool private;
 
-  const PageContent({super.key});
+  const PageContent({super.key, required this.private});
 
   @override
   State<PageContent> createState() => _PageContentState();
@@ -149,39 +168,65 @@ class _PageContentState extends State<PageContent> {
           child: Scaffold(
             appBar: AppBar(
               scrolledUnderElevation: 0,
-              title: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 16,
-                    backgroundColor: Colors.transparent,
-                    backgroundImage: ExtendedNetworkImageProvider(
-                      model.posterAvatar,
-                      cache: true,
+              title: GestureDetector(
+                onTap: () async {
+                  // TODO: 用户个人主页
+                  // OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
+                  // PostDetailProvider postDetailProvider = Provider.of<PostDetailProvider>(context,listen: false);
+                  // await otherUserProvider.getUserById(postDetailProvider.model.posterId);
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => OtherAccountPage()),
+                  // );
+                },
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 16,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: ExtendedNetworkImageProvider(
+                        model.posterAvatar,
+                        cache: true,
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Text(
-                      model.posterName,
-                      style: Theme.of(context).textTheme.titleMedium,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Text(
+                        model.posterName,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               actions: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: IconButton(
-                    onPressed: () async {
-                      // 分享屏幕快照
-                      try {
-                        await ImageUtil.shareImageData(await _capturePng());
-                      } catch (e) {
-                        Fluttertoast.showToast(msg: "分享失败: $e");
-                      }
-                    },
-                    icon: const Icon(Icons.share),
-                  ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.home_outlined),
+                      onPressed: () {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                      },
+                    ), // 设置图标之间的间距
+                    widget.private
+                        ? IconButton(
+                      onPressed: () {
+                        _showBottomSheet(context);
+                      },
+                      icon: const Icon(Icons.more_horiz_outlined),
+                    )
+                        : IconButton(
+                      onPressed: () async {
+                        // 分享屏幕快照
+                        try {
+                          await ImageUtil.shareImageData(await _capturePng());
+                        } catch (e) {
+                          Fluttertoast.showToast(msg: "分享失败");
+                        }
+                      },
+                      icon: const Icon(Icons.share_outlined),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -190,19 +235,26 @@ class _PageContentState extends State<PageContent> {
               slivers: [
                 // 图片
                 SliverToBoxAdapter(
-                  child: ImageCardSwiper(images: model.images),
+                  child: ImageCardSwiper(images: model.images ?? []),
                 ),
                 // 文本
                 SliverToBoxAdapter(
                   child: TextSection(title: model.title, content: model.content),
                 ),
+                // 发布时间
+                SliverToBoxAdapter(
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(model.publishTime, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)))
+                    )
+                ),
                 // 分隔线
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                     child: Divider(
-                      thickness: 1,
-                      color: Theme.of(context).colorScheme.primary.withAlpha(20)
+                        thickness: 1,
+                        color: Theme.of(context).colorScheme.primary.withAlpha(20)
                     ),
                   ),
                 ),
@@ -222,51 +274,51 @@ class _PageContentState extends State<PageContent> {
                 ),
                 // 评论区
                 FutureBuilder(
-                  future: Provider.of<CommentsProvider>(context, listen: false).fetchComments(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SliverToBoxAdapter(
-                        child: SkeletonListTile(
-                          leadingStyle: SkeletonAvatarStyle(
-                            height: 36,
-                            width: 36,
-                            borderRadius: BorderRadius.circular(18)
-                          ),
-                          titleStyle: SkeletonLineStyle(
-                            height: 36,
-                            borderRadius: BorderRadius.circular(12)
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        )
-                      );
-                    } else if (snapshot.hasError) {
-                      return SliverToBoxAdapter(
-                        child: Center(
-                          child: Text('Error: ${snapshot.error}')
-                        )
-                      );
-                    } else {
-                      return Consumer<CommentsProvider>(
-                        builder: (context, provider, child) {
-                          return SliverList(
-                            delegate: SliverChildBuilderDelegate((context, index) {
-                              return CommentItem(
-                                comment: provider.itemAt(index),
-                                onTap: (commenter) {
-                                  _textEditingController.clear();
-                                  _textEditingController.text = '回复 @$commenter : ';
-                                  Overlay.of(context).insert(_overlayEntry);
-                                  _focusNode.requestFocus();
-                                },
-                              );
-                            },
-                            childCount: provider.length
+                    future: Provider.of<CommentsProvider>(context, listen: false).fetchComments(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return SliverToBoxAdapter(
+                            child: SkeletonListTile(
+                              leadingStyle: SkeletonAvatarStyle(
+                                  height: 36,
+                                  width: 36,
+                                  borderRadius: BorderRadius.circular(18)
+                              ),
+                              titleStyle: SkeletonLineStyle(
+                                  height: 36,
+                                  borderRadius: BorderRadius.circular(12)
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             )
-                          );
-                        },
-                      );
+                        );
+                      } else if (snapshot.hasError) {
+                        return const SliverToBoxAdapter(
+                            child: Center(
+                                child: RefreshPlaceholder(message: '悲报！帖子内容在网络中迷路了')
+                            )
+                        );
+                      } else {
+                        return Consumer<CommentsProvider>(
+                          builder: (context, provider, child) {
+                            return SliverList(
+                                delegate: SliverChildBuilderDelegate((context, index) {
+                                  return CommentItem(
+                                    comment: provider.itemAt(index),
+                                    onTap: (commenter) {
+                                      _textEditingController.clear();
+                                      _textEditingController.text = '回复 @$commenter : ';
+                                      Overlay.of(context).insert(_overlayEntry);
+                                      _focusNode.requestFocus();
+                                    },
+                                  );
+                                },
+                                    childCount: provider.length
+                                )
+                            );
+                          },
+                        );
+                      }
                     }
-                  }
                 ),
                 // 底部分隔线
                 SliverToBoxAdapter(
@@ -296,12 +348,17 @@ class _PageContentState extends State<PageContent> {
                     tooltip: '评论',
                     icon: const Icon(Icons.chat_bubble_outline_rounded),
                     // 滑动至评论区
-                    onPressed: () => Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease),
+                    onPressed: () {
+                      Scrollable.ensureVisible(_commentSectionTitleKey.currentContext!, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+                      // 弹出弹窗
+                      Overlay.of(context).insert(_overlayEntry);
+                      _focusNode.requestFocus();
+                    },
                   ),
                   Consumer<CommentsProvider>(
-                    builder: (context, provider, child) {
-                      return Text('${provider.length}', style: Theme.of(context).textTheme.titleSmall);
-                    }
+                      builder: (context, provider, child) {
+                        return Text('${provider.length}', style: Theme.of(context).textTheme.titleSmall);
+                      }
                   ),
                   const SizedBox(width: 16),
                   IconButton(
@@ -310,8 +367,8 @@ class _PageContentState extends State<PageContent> {
                       valueListenable: _like,
                       builder: (context, value, child) {
                         return value
-                          ? Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary)
-                          : const Icon(Icons.favorite_outline_rounded);
+                            ? Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary)
+                            : const Icon(Icons.favorite_outline_rounded);
                       },
                     ),
                     onPressed: () async {
@@ -319,15 +376,15 @@ class _PageContentState extends State<PageContent> {
                         _like.value = await provider.likePost();
                         _likeNum.value += (_like.value ? 1 : -1);
                       } catch (e) {
-                        Fluttertoast.showToast(msg: '$e');
+                        Fluttertoast.showToast(msg: '$e'.substring(11));
                       }
                     },
                   ),
                   ValueListenableBuilder<int>(
-                    valueListenable: _likeNum,
-                    builder: (context, value, child) {
-                      return Text('$value', style: Theme.of(context).textTheme.titleSmall);
-                    }
+                      valueListenable: _likeNum,
+                      builder: (context, value, child) {
+                        return Text('$value', style: Theme.of(context).textTheme.titleSmall);
+                      }
                   ),
                 ],
               ),
@@ -341,9 +398,109 @@ class _PageContentState extends State<PageContent> {
                 Overlay.of(context).insert(_overlayEntry);
                 _focusNode.requestFocus();
               },
-              child: const Icon(Icons.edit),
+              child: Icon(Icons.edit, color: Theme.of(context).colorScheme.surface),
             ),
             floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
+          ),
+        );
+      },
+    );
+  }
+
+  void _showBottomSheet(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      elevation: 0,
+      showDragHandle: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 32),
+          child: Row(
+            children: [
+              const SizedBox(width: 16),
+              SizedBox(
+                width: 64,
+                height: 64,
+                child: InkWell(
+                  onTap: () async {
+                    try {
+                      await ImageUtil.shareImageData(await _capturePng());
+                      Navigator.pop(context);
+                    } catch (e) {
+                      Fluttertoast.showToast(msg: "分享失败");
+                      Navigator.pop(context);
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.share, size: 30),
+                      const SizedBox(height: 4),
+                      Text('分享', style: Theme.of(context).textTheme.labelMedium)
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 64,
+                height: 64,
+                child: InkWell(
+                  onTap: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                              elevation: 0,
+                              title: const Text('是否删除帖子'),
+                              content: const Text('删除帖子后无法恢复'),
+                              actions: [
+                                TextButton(
+                                  child: const Text('取消'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                TextButton(
+                                  child: const Text('确认'),
+                                  onPressed: () async {
+                                    // TODO: 删除帖子
+                                    // try {
+                                    //   await Provider.of<PostDetailProvider>(ctx, listen: false).deletePost();
+                                    //   Provider.of<UserPostsProvider>(context, listen: false).fetchPosts();
+                                    //
+                                    //   Fluttertoast.showToast(msg: "帖子已删除");
+                                    //   Navigator.pop(context);
+                                    //   Navigator.pop(context);
+                                    //   Navigator.pop(context);
+                                    // } catch (e) {
+                                    //   Fluttertoast.showToast(msg: "删除失败");
+                                    //   Navigator.pop(context);
+                                    //   Navigator.pop(context);
+                                    // }
+                                  },
+                                )
+                              ]
+                          );
+                        }
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.delete_outlined, size: 30),
+                      const SizedBox(height: 4),
+                      Text('删除', style: Theme.of(context).textTheme.labelMedium)
+                    ],
+                  ),
+                ),
+              )
+            ],
           ),
         );
       },
@@ -361,6 +518,7 @@ class _PageContentState extends State<PageContent> {
             topRight: Radius.circular(12),
             topLeft: Radius.circular(12),
           ),
+          elevation: 3,
           color: Theme.of(context).colorScheme.surfaceVariant,
           child: Padding(
             padding: const EdgeInsets.only(top: 16),
@@ -397,7 +555,7 @@ class _PageContentState extends State<PageContent> {
                       await Provider.of<CommentsProvider>(buildContext, listen: false).createComment(_textEditingController.text);
                       Fluttertoast.showToast(msg: "评论已发送");
                     } catch (e) {
-                      Fluttertoast.showToast(msg: "$e");
+                      Fluttertoast.showToast(msg: "$e".substring(11));
                     }
                     _textEditingController.clear();
                   } else {
@@ -464,40 +622,40 @@ class _ImageCardSwiperState extends State<ImageCardSwiper> {
         indicatorLayout: PageIndicatorLayout.COLOR,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
-            padding: const EdgeInsets.only(
-              left: 16,
-              right: 16,
-              bottom: 32,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        fullscreenDialog: true,
-                        builder: (context) {
-                          return _buildImagePageView(context);
-                        }
-                      )
-                    );
-                    _controller.move(_currentIndex);
-                  },
-                  child: Hero(
-                    tag: widget.images[index],
-                    child: ExtendedImage.network(
-                      widget.images[index],
-                      cache: true,
-                      enableLoadState: false,
-                      fit: BoxFit.cover,
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                bottom: 32,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () async {
+                      await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              fullscreenDialog: true,
+                              builder: (context) {
+                                return _buildImagePageView(context);
+                              }
+                          )
+                      );
+                      _controller.move(_currentIndex);
+                    },
+                    child: Hero(
+                      tag: widget.images[index],
+                      child: ExtendedImage.network(
+                        widget.images[index],
+                        cache: true,
+                        enableLoadState: false,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            )
+              )
           );
         },
         itemCount: widget.images.length,
@@ -545,25 +703,25 @@ class _ImageCardSwiperState extends State<ImageCardSwiper> {
               ),
             ),
             Positioned(
-              top: MediaQuery.of(context).padding.top + 16,
-              child: ValueListenableBuilder<int>(
-                valueListenable: _tipIndex,
-                builder: (context, value, child) => Text('${value + 1}/${widget.images.length}', style: Theme.of(context).textTheme.titleMedium),
-              )
+                top: MediaQuery.of(context).padding.top + 16,
+                child: ValueListenableBuilder<int>(
+                  valueListenable: _tipIndex,
+                  builder: (context, value, child) => Text('${value + 1}/${widget.images.length}', style: Theme.of(context).textTheme.titleMedium),
+                )
             ),
             Positioned(
-              bottom: MediaQuery.of(context).padding.bottom + 16,
-              child: ActionChip(
-                label: const Text('保存图片'),
-                onPressed: () async {
-                  try {
-                    await ImageUtil.saveImageToGallery(widget.images[_currentIndex]);
-                    Fluttertoast.showToast(msg: "图片已保存至相册");
-                  } catch (e) {
-                    Fluttertoast.showToast(msg: "图片保存失败：$e");
-                  }
-                },
-              )
+                bottom: MediaQuery.of(context).padding.bottom + 16,
+                child: ActionChip(
+                  label: const Text('保存图片'),
+                  onPressed: () async {
+                    try {
+                      await ImageUtil.saveImageToGallery(widget.images[_currentIndex]);
+                      Fluttertoast.showToast(msg: "图片已保存至相册");
+                    } catch (e) {
+                      Fluttertoast.showToast(msg: "图片保存失败");
+                    }
+                  },
+                )
             ),
           ],
         ),
@@ -588,9 +746,9 @@ class TextSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.headlineSmall),
+          SelectableText(title, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
-          Text(content, style: Theme.of(context).textTheme.bodyLarge),
+          SelectableText(content, style: Theme.of(context).textTheme.bodyLarge),
         ],
       ),
     );
@@ -613,10 +771,23 @@ class CommentItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: Colors.transparent,
-            backgroundImage: NetworkImage(comment.commenterAvatar),
+          InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () async {
+              // TODO: 用户个人主页
+              // log("commenterId: ${comment.commenterId}");
+              // OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
+              // await otherUserProvider.getUserById(comment.commenterId);
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => OtherAccountPage()),
+              // );
+            },
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.transparent,
+              backgroundImage: NetworkImage(comment.commenterAvatar),
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -638,14 +809,14 @@ class CommentItem extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text.rich(
                         TextSpan(
-                          style: Theme.of(context).textTheme.labelMedium,
-                          children: [
-                            TextSpan(
-                              text: comment.commentTime,
-                              style: TextStyle(color: Theme.of(context).colorScheme.outline)
-                            ),
-                            TextSpan(text: ' 回复', style: Theme.of(context).textTheme.bodySmall),
-                          ]
+                            style: Theme.of(context).textTheme.labelMedium,
+                            children: [
+                              TextSpan(
+                                  text: comment.commentTime,
+                                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))
+                              ),
+                              const TextSpan(text: ' 回复', style: TextStyle(fontWeight: FontWeight.bold)),
+                            ]
                         ),
                       ),
                     ],

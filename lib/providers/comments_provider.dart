@@ -17,7 +17,7 @@ class CommentsProvider extends ChangeNotifier {
   Future<void> fetchComments() async {
     final res = await CommentService.getComments(_postId);
     if(!res.isSuccess()) {
-      throw Exception('未拿到评论数据: ${res.message}');
+      throw Exception('未获取到评论数据: ${res.message}');
     }
     _list = res.data
         .map((e) => Comment.fromJson(e))
@@ -30,8 +30,6 @@ class CommentsProvider extends ChangeNotifier {
     if(_list == null){
       await fetchComments();
     }
-    log("$_postId");
-    log(content);
     final res = await CommentService.postComment(_postId, content);
     if(!res.isSuccess()) {
       throw Exception('发布评论失败: ${res.message}');
