@@ -11,9 +11,10 @@ import 'package:seecooker/providers/post/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/providers/recommend_provider.dart';
-import 'package:seecooker/providers/home_recipes_provider.dart';
-import 'package:seecooker/utils/color_schemes.dart';
+import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:seecooker/utils/theme_util.dart';
+import 'package:theme_provider/theme_provider.dart';
 
 void main() {
   // WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -48,17 +49,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'seecooker',
-      theme: ThemeData(
-        colorScheme: customLightColorScheme,
-        useMaterial3: true,
+    return ThemeProvider(
+      themes: themes,
+      saveThemesOnChange: true,
+      loadThemeOnInit: true,
+      child: ThemeConsumer(
+        child: Builder(
+          builder: (themeContext) => MaterialApp(
+            title: 'seecooker',
+            theme: ThemeProvider.themeOf(themeContext).data,
+            home: const MainPage(),
+          ),
+        ),
       ),
-      darkTheme: ThemeData(
-        colorScheme: darkColorScheme,
-        useMaterial3: true,
-      ),
-      home: const MainPage(),
     );
   }
 }

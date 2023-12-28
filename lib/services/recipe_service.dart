@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:seecooker/models/NewRecipe.dart';
 import 'package:seecooker/models/http_result.dart';
+import 'package:seecooker/utils/server_url_util.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
 import 'package:seecooker/utils/sa_token_util.dart';
 
 class RecipeService {
   /// 测试阶段可以先用apiFox的Mock的url
-  static const String baseUrl = 'http://124.222.18.205:8080/v1';
+  static const String baseUrl = ServerUrlUtil.baseUrl;
 
   /// 使用Dio进行网络请求
   static Dio dio = Dio();

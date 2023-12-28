@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/recipe/recipe_detail.dart';
-import 'package:seecooker/providers/home_recipes_provider.dart';
+import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/widgets/recipe_card.dart';
 import 'package:skeletons/skeletons.dart';
@@ -178,7 +178,7 @@ class RecipeList extends StatelessWidget {
                 ),
               );
             },
-            childCount: provider.length,
+            childCount: provider.count,
           )
         );
       }

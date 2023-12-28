@@ -3,9 +3,10 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:seecooker/models/http_result.dart';
 import 'package:seecooker/utils/sa_token_util.dart';
+import 'package:seecooker/utils/server_url_util.dart';
 
 class PostService {
-  static const String baseUrl = 'http://124.222.18.205:8080/v1';
+  static const String baseUrl = ServerUrlUtil.baseUrl;
 
   static Dio dio = Dio();
 
@@ -48,6 +49,30 @@ class PostService {
       await SaTokenUtil.getTokenValue()
     });
     final response = await dio.put(lastUrl, options: options);
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
+  }
+
+  static Future<HttpResult> deletePost(int postId) async {
+    String lastUrl = '$baseUrl/post/$postId';
+    Options options = Options(headers: {
+      await SaTokenUtil.getTokenName():
+      await SaTokenUtil.getTokenValue()
+    });
+    final response = await dio.delete(lastUrl, options: options);
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
+  }
+
+  static Future<HttpResult> getPostsByPage(int pageNo) async {
+    String lastUrl = '$baseUrl/posts/page/$pageNo';
+    final response = await dio.get(lastUrl);
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
     } else {

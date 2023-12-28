@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:seecooker/models/http_result.dart';
 import 'package:seecooker/utils/sa_token_util.dart';
+import 'package:seecooker/utils/server_url_util.dart';
 
 class CommentService {
-  static const String baseUrl = 'http://124.222.18.205:8080/v1';
+  static const String baseUrl = ServerUrlUtil.baseUrl;
 
   static Dio dio = Dio();
 
