@@ -25,7 +25,7 @@ build-job:       # This job runs in the build stage, which runs first.
   image: cirrusci/flutter:stable
   script:
     - echo "Building apk..."
-    - docker run --rm -v $(pwd):/app -w /app cirrusci/flutter:stable flutter build apk
+    - docker run --rm -v $(pwd):/app --env PUB_HOSTED_URL=https://mirror.sjtu.edu.cn/flutter-infra --env FLUTTER_STORAGE_BASE_URL=https://mirror.sjtu.edu.cn -w /app ghcr.io/cirruslabs/flutter:3.16.5 flutter build apk
     - echo "Build complete."
   artifacts:
     paths :
