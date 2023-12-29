@@ -2,8 +2,8 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/search/search_page.dart';
-import 'package:seecooker/providers/search/search_result_provider.dart';
-import 'package:seecooker/widgets/recipe_list_item.dart';
+import 'package:seecooker/providers/recipe/search_recipes_provider.dart';
+import 'package:seecooker/widgets/recipe_item.dart';
 import 'package:skeletons/skeletons.dart';
 
 class SearchResultPage extends StatelessWidget {
@@ -17,7 +17,7 @@ class SearchResultPage extends StatelessWidget {
     _textEditingController.text = query;
 
     return Provider(
-      create: (BuildContext context) => SearchResultProvider(),
+      create: (BuildContext context) => SearchRecipesProvider(query),
       builder: (context, child) {
         return Scaffold(
           appBar: AppBar(
@@ -46,7 +46,7 @@ class SearchResultPage extends StatelessWidget {
             ],
           ),
           body: FutureBuilder(
-            future: Provider.of<SearchResultProvider>(context).fetchSearchResult(query),
+            future: Provider.of<SearchRecipesProvider>(context).fetchRecipes(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting){
                 return Center(child: _buildSkeleton());
@@ -55,9 +55,9 @@ class SearchResultPage extends StatelessWidget {
                   child: SelectableText('Error: ${snapshot.error}'),
                 );
               } else {
-                return Consumer<SearchResultProvider>(
+                return Consumer<SearchRecipesProvider>(
                   builder: (context, provider, child) {
-                    if(provider.length == 0){
+                    if(provider.count == 0){
                       return Container(
                         padding: const EdgeInsets.all(32),
                         child: Text('呜呜，小助手找不到“$query”的相关结果呢，\n我们再试试其他的关键词吧。( ╯□╰ )')
@@ -65,7 +65,7 @@ class SearchResultPage extends StatelessWidget {
                     } else {
                       return ListView.builder(
                         itemBuilder: (context, index) {
-                          return RecipeListItem(
+                          return RecipeItem(
                             id: provider.itemAt(index).id,
                             name: provider.itemAt(index).name,
                             cover: provider.itemAt(index).cover,
@@ -73,7 +73,7 @@ class SearchResultPage extends StatelessWidget {
                             authorAvatar: provider.itemAt(index).authorAvatar,
                           );
                         },
-                        itemCount: provider.length,
+                        itemCount: provider.count,
                       );
                     }
                   }
