@@ -6,14 +6,15 @@ class RecipeModel {
   late String name;
   late String cover;
   late String introduction;
+  late List<String> stepImages;
+  late List<String> stepContents;
   late String authorName;
   late String authorAvatar;
-  late List<String> stepContents;
-  late List<String> stepImages;
-  late int starAmount;
-  late List<Map<String,String>> ingredients;
   late bool isFavorite;
-  late bool isMarked;
+
+  late int? starAmount = 0;
+  late List<Map<String,String>>? ingredients;
+  late bool? isMarked = false;
   RecipeModel.empty();
 
   RecipeModel(

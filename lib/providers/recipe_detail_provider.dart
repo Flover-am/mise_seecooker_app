@@ -18,6 +18,9 @@ class RecipeDetailProvider with ChangeNotifier {
     }
     /// 将数据转换成Model
     _model = RecipeModel.fromJson(res.data);
+    _model.starAmount ??= 0;
+    _model.isMarked ??= false;
+
     return _model;
   }
 
