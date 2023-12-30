@@ -23,8 +23,9 @@ class RecipeService {
   }
 
   static Future<HttpResult> searchRecipes(String query) async {
-    String lastUrl = "$baseUrl/recipes/search";
+    String lastUrl = "https://mock.apifox.com/m2/3614939-0-default/128343201";
     final response = await dio.get(lastUrl, queryParameters: {'query': query});
+    print(response);
     if (response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
     } else {
