@@ -30,7 +30,7 @@ class SearchResultPage extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => SearchAiProvider(query)),
       ],
       builder: (context, child) {
-        Future aiResponseFuture = Provider.of<SearchAiProvider>(context).getAiResponse();
+        Future aiResponseFuture = Provider.of<SearchAiProvider>(context).fetchAiResponse();
         return Scaffold(
           appBar: AppBar(
             titleSpacing: 0,

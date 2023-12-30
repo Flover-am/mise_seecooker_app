@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seecooker/services/ai_service.dart';
 
 class SearchAiProvider with ChangeNotifier {
   late String _response;
@@ -9,10 +10,12 @@ class SearchAiProvider with ChangeNotifier {
 
   String get response => _response;
 
-  Future<void> getAiResponse() async {
-    await Future.delayed(const Duration(seconds: 1));
-
-    _response = "下面是$query的答案啊阿斯顿八大关核武器的感情唯一的v请问如图围观人群v请问如图围观人v请问如图围观人v请问如图围观人v请问如图围观人v请问如图围观人v请问如图围观人v请问如图围观人v请问如图围观人v请问如图围观人";
+  Future<void> fetchAiResponse() async {
+    final res = await AiService.getAiResponse(query);
+    if(!res.isSuccess()) {
+      throw Exception('未获取到大模型返回结果: ${res.message}');
+    }
+    _response = res.data;
   }
 
 }
