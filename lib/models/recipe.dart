@@ -4,6 +4,7 @@ part 'recipe.g.dart';
 
 @JsonSerializable()
 class Recipe {
+  @JsonKey(name: 'recipeId')
   int id;
   String name;
   String cover;
