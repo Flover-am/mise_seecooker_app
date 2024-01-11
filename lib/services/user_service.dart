@@ -133,17 +133,17 @@ class UserService {
   static Future<HttpResult> modifyPassword(String username,String password, String newPassword) async {
     String requestUrl = "$baseUrl/modify/password";
 
+    Map<String, dynamic> requestData = {
+      "username": username,
+      "password": password,
+      "newPassword":newPassword,
+    };
 
-    final FormData formData =FormData.fromMap(
-        {  "username": username,
-          "password":password,
-          "newPassword":newPassword,
-        });
+    dio.options.headers['Content-Type'] = 'application/json'; // Set the request content type to JSON
 
-    var data = formData;
+    var response = await dio.put(requestUrl, data: jsonEncode(requestData));
 
-    /// 发送请求，拿到 Response
-    var response = await dio.post(requestUrl, data: data);
+
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }
