@@ -1,18 +1,16 @@
 import 'dart:developer';
 
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/widgets/recipe_card.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
-import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/pages/search/search_page.dart';
-
-import '../publish/publish_page.dart';
+import 'package:seecooker/pages/publish/publish_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -60,45 +58,52 @@ class _HomePageState extends State<HomePage> {
                     child: child,
                   );
                 },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.background
-                      ]
-                    )
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 96),
-                      Consumer<UserProvider>(
-                        builder: (context, provider, child) {
-                          if(provider.username != '未登录') {
-                            return Text('亲爱的 ${provider.username} ，', style: Theme.of(context).textTheme.titleMedium);
-                          } else {
-                            return Text('你好，', style: Theme.of(context).textTheme.titleMedium);
-                          }
-                        },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 88,
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.background
+                              ]
+                          )
+                      )
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Consumer<UserProvider>(
+                            builder: (context, provider, child) {
+                              if(provider.username != '未登录') {
+                                return Text('亲爱的 ${provider.username} ，', style: Theme.of(context).textTheme.titleMedium);
+                              } else {
+                                return Text('你好，', style: Theme.of(context).textTheme.titleMedium);
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          Text.rich(
+                            TextSpan(
+                              style: Theme.of(context).textTheme.titleMedium,
+                              children: [
+                                const TextSpan(text: '欢迎使用 '),
+                                TextSpan(text: 'seecooker', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                                const TextSpan(text: ' ( \'◡\' )'),
+                              ]
+                            )
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
-                      Text.rich(
-                        TextSpan(
-                          style: Theme.of(context).textTheme.titleMedium,
-                          children: [
-                            const TextSpan(text: '欢迎使用 '),
-                            TextSpan(text: 'seecooker', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-                            const TextSpan(text: ' ( \'◡\' )'),
-                          ]
-                        )
-                      ),
-                      //Text('欢迎使用 seecooker ( \'◡\' )', style: Theme.of(context).textTheme.titleMedium),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
