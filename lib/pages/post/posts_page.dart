@@ -40,7 +40,7 @@ class _PostsPageState extends State<PostsPage> {
             MaterialPageRoute(builder: (context) => const PublishPostPage(param: "")),
           ),
         },
-        child: const Icon(Icons.edit),
+        child: Icon(Icons.edit, color: Theme.of(context).colorScheme.surface),
       ),
       body: const PostsWaterfall<CommunityPostsProvider>(),
     );

@@ -33,7 +33,7 @@ class ExploreService {
 
   static Future<HttpResult> fetchMorePosts(List<String> ingredients) async {
     String lastUrl = '$baseUrl/recipe/explore';
-    Map<String, List<String>> map = Map();
+    Map<String, List<String>> map = Map();//请求参数放在map中
     map["ingredients"] = ingredients;
     // final FormData formData =FormData.fromMap(map);
     final response = await dio.get(lastUrl,queryParameters: map);
@@ -44,7 +44,12 @@ class ExploreService {
     }
   }
   static Future<void> favourite(int id) async {
-    dio.put("$baseUrl/recipe/favorite/$id");
+    final response = await dio.put("$baseUrl/recipe/favorite/$id");
+    if(response.statusCode == 200) {
+      log("success");
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
   }
 
 }

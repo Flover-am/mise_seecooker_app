@@ -73,7 +73,7 @@ class ExpRecipeCard extends StatelessWidget {
                   backgroundImage: NetworkImage(authorAvatar),
                 ),
                 title: Text(author,style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27)),
-                subtitle: Text(introduction.substring(0,17)+"……",style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27)),
+                subtitle: Text(introduction.length>17 ? introduction.substring(0,17)+"……" : introduction,style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27)),
               ),
             ),
           ))

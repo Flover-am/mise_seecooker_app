@@ -9,9 +9,11 @@ class UserInfo {
 
   int postNum;
 
-  int getLikedNum;
+  int? getLikedNum;
 
   String avatar;
+
+  String? signature;
 
 
   UserInfo(
@@ -19,10 +21,12 @@ class UserInfo {
       this.postNum,
       this.getLikedNum,
       this.avatar,
+      this.signature,
       );
 
   factory UserInfo.fromJson(Map<String, dynamic> json) =>
       _$UserInfoFromJson(json);
+
 
   Map<String, dynamic> toJson() => _$UserInfoToJson(this);
 }

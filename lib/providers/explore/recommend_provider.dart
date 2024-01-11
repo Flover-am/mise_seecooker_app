@@ -1,3 +1,5 @@
+/// 发布用户选择
+
 import 'dart:ffi';
 import 'dart:math';
 
@@ -15,7 +17,6 @@ class RecommendProvider extends ChangeNotifier {
   ExploreRecipe itemAt(int index) => _list[index];
   Future<void> fetchPosts(List<String> ingredients) async {
     final res = await ExploreService.fetchPosts(ingredients);
-    print("!!!!!!!!!!!!!1");
     print(res.data);
     List<ExploreRecipe> cardlist = [];
     cardlist = res.data

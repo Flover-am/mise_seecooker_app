@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:seecooker/models/comment.dart';
-import 'package:seecooker/services/comment_service.dart';
+import 'package:seecooker/services/community_service.dart';
 
 class CommentsProvider extends ChangeNotifier {
   final int _postId;
@@ -15,7 +15,7 @@ class CommentsProvider extends ChangeNotifier {
   Comment itemAt(int index) => _list![index];
 
   Future<void> fetchComments() async {
-    final res = await CommentService.getComments(_postId);
+    final res = await CommunityService.getComments(_postId);
     if(!res.isSuccess()) {
       throw Exception('未获取到评论数据: ${res.message}');
     }
@@ -30,7 +30,7 @@ class CommentsProvider extends ChangeNotifier {
     if(_list == null){
       await fetchComments();
     }
-    final res = await CommentService.postComment(_postId, content);
+    final res = await CommunityService.postComment(_postId, content);
     if(!res.isSuccess()) {
       throw Exception('发布评论失败: ${res.message}');
     }

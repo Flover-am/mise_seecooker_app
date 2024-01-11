@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/register_page.dart';
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key});
@@ -99,6 +99,7 @@ class _LoginFormState extends State<LoginForm> {
                     context, listen: false);
                 try {
                   await userProvider.login(username, password);
+                  print("用户id： "+userProvider.id.toString());
                 } catch (e) {
                   // 处理异常的代码
                   if(e.toString().contains("Password error")) {
@@ -155,18 +156,31 @@ class _LoginFormState extends State<LoginForm> {
             child: const Text('登录'),
           ),
           const SizedBox(height: 16),
-          RichText(
-            text: TextSpan(
-              text: '还没有账号？点击这里注册',
-              style: TextStyle(color: Colors.grey),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const RegisterPage()),
-                  );
-                },
-            ),
+          Text.rich(
+              TextSpan(
+                  style: Theme.of(context).textTheme.labelLarge,
+                  children: [
+                    TextSpan(
+                        text: '还没有账号？点击这里',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)
+                        )
+                    ),
+                    TextSpan(
+                      text: '注册 ',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const RegisterPage()),
+                          );
+                        },
+                    )
+                  ]
+              )
           ),
         ],
       ),
