@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
+import 'package:seecooker/providers/user/user_favor_recipe_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/providers/user/user_recipe_provider.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
@@ -51,8 +52,15 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
   Widget build(BuildContext context){
     UserProvider userProvider = Provider.of<UserProvider>(context);
     int id = userProvider.id;
-    return ChangeNotifierProvider<UserRecipeProvider>(
-        create: (_) => UserRecipeProvider(id),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserRecipeProvider>(
+          create: (_) => UserRecipeProvider(id),
+        ),
+        ChangeNotifierProvider<UserFavorRecipesProvider>(
+          create: (_) => UserFavorRecipesProvider(id),
+        ),
+      ],
       child: Scaffold(
         body: NestedScrollView(
           controller: _scrollController,
@@ -81,7 +89,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
     return TabBarView(
       controller: _tabController,
       children: [
-      _buildRecipesContent(context),
+      _buildFavorRecipesContent(context),
       _buildRecipesContent(context),
       _buildFavoriteContent(context),
     ],);
@@ -314,6 +322,25 @@ Widget _buildRecipesContent(BuildContext context) {
 
 }
 
+Widget _buildFavorRecipesContent(BuildContext context) {
+  UserProvider userProvider = Provider.of<UserProvider>(context);
+  if (!userProvider.isLoggedIn) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '请先登录',
+            style: TextStyle(fontSize: 20), // 设置字体大小为24
+          ),
+        ],
+      ),
+    );
+  }
+  return UserFavorRecipesList();
+
+}
+
 class UserInfoList extends StatefulWidget {
   const UserInfoList({super.key});
 
@@ -354,7 +381,32 @@ class _UserRecipesListState extends State<UserRecipesList> with AutomaticKeepAli
   Widget build(BuildContext context) {
     super.build(context);
     return const RecipesList<UserRecipeProvider>(
-      emptyMessage: '抱歉',
+      emptyMessage: '暂无菜谱',
+      enableRefresh: false,
+      private: false,
+    );
+    //return const PostsWaterfall<CommunityPostsProvider>();
+  }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
+}
+
+class UserFavorRecipesList extends StatefulWidget {
+  const UserFavorRecipesList({super.key});
+
+  @override
+  State<UserFavorRecipesList> createState() => _UserFavorRecipesListState();
+}
+
+class _UserFavorRecipesListState extends State<UserFavorRecipesList> with AutomaticKeepAliveClientMixin{
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return const RecipesList<UserFavorRecipesProvider>(
+      emptyMessage: '暂无菜谱',
       enableRefresh: false,
       private: false,
     );

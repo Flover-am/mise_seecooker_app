@@ -188,4 +188,15 @@ class UserService {
     return HttpResult.fromJson(response.data);
   }
 
+  static Future<HttpResult> getUserFavorRecipe(int id) async {
+    String requestUrl = "$baseUrl/recipe/favorites/$id";
+    Options testOpt = Options(headers: {
+      await SaTokenUtil.getTokenName():
+      await SaTokenUtil.getTokenValue()
+    });
+    /// 发起get请求，获取到response
+    var response = await dio.get(requestUrl,options: testOpt);
+    /// 将response的data转换为HttpResult返回给上一层
+    return HttpResult.fromJson(response.data);
+  }
 }
