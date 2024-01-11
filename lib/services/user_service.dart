@@ -147,6 +147,22 @@ class UserService {
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }
+  static Future<HttpResult> modifySignature(String newSignature) async {
+    String requestUrl = "$baseUrl/modify/signature";
+    Options testOpt = Options(headers: {
+      await SaTokenUtil.getTokenName():
+      await SaTokenUtil.getTokenValue()
+    });
+    final FormData formData =FormData.fromMap(
+        {     "signature": newSignature,
+        });
+
+    var data = formData;
+    /// 发送请求，获取到 Response
+    var response = await dio.put(requestUrl, data: data,options: testOpt);
+    /// 将Response的data转换成封装对象HttpResult
+    return HttpResult.fromJson(response.data);
+  }
 
 
 }
