@@ -1,36 +1,59 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
+import 'package:seecooker/models/Ingredients.dart';
+import 'package:seecooker/providers/explore/explore_post_provider.dart';
 
-import '../pages/post_page.dart';
+
 
 class MySearchBar extends StatefulWidget {
-  const MySearchBar({super.key});
-
+  const MySearchBar({super.key ,required this.categories});
+  final List<Ingredients> categories;
   @override
-  _MySearchBarState createState() => _MySearchBarState();
+  _MySearchBarState createState() => _MySearchBarState(categories: this.categories);
 }
 
+String FindDish(String dish, List<Ingredients> categories){
+  if(dish=="") {
+    return "";
+  }
+  for(var category in categories){
+    for(String ingredient in category.name) {
+      if(ingredient==dish)
+        return ingredient;
+    }
+  }
+  return "";
+}
 class _MySearchBarState extends State<MySearchBar> {
-  List<String> _searchHistory = ['history 1', 'history 2', 'history 3', 'history 4', 'history 5', 'history 6'];
-
+  List<String> _searchHistory = [];
+  String search = "0";
+  String suggest = "没有对应食材";
+  _MySearchBarState({required this.categories});
+  final List<Ingredients> categories;
   Iterable<Widget> getSuggestions(SearchController controller) {
+    setState(() {
+      if(FindDish(search, categories)!="") {
+        suggest=FindDish(search, categories);
+      }
+    });
     var searchItem = ListTile(
       leading: const Icon(Icons.arrow_outward),
-      title: Text('111'),
+      title: Text(suggest),
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PostPage(param: '111'))
-        );
+        if(!Provider.of<ExplorePostProvider>(context, listen: false).contain(FindDish(search, categories))) {
+          Provider.of<ExplorePostProvider>(context, listen: false).add(FindDish(search, categories));
+        }
       },
     );
     var historyList = _searchHistory.map((item) => ListTile(
       leading: const Icon(Icons.history),
       title: Text(item),
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PostPage(param: item))
-        );
+        if(!Provider.of<ExplorePostProvider>(context, listen: false).contain(item)) {
+          Provider.of<ExplorePostProvider>(context, listen: false).add(FindDish(item,categories));
+        }
       },
     ));
     var clearItem = ListTile(
@@ -63,14 +86,41 @@ class _MySearchBarState extends State<MySearchBar> {
             radius: 12,
             backgroundImage: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
           )],
-          hintText: '搜索菜谱',
-          onTap: () => { controller.openView() },
-          onChanged: (_) => { controller.openView() },
+          hintText: '搜索食材',
           onSubmitted: (text) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PostPage(param: text))
-            );
+            if(FindDish(text,categories)!=""){
+              if(!Provider.of<ExplorePostProvider>(context, listen: false).contain(FindDish(text,categories))) {
+                Provider.of<ExplorePostProvider>(context, listen: false).add(FindDish(text,categories));
+                Fluttertoast.showToast(
+                    msg: "成功添加${FindDish(text,categories)}！",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black,
+                    fontSize: 16.0);
+              }
+              else {
+                Fluttertoast.showToast(
+                    msg: "您已添加过${FindDish(text,categories)}！",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.white,
+                    textColor: Colors.black,
+                    fontSize: 16.0);
+              }
+            }
+            else{
+        Fluttertoast.showToast(
+        msg: "没有找到该食材！",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.white,
+        textColor: Colors.black,
+        fontSize: 16.0);
+            }
           },
         );
       },

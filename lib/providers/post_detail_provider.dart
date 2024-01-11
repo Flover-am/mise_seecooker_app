@@ -1,40 +1,37 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
 import 'package:seecooker/models/post_detail.dart';
+import 'package:seecooker/services/community_service.dart';
 
-class PostDetailProvider with ChangeNotifier{
-  late PostDetailModel _model;
+class PostDetailProvider{
+  final int _postId;
+  late PostDetail _model;
 
-  PostDetailModel get model => _model;
+  PostDetailProvider(this._postId);
 
-  Future<PostDetailModel> fetchPostDetail(int id) async {
-    // TODO: ADD HTTP GET REQUEST
-    await Future.delayed(const Duration(seconds: 2));
-    _model = PostDetailModel(
-      id,
-      '作者$id',
-      '标题$id',
-      'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-      '内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容$id',
-      ['https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-       'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg',
-       'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'
-      ],
-      [
-        CommentModel(1, 'author1', DateTime.now(), '内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容', 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-        CommentModel(2, 'author2', DateTime.now(), '内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容', 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-        CommentModel(3, 'author3', DateTime.now(), '内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容', 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-        CommentModel(4, 'author4', DateTime.now(), '内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容', 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-        CommentModel(5, 'author5', DateTime.now(), '内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容', 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-        CommentModel(6, 'author6', DateTime.now(), '内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容', 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-        CommentModel(7, 'author7', DateTime.now(), '内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容', 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-      ]
-    );
-    return _model;
+  PostDetail get model => _model;
+
+  Future<void> fetchPostDetail() async {
+    final res = await CommunityService.getPostDetail(_postId);
+    if(!res.isSuccess()) {
+      throw Exception('未获取到帖子详情数据: ${res.message}');
+    }
+    _model = PostDetail.fromJson(res.data);
   }
 
-  void postComment(String content) {
-    _model.comments.insert(0, CommentModel(6, 'newauthor', DateTime.now(), content, 'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'));
-    // TODO: ADD HTTP POST REQUEST
-    notifyListeners();
+  Future<bool> likePost() async {
+    final res = await CommunityService.likePost(_postId);
+    if(!res.isSuccess()) {
+      throw Exception('点赞失败: ${res.message}');
+    }
+    return res.data as bool;
+  }
+
+  Future<void> deletePost() async {
+    final res = await CommunityService.deletePost(_postId);
+    if(!res.isSuccess()) {
+      throw Exception('点赞失败: ${res.message}');
+    }
   }
 }

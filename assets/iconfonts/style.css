@@ -1,0 +1,31 @@
+@font-face {
+  font-family: 'ai';
+  src:  url('fonts/ai.eot?vj6t8h');
+  src:  url('fonts/ai.eot?vj6t8h#iefix') format('embedded-opentype'),
+    url('fonts/ai.ttf?vj6t8h') format('truetype'),
+    url('fonts/ai.woff?vj6t8h') format('woff'),
+    url('fonts/ai.svg?vj6t8h#ai') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'ai' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-ai:before {
+  content: "\e900";
+  color: #75a99c;
+}
