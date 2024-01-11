@@ -1,7 +1,9 @@
+/// 各个分类具体菜品的展示和选择框
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/providers/explore_post_provider.dart';
+import 'package:seecooker/providers/explore/explore_post_provider.dart';
 
 class ChosenLine extends StatelessWidget{
   const ChosenLine({super.key, required this.title, required this.dishesFilter});

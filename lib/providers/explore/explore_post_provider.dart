@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 
-import '../models/post.dart';
 
 class ExplorePostProvider extends ChangeNotifier {
   final List<String> _list = [];
