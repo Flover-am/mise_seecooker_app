@@ -11,7 +11,7 @@ import '../utils/shared_preferences_util.dart';
 
 class UserService {
   /// 测试阶段可以先用apiFox的Mock的url
-  static const String baseUrl = ServerUrlUtil.baseUrl;
+  static const String baseUrl = ServerUrlUtil.baseUrl+'/user';
   /// 使用Dio进行网络请求
   static var dio = Dio();
 
@@ -43,7 +43,7 @@ class UserService {
   }
 
   static Future<HttpResult> getUserById(int id) async {
-    String requestUrl = "$baseUrl/user/$id";
+    String requestUrl = "$baseUrl/info/$id";
 
 
     /// 发起get请求，拿到response
@@ -53,7 +53,7 @@ class UserService {
   }
 
   static Future<HttpResult> getUser() async {
-    String requestUrl = "$baseUrl/user";
+    String requestUrl = "$baseUrl";
     Options testOpt = Options(headers: {
       // await SharedPreferencesUtil.getString("tokenName"):
       // await SharedPreferencesUtil.getString("tokenValue")
@@ -68,7 +68,7 @@ class UserService {
   }
 
   static Future<HttpResult> register(String username,String password, String avatarFile) async {
-    String requestUrl = "$baseUrl/user";
+    String requestUrl = "$baseUrl";
     final FormData formData =FormData.fromMap(
 {     "username": username,
       "password": password,
