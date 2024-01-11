@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:seecooker/utils/FileConverter.dart';
 
 class NewRecipe {
-
   /// 封面
   late File cover;
 
@@ -22,6 +21,8 @@ class NewRecipe {
 
   /// 配料
   List<Map<String, String>> ingredients = [];
+  List<String> ingredientsName = [];
+  List<String> ingredientsAmount = [];
 
   NewRecipe();
 
@@ -40,6 +41,8 @@ class NewRecipe {
       'stepContents': stepContents,
       'cover': await FileConverter.file2MultipartFile(cover),
       'stepImages': s,
+      'ingredientsName': ingredientsName,
+      'ingredientsAmount': ingredientsAmount
     });
     return formData;
   }
