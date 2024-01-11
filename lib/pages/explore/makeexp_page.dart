@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/account/login_page.dart';
+import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
 import 'package:seecooker/providers/explore/recommend_provider.dart';
 import 'package:seecooker/services/explore_service.dart';
 import 'package:seecooker/utils/sa_token_util.dart';
@@ -18,7 +19,6 @@ import 'package:tcard/tcard.dart';
 import 'package:seecooker/providers/explore/explore_post_provider.dart';
 import 'package:seecooker/widgets/exp_recipe_card.dart';
 import 'package:seecooker/widgets/recipe_card.dart';
-import 'package:seecooker/pages/recipe/recipe_detail.dart';
 
 class MakeExpPage extends StatefulWidget {
   const MakeExpPage({super.key});
@@ -102,7 +102,7 @@ class SwipeCardState extends State<SwipeCard>{
                             onTap: () =>Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RecipeDetail(id: index))
+                                    builder: (context) => RecipeDetailPage(id: index))
                             ),
                             child: ExpRecipeCard(
                               id: provider.itemAt(index).recipeId,
