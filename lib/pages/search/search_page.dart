@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -194,7 +193,7 @@ class SearchPage extends StatelessWidget {
                               Wrap(
                                 spacing: 8,
                                 runSpacing: 4,
-                                children: provider.recommend.map((item) =>
+                                children: provider.list.map((item) =>
                                   ActionChip(
                                     label: Text(item, overflow: TextOverflow.ellipsis),
                                     visualDensity: VisualDensity.compact,

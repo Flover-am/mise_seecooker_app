@@ -78,7 +78,6 @@ class CommunityService {
   static Future<HttpResult> getPostsByPage(int pageNo) async {
     String lastUrl = '$baseUrl/posts/page/$pageNo';
     final response = await dio.get(lastUrl);
-    log(HttpResult.fromJson(response.data).data.toString());
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
     } else {
@@ -100,7 +99,7 @@ class CommunityService {
   /// 发布评论
   static Future<HttpResult> postComment(int postId, String content) async {
     String lastUrl = '$baseUrl/comment';
-    Options testOpt = Options(headers: {
+    Options options = Options(headers: {
       await SaTokenUtil.getTokenName():
       await SaTokenUtil.getTokenValue()
     });
@@ -110,12 +109,46 @@ class CommunityService {
           'postId': postId,
           'content': content,
         },
-        options: testOpt
+        options: options
     );
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
     } else {
       throw Exception('Network exception: ${response.statusCode}');
+    }
+  }
+
+  /// 发布帖子
+  static Future<HttpResult> publishPost(String title, String content, List<String> filePath) async {
+    String tokenName = await SaTokenUtil.getTokenName();
+    String tokenValue = await SaTokenUtil.getTokenValue();
+    BaseOptions publishOptions=BaseOptions(
+        baseUrl: baseUrl,
+        headers:{
+          tokenName: tokenValue
+        }
+    );
+    dio.options=publishOptions;
+    //构建FormData
+    final FormData formData =FormData.fromMap(
+        {
+          'title': title,
+          'content': content
+        }
+    );
+    for(String singleFilePath in filePath){
+      MultipartFile multipartFile = await MultipartFile.fromFile(singleFilePath, filename: singleFilePath.split('/').last);
+      formData.files.add(MapEntry("images",multipartFile));
+    }
+    //发送请求并等待回复
+    final response = await dio.post(
+        '/post',
+        data: formData
+    );
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network Exception: ${response.statusCode}');
     }
   }
 }

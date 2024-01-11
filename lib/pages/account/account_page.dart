@@ -15,15 +15,15 @@ import '../../providers/post/community_posts_provider.dart';
 import '../../providers/recipe/search_recipes_provider.dart';
 import '../../providers/user/user_posts_provider.dart';
 import '../../widgets/recipe_card.dart';
+import '../recipe/recipe_detail_page.dart';
 import '../../widgets/recipes_list.dart';
-import '../recipe/recipe_detail.dart';
 import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
 import 'modify/modify_page.dart';
 import 'other_account_page.dart';
 import 'settings/settings_page.dart';
-
+///用户页面
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
@@ -84,8 +84,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
           child: Icon(Icons.rocket),
         ) : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-
-      ),
+      )
     );
 
   }
@@ -164,8 +163,8 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               Tab(text: '收藏菜谱',),
               Tab(text: '发布菜谱'),
               Tab(text: '发布帖子'),
-      ],        labelColor: Colors.black, // 设置选中标签的文本颜色为白色
-                unselectedLabelColor: Colors.black,
+      ],        labelColor: Colors.white, // 设置选中标签的文本颜色为白色
+                unselectedLabelColor: Colors.black, //
               ),
         actions: [
           IconButton(
@@ -184,7 +183,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
 
 }
 
-
+///用户登录后页面
 Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -209,6 +208,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                   SizedBox(height: 8),
@@ -216,6 +216,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                     userProvider.description,
                     style: TextStyle(
                       fontSize: 16,
+                      color: Colors.white,
                     ),
                   ), // 替换为用户描述
                 ],
@@ -229,9 +230,9 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
               SizedBox(width:15),
               Column(
                 children: [
-                  Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16,  color: Colors.white,fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
-                  Text('发布帖子数', style: TextStyle(fontSize: 12)),
+                  Text('发帖数', style: TextStyle(fontSize: 12,color: Colors.white,)),
                 ],
               ),
               SizedBox(width: 160),
@@ -243,7 +244,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.orange, // 按钮背景色
+                  primary: Theme.of(context).colorScheme.secondaryContainer, // 按钮背景色
                   onPrimary: Colors.white, // 文字颜色
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20), // 圆角大小
@@ -259,7 +260,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
     );
   }
 
-
+///用户未登录页面
 Widget _buildNotLoggedInProfileSection(BuildContext context) {
   return Container(
     padding: const EdgeInsets.all(60),
@@ -292,7 +293,7 @@ Widget _buildNotLoggedInProfileSection(BuildContext context) {
   );
 }
 
-
+///构建用户帖子列表
 Widget _buildPostContent(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     if (!userProvider.isLoggedIn) {
@@ -311,7 +312,7 @@ Widget _buildPostContent(BuildContext context) {
       return UserPostList();
 
   }
-
+///构建用户菜谱列表
 Widget _buildRecipesContent(BuildContext context) {
   UserProvider userProvider = Provider.of<UserProvider>(context);
   if (!userProvider.isLoggedIn) {
@@ -330,7 +331,7 @@ Widget _buildRecipesContent(BuildContext context) {
   return UserRecipesList();
 
 }
-
+///构建用户收藏列表
 Widget _buildFavorRecipesContent(BuildContext context) {
   UserProvider userProvider = Provider.of<UserProvider>(context);
   if (!userProvider.isLoggedIn) {
@@ -363,7 +364,7 @@ class _UserPostListState extends State<UserPostList> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
 
-    return const PostsWaterfall<UserPostsProvider>();
+    return const PostsWaterfall<UserPostsProvider>(private: true,);
   }
 
   @override
