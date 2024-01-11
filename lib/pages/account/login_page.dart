@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/register_page.dart';
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key});
@@ -99,6 +99,7 @@ class _LoginFormState extends State<LoginForm> {
                     context, listen: false);
                 try {
                   await userProvider.login(username, password);
+                  print("用户id： "+userProvider.id.toString());
                 } catch (e) {
                   // 处理异常的代码
                   if(e.toString().contains("Password error")) {

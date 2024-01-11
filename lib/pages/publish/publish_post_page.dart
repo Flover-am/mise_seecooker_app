@@ -6,7 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:seecooker/providers/post/community_posts_provider.dart';
 
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/services/publish_service.dart';
 import 'package:seecooker/models/http_result.dart';
 import 'package:seecooker/pages/account/login_page.dart';

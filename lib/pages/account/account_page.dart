@@ -3,14 +3,17 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
+import 'package:seecooker/providers/user/user_recipe_provider.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../../providers/recipe/home_recipes_provider.dart';
 import '../../providers/post/community_posts_provider.dart';
+import '../../providers/recipe/search_recipes_provider.dart';
 import '../../widgets/recipe_card.dart';
+import '../../widgets/recipes_list.dart';
 import '../recipe/recipe_detail.dart';
 import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
@@ -47,26 +50,29 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context){
     UserProvider userProvider = Provider.of<UserProvider>(context);
+    int id = userProvider.id;
+    return ChangeNotifierProvider<UserRecipeProvider>(
+        create: (_) => UserRecipeProvider(id),
+      child: Scaffold(
+        body: NestedScrollView(
+          controller: _scrollController,
+          body: buildBodyWidget(context),
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              buildSliverAppBar(userProvider),
+            ]; },
+        ),
+        floatingActionButton: isPinned ? FloatingActionButton(
+          heroTag: UniqueKey(),
+          onPressed: () {
+            // 处理悬浮按钮点击事件
+            _scrollController.jumpTo(0);
+          },
+          child: Icon(Icons.rocket),
+        ) : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
-    return Scaffold(
-      body: NestedScrollView(
-        controller: _scrollController,
-        body: buildBodyWidget(context),
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            buildSliverAppBar(userProvider),
-          ]; },
       ),
-      floatingActionButton: isPinned ? FloatingActionButton(
-        heroTag: UniqueKey(),
-        onPressed: () {
-          // 处理悬浮按钮点击事件
-          _scrollController.jumpTo(0);
-        },
-        child: Icon(Icons.rocket),
-      ) : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-
     );
 
   }
@@ -75,8 +81,8 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
     return TabBarView(
       controller: _tabController,
       children: [
-      _buildFavoriteContent(context),
-      _buildFavoriteContent(context),
+      _buildRecipesContent(context),
+      _buildRecipesContent(context),
       _buildFavoriteContent(context),
     ],);
   }
@@ -289,6 +295,24 @@ Widget _buildFavoriteContent(BuildContext context) {
 
   }
 
+Widget _buildRecipesContent(BuildContext context) {
+  UserProvider userProvider = Provider.of<UserProvider>(context);
+  if (!userProvider.isLoggedIn) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '请先登录',
+            style: TextStyle(fontSize: 20), // 设置字体大小为24
+          ),
+        ],
+      ),
+    );
+  }
+  return UserRecipesList();
+
+}
 
 class UserInfoList extends StatefulWidget {
   const UserInfoList({super.key});
@@ -315,6 +339,34 @@ class _UserInfoListState extends State<UserInfoList> with AutomaticKeepAliveClie
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
+
+
+class UserRecipesList extends StatefulWidget {
+  const UserRecipesList({super.key});
+
+  @override
+  State<UserRecipesList> createState() => _UserRecipesListState();
+}
+
+class _UserRecipesListState extends State<UserRecipesList> with AutomaticKeepAliveClientMixin{
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return const RecipesList<UserRecipeProvider>(
+      emptyMessage: '抱歉',
+      enableRefresh: false,
+      private: false,
+    );
+    //return const PostsWaterfall<CommunityPostsProvider>();
+  }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
+}
+
+
 
 Widget _buildSkeleton(BuildContext context) {
   return Column(

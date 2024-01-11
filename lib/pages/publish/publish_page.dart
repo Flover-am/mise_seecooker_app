@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:seecooker/pages/publish/publish_post_page.dart';
 import 'package:seecooker/pages/publish/publish_recipe.dart';
 
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 
 class PublishPage extends StatefulWidget{
   final param;
