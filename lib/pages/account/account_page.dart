@@ -140,8 +140,8 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                 ),
               ),
             bottom: TabBar(controller: _tabController, tabs: const [
-              Tab(text: '收藏菜单',),
-              Tab(text: '发布菜单'),
+              Tab(text: '收藏菜谱',),
+              Tab(text: '发布菜谱'),
               Tab(text: '发布帖子'),
       ],        labelColor: Colors.black, // 设置选中标签的文本颜色为白色
                 unselectedLabelColor: Colors.black,

@@ -13,7 +13,7 @@ class User {
 
   String avatar;
 
-  String description;
+  String? description;
 
   List<int> likeRecipes;
 

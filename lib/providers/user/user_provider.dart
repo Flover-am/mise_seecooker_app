@@ -18,7 +18,7 @@ class UserProvider extends ChangeNotifier{
 
   String get password => _user.password;
 
-  String get description => _user.description;
+  String get description => _user.description ?? "编辑个签，展示我的独特态度";
 
   int get postNum => _user.postNum;
 
