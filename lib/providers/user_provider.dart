@@ -161,6 +161,7 @@ class UserProvider extends ChangeNotifier{
 
     /// 判断是否获取成功
     if(!res.isSuccess()){
+      print(res.message);
       return false;
     }
     getUser();
