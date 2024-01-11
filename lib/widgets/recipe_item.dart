@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:seecooker/pages/recipe/recipe_detail.dart';
 
-class RecipeListItem extends StatelessWidget {
+class RecipeItem extends StatelessWidget {
   final int id;
   final String name;
   final String cover;
   final String authorName;
   final String? authorAvatar;
 
-  const RecipeListItem({
+  const RecipeItem({
     super.key,
     required this.id,
     required this.name,

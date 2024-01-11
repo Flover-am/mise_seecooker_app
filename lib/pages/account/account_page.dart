@@ -8,7 +8,7 @@ import 'package:seecooker/utils/shared_preferences_util.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
 import 'package:skeletons/skeletons.dart';
 
-import '../../providers/home_recipes_provider.dart';
+import '../../providers/recipe/home_recipes_provider.dart';
 import '../../providers/post/community_posts_provider.dart';
 import '../../widgets/recipe_card.dart';
 import '../recipe/recipe_detail.dart';

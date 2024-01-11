@@ -80,11 +80,15 @@ class _RecipeDetailState extends State<RecipeDetail> {
                                           ClipRRect(
                                               child: Image.network(model.cover,
                                                   fit: BoxFit.fitWidth)),
-                                          RecipeHead(title: model.name,
+                                          RecipeHead(
+                                              title: model.name,
                                               introduction: model.introduction),
-                                          Ingredients(
-                                            ingredients: model.ingredients,
-                                          )
+                                          model.ingredients != null
+                                              ? Ingredients(
+                                                  ingredients:
+                                                      model.ingredients!,
+                                                )
+                                              : Container()
                                         ],
                                       );
                                     }
@@ -143,10 +147,10 @@ class RecipeHead extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,style: const TextStyle(
-            fontSize: 35,
-            fontWeight: FontWeight.bold
-          ),),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+          ),
           Text("  $introduction"),
         ],
       ),
