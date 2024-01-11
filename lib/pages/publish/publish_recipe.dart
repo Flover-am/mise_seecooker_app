@@ -330,7 +330,6 @@ class _PublishRecipeState extends State<PublishRecipe> {
             )),
         GestureDetector(
             onTap: () {
-              Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
               selectStepCover(index);
               log("hasStepsCover:$hasStepsCover");
             },
@@ -403,7 +402,6 @@ class _PublishRecipeState extends State<PublishRecipe> {
   Widget _buildCover(hasCover) {
     return GestureDetector(
         onTap: () {
-          Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
           selectCover();
           setState(() {
             // this.hasCover = true;

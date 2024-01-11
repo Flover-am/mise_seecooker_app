@@ -229,7 +229,7 @@ class _RegisterFormState extends State<RegisterForm> {
     return containsDigit && containsLetter;
   }
 }
-
+///资源格式转换函数
 Future<File> createTemporaryFileFromAsset(String assetPath) async {
   final byteData = await rootBundle.load(assetPath);
   final tempDir = await getTemporaryDirectory();
@@ -237,7 +237,7 @@ Future<File> createTemporaryFileFromAsset(String assetPath) async {
   await tempFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
   return tempFile;
 }
-
+///文件格式转换函数
 File convertXFileToFile(XFile xfile) {
   return File(xfile.path);
 }

@@ -26,7 +26,7 @@ import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
 import 'modify/modify_page.dart';
 import 'settings/settings_page.dart';
-
+///其他用户界面
 class OtherAccountPage extends StatefulWidget {
   const OtherAccountPage({super.key});
 
@@ -143,7 +143,7 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: MediaQuery.of(context).padding.top + 16),
-                      _buildLoggedInProfileSection(otherUserProvider,context)
+                      _buildProfileSection(otherUserProvider,context)
                     ],
                   ),
                 ),
@@ -164,8 +164,8 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
 
 }
 
-
-Widget _buildLoggedInProfileSection(OtherUserProvider otherUserProvider,BuildContext context) {
+///构建其他用户界面
+Widget _buildProfileSection(OtherUserProvider otherUserProvider,BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -220,18 +220,18 @@ Widget _buildLoggedInProfileSection(OtherUserProvider otherUserProvider,BuildCon
     );
   }
 
-
+///构建其他用户发布帖子列表
 Widget _buildPostContent(BuildContext context) {
 
       return UserPostList();
 
   }
-
+///构建其他用户发布菜谱列表
 Widget _buildRecipesContent(BuildContext context) {
   return UserRecipesList();
 
 }
-
+///构建其他用户收藏列表
 Widget _buildFavorRecipesContent(BuildContext context) {
   return UserFavorRecipesList();
 
