@@ -13,7 +13,7 @@ class UserInfo {
 
   String avatar;
 
-  String signature;
+  String? signature;
 
 
   UserInfo(

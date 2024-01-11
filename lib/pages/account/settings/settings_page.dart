@@ -7,7 +7,7 @@ import 'package:seecooker/pages/account/settings/settings_help_page.dart';
 import 'package:seecooker/pages/account/settings/settings_support_page.dart';
 import 'package:theme_provider/theme_provider.dart';
 
-import '../../../providers/user_provider.dart';
+import '../../../providers/user/user_provider.dart';
 
 
 class SettingsPage extends StatelessWidget {

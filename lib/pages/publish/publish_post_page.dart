@@ -6,7 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:seecooker/providers/post/community_posts_provider.dart';
 
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/services/publish_service.dart';
 import 'package:seecooker/models/http_result.dart';
 import 'package:seecooker/pages/account/login_page.dart';
@@ -146,6 +146,8 @@ class _PublishPostPageState extends State<PublishPostPage> {
           Navigator.pop(ctx);
           Fluttertoast.showToast(msg: "发布成功");
           Provider.of<CommunityPostsProvider>(ctx, listen: false).fetchPosts();
+          Provider.of<UserProvider>(ctx, listen: false).getUser();
+
           // TODO: 更新用户帖子
           // Provider.of<UserPostsProvider>(ctx, listen: false).fetchPosts();
         } else {

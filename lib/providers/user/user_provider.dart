@@ -3,14 +3,14 @@ import 'package:seecooker/models/user_login.dart';
 import 'package:seecooker/utils/sa_token_util.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
 
-import '../models/user.dart';
-import '../models/user_info.dart';
-import '../services/user_service.dart';
+import '../../models/user.dart';
+import '../../models/user_info.dart';
+import '../../services/user_service.dart';
 import 'dart:io';
 
 class UserProvider extends ChangeNotifier{
   var defaultAvatar = "https://seecooker.oss-cn-shanghai.aliyuncs.com/avatar/ecff12a2-2986-4bd9-a393-cf8f1065397f.webp";
-  late User _user = User("未登录", "未登录", defaultAvatar,"编辑个签，展示我的独特态度",[],[],[],999,999,"","",false);
+  late User _user = User(111,"未登录", "未登录", defaultAvatar,"编辑个签，展示我的独特态度",[],[],[],999,999,"","",false);
   late UserLogin _userLogin;
   late UserInfo _userInfo;
   get isLoggedIn => _user.isLoggedIn;
@@ -18,13 +18,15 @@ class UserProvider extends ChangeNotifier{
 
   String get password => _user.password;
 
-  String get description => _user.description;
+  String get description => _user.description ?? "编辑个签，展示我的独特态度";
 
   int get postNum => _user.postNum;
 
   int get getLikedNum => _user.getLikedNum;
 
   String get avatar => _user.avatar;
+
+  int get id => _user.id;
 
 
   Future<void> loadLoginStatus() async {
@@ -52,6 +54,7 @@ class UserProvider extends ChangeNotifier{
 
     _user.username = username;
     _user.password = password;
+    _user.id = int.parse(_userLogin.loginId);
     _user.isLoggedIn = true;
     _user.tokenName = tempTokenName;
     _user.tokenValue = tempTokenValue;
@@ -121,7 +124,7 @@ class UserProvider extends ChangeNotifier{
     /// 先进行请求，然后从请求中拿数据
     var res =  await UserService.register(username,password,avatarFile);
     print("返回的注册信息： "+res.message);
-    
+
     /// 判断是否获取成功
     if(!res.isSuccess()){
       return false;
@@ -177,11 +180,27 @@ class UserProvider extends ChangeNotifier{
 
     /// 判断是否获取成功
     if(!res.isSuccess()){
+      print(res.message);
       return false;
     }
     getUser();
 
     return true;
   }
+
+  // Future<void> getUserRecipe() async {
+  //   /// 先进行请求，然后从请求中拿数据
+  //   var res =  await UserService.getUserRecipe(id);
+  //   /// 判断是否获取成功
+  //   if(!res.isSuccess()){
+  //     throw Exception("未成功获取用户关注社团:${res.message}");
+  //   }
+  //   /// 将数据转换成Model
+  //   _user.subscribeCommunities = res.data
+  //       .map((e)=>CommunityShort.fromJson(e))
+  //       .toList()
+  //       .cast<CommunityShort>();
+  //   notifyListeners();
+  // }
 
 }
