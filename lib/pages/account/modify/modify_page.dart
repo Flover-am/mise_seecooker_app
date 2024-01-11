@@ -111,8 +111,8 @@ class _ModifyPageState extends State<ModifyPage> {
                           defaultUserName, _avatar_file.path);
                     }
                     if(!signatureFlag){
-                      //hasSignatureModified |= await userProvider.modifySignature(_signature);
-                      hasSignatureModified = true;
+                      hasSignatureModified |= await userProvider.modifySignature(_signature);
+                      //hasSignatureModified = true;
                     }
                     if(!usernameFlag){
                       hasUsernameModified |= await userProvider.modifyUsername(defaultUserName, _username);
