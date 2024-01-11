@@ -185,7 +185,18 @@ class _PublishRecipeState extends State<PublishRecipe> {
                                                     index: index,
                                                     onChange: provider
                                                         .changeIngredientAmout,
-                                                    ops: ["一个"],
+                                                    ops: const [
+                                                      "一个",
+                                                      "两个",
+                                                      "三个",
+                                                      "四个",
+                                                      "五个",
+                                                      "六个",
+                                                      "七个",
+                                                      "八个",
+                                                      "九个",
+                                                      "十个"
+                                                    ],
                                                   )),
                                             ],
                                           ),
