@@ -36,17 +36,20 @@ class _TextSelectState extends State<TextSelect> {
   Widget build(BuildContext context) {
     return Autocomplete<String>(
       optionsViewBuilder: (context, onSelected, options) {
-        return SizedBox(
-            height: 200.0,
-            width: 100.0,
-            child: Material(
-              elevation: 4.0,
+        // 下拉栏的高度控制为200，宽度为100，可以滑动
 
-              child: ListView(
-
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                children: options.map((String option) {
+        return Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            elevation: 4.0,
+            child: SizedBox(
+              height: 180,
+              width: 160.0,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                itemCount: options.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final String option = options.elementAt(index);
                   return GestureDetector(
                     onTap: () {
                       onSelected(option);
@@ -55,9 +58,11 @@ class _TextSelectState extends State<TextSelect> {
                       title: Text(option),
                     ),
                   );
-                }).toList(),
+                },
               ),
-            ));
+            ),
+          ),
+        );
       },
       optionsBuilder: (TextEditingValue textEditingValue) {
         widget.onChange(widget.index, textEditingValue.text);
