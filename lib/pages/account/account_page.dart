@@ -225,12 +225,12 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
           SizedBox(height: 8),
           Row(
             children: [
-              SizedBox(width: 30),
+              SizedBox(width:15),
               Column(
                 children: [
                   Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
-                  Text('发布数', style: TextStyle(fontSize: 12)),
+                  Text('发布帖子数', style: TextStyle(fontSize: 12)),
                 ],
               ),
               SizedBox(width: 160),

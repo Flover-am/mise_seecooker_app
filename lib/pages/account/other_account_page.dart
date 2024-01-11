@@ -33,7 +33,7 @@ class OtherAccountPage extends StatefulWidget {
 class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerProviderStateMixin{
   late TabController _tabController;
   bool flag = false;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool isPinned = true;
   @override
   void initState() {
