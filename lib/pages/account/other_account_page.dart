@@ -23,14 +23,14 @@ import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 import 'modify/modify_page.dart';
 import 'settings/settings_page.dart';
 
-class AccountPage extends StatefulWidget {
-  const AccountPage({super.key});
+class OtherAccountPage extends StatefulWidget {
+  const OtherAccountPage({super.key});
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  State<OtherAccountPage> createState() => _OtherAccountPageState();
 }
 
-class _AccountPageState extends State<AccountPage> with SingleTickerProviderStateMixin{
+class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerProviderStateMixin{
   late TabController _tabController;
   bool flag = false;
   ScrollController _scrollController = ScrollController();
@@ -101,8 +101,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
 
   buildSliverAppBar(UserProvider userProvider) {
     return SliverAppBar(
-              //backgroundColor: Color.fromRGBO(244,164,96, 1),
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              backgroundColor: Color.fromRGBO(244,164,96, 1),
               pinned: true,
               expandedHeight: 230,
               toolbarHeight: 30,
@@ -118,28 +117,21 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                   },
                   child: Column(
                     children: [
-                      userProvider.isLoggedIn
-                          ?
                       CircleAvatar(
                         radius: 15,
                         backgroundImage: NetworkImage(userProvider.avatar),
-                      )
-                          : Container(),
-                      //       const CircleAvatar(
-                      //       radius: 15,
-                      //       backgroundImage: AssetImage('assets/images/nju_community_logo_origin.png'),
-                      // ),
+                      ),
                     ],
                   ),
                 ),
                 background: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Theme.of(context).colorScheme.primaryContainer, // 起始颜色
-                        Theme.of(context).colorScheme.secondaryContainer, // 结束颜色
+                        Color(0xFFFFE0B2), // 起始颜色
+                        Color(0xFFFFCC80), // 结束颜色
                       ],
                     ),
                   ),
