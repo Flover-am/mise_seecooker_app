@@ -20,14 +20,13 @@ class NewRecipe {
   List<String> stepContents = [];
 
   /// 配料
-  List<Map<String, String>> ingredients = [];
   List<String> ingredientsName = [];
   List<String> ingredientsAmount = [];
 
   NewRecipe();
 
   NewRecipe.all(this.cover, this.name, this.introduction, this.stepImages,
-      this.stepContents, this.ingredients);
+      this.stepContents);
 
   Future<FormData> toFormData() async {
     List<MultipartFile> s = [];
