@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/pages/post/post_detail_page.dart';
 
-class PostCard extends StatelessWidget {
+class PostCard  extends StatelessWidget {
   final int postId;
   final String cover;
   final int posterId;
@@ -43,9 +43,35 @@ class PostCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: ExtendedImage.network(
                   cover,
-                  cache: false,
+                  cache: true,
                   fit: BoxFit.cover,
-                  enableLoadState: false,
+                  enableLoadState: true,
+                  loadStateChanged: (ExtendedImageState state) {
+                    if (state.extendedImageLoadState case LoadState.loading) {
+                      return SkeletonLine(
+                        style: SkeletonLineStyle(
+                            height: 172,
+                            borderRadius: BorderRadius.circular(12)
+                        ),
+                      );
+                    } else {
+                      return TweenAnimationBuilder(
+                        duration: const Duration(milliseconds: 500),
+                        tween: Tween<double>(begin: 0.0, end: 1.0),
+                        curve: Curves.easeOut,
+                        builder: (context, value, child) {
+                          return Opacity(
+                            opacity: value,
+                            child: child,
+                          );
+                        },
+                        child: ExtendedRawImage(
+                          image: state.extendedImageInfo?.image,
+                          fit: BoxFit.cover,
+                        )
+                      );
+                    }
+                  }
                 ),
               ),
             ),

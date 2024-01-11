@@ -107,7 +107,6 @@ class _PostsWaterfallState<T extends PostsProvider> extends State<PostsWaterfall
                   ),
                 );
               } else {
-                precacheImage(ExtendedNetworkImageProvider(provider.itemAt(index).cover), context);
                 return TweenAnimationBuilder(
                   duration: const Duration(milliseconds: 500),
                   tween: Tween<double>(begin: 0.0, end: 1.0),

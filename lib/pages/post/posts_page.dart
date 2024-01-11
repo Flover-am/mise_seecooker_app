@@ -20,6 +20,7 @@ class _PostsPageState extends State<PostsPage> {
         scrolledUnderElevation: 0,
         title: const Text('社区'),
         actions: [
+          // 搜索按钮
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
@@ -32,6 +33,7 @@ class _PostsPageState extends State<PostsPage> {
           const SizedBox(width: 4),
         ],
       ),
+      // 浮动按钮，跳转到帖子发布页
       floatingActionButton: FloatingActionButton(
         heroTag: UniqueKey(),
         onPressed: () => {
@@ -42,6 +44,7 @@ class _PostsPageState extends State<PostsPage> {
         },
         child: Icon(Icons.edit, color: Theme.of(context).colorScheme.surface),
       ),
+      // 社区页帖子瀑布流
       body: const PostsWaterfall<CommunityPostsProvider>(),
     );
   }

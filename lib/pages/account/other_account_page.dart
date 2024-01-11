@@ -22,8 +22,6 @@ import '../../providers/recipe/search_recipes_provider.dart';
 import '../../providers/user/user_posts_provider.dart';
 import '../../widgets/recipe_card.dart';
 import '../../widgets/recipes_list.dart';
-import '../recipe/recipe_detail.dart';
-import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
 import 'modify/modify_page.dart';
