@@ -63,7 +63,7 @@ class RecipeService {
     }
   }
 
-  static Future<HttpResult> postRecipe(NewRecipe recipe) async {
+  static Future<HttpResult> publishRecipe(NewRecipe recipe) async {
     String lastUrl = baseUrl;
     Options testOpt = Options(headers: {
       await SaTokenUtil.getTokenName():
@@ -122,6 +122,17 @@ class RecipeService {
         }
       )
     );
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
+  }
+
+  /// 获取随机推荐菜谱
+  static Future<HttpResult> getRandomRecommend() async {
+    String lastUrl = '$baseUrl/recommend';
+    final response = await dio.get(lastUrl);
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
     } else {
