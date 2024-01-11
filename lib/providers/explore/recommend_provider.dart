@@ -23,9 +23,7 @@ class RecommendProvider extends ChangeNotifier {
         .map((e) => ExploreRecipe.fromJson(e))
         .toList()
         .cast<ExploreRecipe>();
-    for(ExploreRecipe item in cardlist) {
-      _list.add(item);
-    }
+    _list = cardlist;
     notifyListeners();
   }
 
