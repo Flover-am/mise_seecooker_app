@@ -4,14 +4,31 @@ part 'recipe.g.dart';
 
 @JsonSerializable()
 class Recipe {
-  @JsonKey(name: 'recipeId')
-  int id;
+  int recipeId;
   String name;
   String cover;
+  int authorId;
   String authorName;
-  String? authorAvatar;
+  String authorAvatar;
+  String introduction;
+  double score;
+  String publishTime;
+  bool favorite;
+  int favoriteNum;
 
-  Recipe(this.id, this.name, this.cover, this.authorName, this.authorAvatar);
+  Recipe(
+      this.recipeId,
+      this.name,
+      this.cover,
+      this.authorId,
+      this.authorName,
+      this.authorAvatar,
+      this.introduction,
+      this.score,
+      this.publishTime,
+      this.favorite,
+      this.favoriteNum
+    );
 
   factory Recipe.fromJson(Map<String, dynamic> json) => _$RecipeFromJson(json);
 

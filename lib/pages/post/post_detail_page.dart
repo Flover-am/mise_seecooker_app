@@ -14,10 +14,9 @@ import 'package:seecooker/providers/comments_provider.dart';
 import 'package:seecooker/providers/post_detail_provider.dart';
 import 'package:seecooker/utils/image_util.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
+import 'package:seecooker/providers/other_user/other_user_provider.dart';
+import 'package:seecooker/pages/account/other_account_page.dart';
 import 'package:skeletons/skeletons.dart';
-
-import '../../providers/other_user/other_user_provider.dart';
-import '../account/other_account_page.dart';
 
 class PostDetailPage extends StatefulWidget {
   final int postId;
@@ -40,7 +39,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
           ChangeNotifierProvider(create: (context) => CommentsProvider(widget.postId)),
         ],
         builder: (context, child) {
+          // 拉取数据
           Future future = Provider.of<PostDetailProvider>(context, listen: false).fetchPostDetail();
+
           return FutureBuilder(
             future: future,
             builder: (context, snapshot) {
@@ -112,7 +113,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 }
 
+/// 页面主体内容
 class PageContent extends StatefulWidget {
+  /// 是否为个人发布的帖子
   final bool private;
 
   const PageContent({super.key, required this.private});
@@ -125,10 +128,10 @@ class _PageContentState extends State<PageContent> {
   /// 页面滑动控制器
   final ScrollController _scrollController = ScrollController();
 
-  /// 评论区标题
+  /// 评论区标题Key
   final GlobalKey _commentSectionTitleKey = GlobalKey();
 
-  /// 快照区域
+  /// 快照区域Key
   final GlobalKey _repaintBoundaryKey = GlobalKey();
 
   /// 评论输入框焦点
@@ -169,10 +172,12 @@ class _PageContentState extends State<PageContent> {
         return RepaintBoundary(
           key: _repaintBoundaryKey,
           child: Scaffold(
+            // 发布者头像及昵称栏
             appBar: AppBar(
               scrolledUnderElevation: 0,
               title: GestureDetector(
                 onTap: () async {
+                  // TODO: 跳转到个人页面
                   // Navigator.push(
                   //   context,
                   //   MaterialPageRoute(builder: (context) => OtherAccountPage()),
@@ -183,8 +188,7 @@ class _PageContentState extends State<PageContent> {
                     GestureDetector(
                       onTap: () async {
                         OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
-                        PostDetailProvider postDetailProvider = Provider.of<PostDetailProvider>(context,listen: false);
-                        await otherUserProvider.getUserById(postDetailProvider.model.posterId);
+                        await otherUserProvider.getUserById(model.posterId);
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => OtherAccountPage()),
@@ -217,7 +221,7 @@ class _PageContentState extends State<PageContent> {
                       onPressed: () {
                         Navigator.of(context).popUntil((route) => route.isFirst);
                       },
-                    ), // 设置图标之间的间距
+                    ),
                     widget.private
                         ? IconButton(
                       onPressed: () {
@@ -240,6 +244,7 @@ class _PageContentState extends State<PageContent> {
                 ),
               ],
             ),
+            // 主体内容
             body: CustomScrollView(
               controller: _scrollController,
               slivers: [
@@ -349,6 +354,7 @@ class _PageContentState extends State<PageContent> {
                 ),
               ],
             ),
+            // 点赞及评论工具栏
             bottomNavigationBar: BottomAppBar(
               elevation: 0,
               surfaceTintColor: Theme.of(context).colorScheme.primary,
@@ -399,6 +405,7 @@ class _PageContentState extends State<PageContent> {
                 ],
               ),
             ),
+            // 评论按钮
             floatingActionButton: FloatingActionButton(
               mini: true,
               heroTag: UniqueKey(),
@@ -417,6 +424,7 @@ class _PageContentState extends State<PageContent> {
     );
   }
 
+  /// 打开底部功能弹窗
   void _showBottomSheet(BuildContext ctx) {
     showModalBottomSheet(
       context: ctx,
@@ -517,6 +525,7 @@ class _PageContentState extends State<PageContent> {
     );
   }
 
+  /// 打开评论遮罩层
   OverlayEntry _buildOverlayEntry(BuildContext buildContext) {
     return OverlayEntry(
       builder: (context) => Positioned(
@@ -591,6 +600,7 @@ class _PageContentState extends State<PageContent> {
   }
 }
 
+/// 图片滑动区域
 class ImageCardSwiper extends StatefulWidget {
   /// 展示的图片
   final List<String> images;
@@ -740,6 +750,7 @@ class _ImageCardSwiperState extends State<ImageCardSwiper> {
   }
 }
 
+/// 文本内容区域
 class TextSection extends StatelessWidget {
   /// 标题
   final String title;
@@ -765,6 +776,7 @@ class TextSection extends StatelessWidget {
   }
 }
 
+/// 单条评论卡片
 class CommentItem extends StatelessWidget {
   /// 评论内容
   final Comment comment;
@@ -784,8 +796,6 @@ class CommentItem extends StatelessWidget {
           InkWell(
             borderRadius: BorderRadius.circular(18),
             onTap: () async {
-
-              log("commenterId: ${comment.commenterId}");
               OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
               await otherUserProvider.getUserById(comment.commenterId);
               Navigator.push(
