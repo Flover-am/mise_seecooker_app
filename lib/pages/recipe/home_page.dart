@@ -1,19 +1,29 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/recipe/recipe_detail.dart';
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/widgets/recipe_card.dart';
+import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/pages/search/search_page.dart';
 
 import '../publish/publish_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
   Widget build(BuildContext context) {
+    Future future = Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes();
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         heroTag: UniqueKey(),
@@ -23,7 +33,7 @@ class HomePage extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const PublishPage(param: "",)),
           ),
         },
-        child: const Icon(Icons.restaurant_menu_outlined),
+        child: Icon(Icons.restaurant_menu_outlined, color: Theme.of(context).colorScheme.surface),
       ),
       body: CustomScrollView(
         slivers: [
@@ -95,20 +105,26 @@ class HomePage extends StatelessWidget {
             ]
           ),
           FutureBuilder(
-            future: Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes(),
+            future: future,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return SliverToBoxAdapter(
                   child: _buildSkeleton(context),
                 );
               } else if (snapshot.hasError) {
+                log('${snapshot.error}');
                 return SliverToBoxAdapter(
-                  child: Center(
-                    child: Text('Error: ${snapshot.error}'),
+                  child: RefreshPlaceholder(
+                    message: '悲报！食谱在网络中迷路了',
+                    onRefresh: () {
+                      setState((){
+                        future = Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes();
+                      });
+                    },
                   ),
                 );
               } else {
-                return const RecipeList();
+                return const RecipeCardList();
               }
             },
           ),
@@ -141,8 +157,8 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class RecipeList extends StatelessWidget {
-  const RecipeList({super.key});
+class RecipeCardList extends StatelessWidget {
+  const RecipeCardList({super.key});
 
   @override
   Widget build(BuildContext context) {

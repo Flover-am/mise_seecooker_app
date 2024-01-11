@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/post/posts_provider.dart';
-import 'package:seecooker/services/post_service.dart';
+import 'package:seecooker/services/community_service.dart';
 
 import '../../models/post.dart';
 
@@ -18,7 +20,7 @@ class CommunityPostsProvider with ChangeNotifier implements PostsProvider {
   @override
   Future<void> fetchPosts() async {
     _pageNo = 0;
-    final res = await PostService.getPostsByPage(_pageNo);
+    final res = await CommunityService.getPostsByPage(_pageNo);
     if(!res.isSuccess()) {
       throw Exception('未获取到帖子数据: ${res.message}');
     }
@@ -32,7 +34,7 @@ class CommunityPostsProvider with ChangeNotifier implements PostsProvider {
   @override
   Future<void> fetchMorePosts() async {
     _pageNo++;
-    final res = await PostService.getPostsByPage(_pageNo);
+    final res = await CommunityService.getPostsByPage(_pageNo);
     if(!res.isSuccess()) {
       throw Exception('未获取到帖子数据: ${res.message}');
     }

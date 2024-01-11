@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:seecooker/models/post_detail.dart';
-import 'package:seecooker/services/post_service.dart';
+import 'package:seecooker/services/community_service.dart';
 
 class PostDetailProvider{
   final int _postId;
@@ -13,7 +13,7 @@ class PostDetailProvider{
   PostDetail get model => _model;
 
   Future<void> fetchPostDetail() async {
-    final res = await PostService.getPostDetail(_postId);
+    final res = await CommunityService.getPostDetail(_postId);
     if(!res.isSuccess()) {
       throw Exception('未获取到帖子详情数据: ${res.message}');
     }
@@ -21,7 +21,7 @@ class PostDetailProvider{
   }
 
   Future<bool> likePost() async {
-    final res = await PostService.likePost(_postId);
+    final res = await CommunityService.likePost(_postId);
     if(!res.isSuccess()) {
       throw Exception('点赞失败: ${res.message}');
     }
@@ -29,7 +29,7 @@ class PostDetailProvider{
   }
 
   Future<void> deletePost() async {
-    final res = await PostService.deletePost(_postId);
+    final res = await CommunityService.deletePost(_postId);
     if(!res.isSuccess()) {
       throw Exception('点赞失败: ${res.message}');
     }

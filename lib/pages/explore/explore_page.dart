@@ -159,6 +159,7 @@ class _ExplorePageState extends State<ExplorePage> {
           )),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.shopping_bag),
+          heroTag: UniqueKey(),
           onPressed: () => showCommentSection(context, false)),
     );
   }
