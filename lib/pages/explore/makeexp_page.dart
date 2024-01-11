@@ -6,8 +6,10 @@
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
+import 'package:seecooker/pages/account/login_page.dart';
 import 'package:seecooker/providers/explore/recommend_provider.dart';
 import 'package:seecooker/services/explore_service.dart';
+import 'package:seecooker/utils/sa_token_util.dart';
 import 'package:seecooker/widgets/tinder_card.dart';
 
 import 'package:seecooker/widgets/post_card.dart';
@@ -39,6 +41,10 @@ class _MakeExpPageState extends State<MakeExpPage> {
                 .fetchPosts(Provider.of<ExplorePostProvider>(context,
                 listen: false).showlist()),
             builder: (context, snapshot) {
+              if(Provider.of<RecommendProvider>(context, listen: false).length==0)
+                return  Center(
+                  child: Text('抱歉，没能找到相关推荐'),
+                );
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -139,7 +145,15 @@ class SwipeCardState extends State<SwipeCard>{
                           });
 
                           print("右滑！");
-
+                          try{SaTokenUtil.getTokenName();
+                          }
+                          catch(e){
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
+                            );
+                          }
                           // 探索界面不解除已收藏的菜品
                           if(!provider.itemAt(index).favorite)
                             ExploreService.favourite(provider.itemAt(index).recipeId);
