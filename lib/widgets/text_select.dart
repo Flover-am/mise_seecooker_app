@@ -3,19 +3,32 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 
 class TextSelect extends StatefulWidget {
-  const TextSelect({super.key});
+  final void Function(int index, String value) onChange;
+
+  final List<String> ops;
+
+  const TextSelect(
+      {super.key,
+      required this.onChange,
+      required this.index,
+      required this.ops});
+
+  final int index;
 
   @override
   State<TextSelect> createState() => _TextSelectState();
 }
 
 class _TextSelectState extends State<TextSelect> {
-  final List<String> _kOptions = <String>[
-    'aardvark',
-    'bobcat',
-    'chameleon',
-  ];
+  late final List<String> _kOptions;
   String _text = "";
+
+  @override
+  void initState() {
+    _kOptions = widget.ops;
+    // TODO: implement initState
+    super.initState();
+  }
 
   String get text => _text;
 
@@ -23,6 +36,7 @@ class _TextSelectState extends State<TextSelect> {
   Widget build(BuildContext context) {
     return Autocomplete<String>(
       optionsBuilder: (TextEditingValue textEditingValue) {
+        widget.onChange(widget.index, textEditingValue.text);
         _text = textEditingValue.text;
         log(_text);
 
@@ -34,6 +48,8 @@ class _TextSelectState extends State<TextSelect> {
         });
       },
       onSelected: (String selection) {
+        widget.onChange(widget.index, selection);
+
         log(_text);
         _text = selection;
         debugPrint('You just selected $selection');

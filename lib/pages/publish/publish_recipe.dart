@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import 'package:seecooker/models/NewRecipe.dart';
+import 'package:seecooker/providers/recipe/new_recipe_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/services/recipe_service.dart';
 import 'package:seecooker/utils/FileConverter.dart';
@@ -33,182 +34,267 @@ class _PublishRecipeState extends State<PublishRecipe> {
   ValueNotifier<int> countStep = ValueNotifier<int>(2);
 
   /// 标题和简介的监听
-  final titleController = TextEditingController();
-  final introductionController = TextEditingController();
+  // final titleController = TextEditingController();
+  // final introductionController = TextEditingController();
 
   /// 配料表的名字和用量的监听
-  Map<int, TextEditingController> ingredientsNameController = {};
-  Map<int, TextEditingController> ingredientsAmountController = {};
+  // Map<int, TextEditingController> ingredientsNameController = {};
+  // Map<int, TextEditingController> ingredientsAmountController = {};
   Map<int, TextSelect> ingredientsName = {};
   Map<int, TextSelect> ingredientsAmount = {};
 
   /// 步骤介绍的监听
-  Map<int, TextEditingController> stepContentsController = {};
-
-  // @override
-  // void initState() {
-  //   setState(() {
-  //     titleController.text = "1";
-  //     introductionController.text = "1";
-  //   });
-  // }
+  // Map<int, TextEditingController> stepContentsController = {};
 
   /// 主页面
   @override
   Widget build(BuildContext context) {
     var page = this;
-    // // 检查用户是否已登录
-    // if (!userModel.isLoggedIn) {
-    //   // 如果未登录，则导航到LoginPage
-    //   WidgetsBinding.instance!.addPostFrameCallback((_) {
-    //     Navigator.of(context).pushReplacement(
-    //       MaterialPageRoute(builder: (context) => const LoginPage()),
-    //     );
-    //   });
-    //   print(userModel.isLoggedIn);
-    //   //Navigator.pop(context);
-    // }
-    return Scaffold(
-      appBar: AppBar(
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Fluttertoast.showToast(msg: "//TODO: 发布");
-                },
-                icon: const Icon(Icons.publish_rounded))
-          ],
-          title: Consumer<UserProvider>(
-            builder: (context, user, child) =>
-                Stack(
-                  children: [
-                    Text('${user.username} post'),
-                  ],
-                ),
-          )),
-      body: ListView(
-        // 整个页面
-        children: [
 
-          /// 封面
-          _buildCover(hasCover),
-
-          /// 标题
-          /// 简介
-          Container(
-            margin: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-            child: Column(
+    return ChangeNotifierProvider(
+      create: (context) => NewRecipeProvider(),
+      builder: (context, child) {
+        return Consumer<NewRecipeProvider>(builder: (context, provider, child) {
+          return Scaffold(
+            appBar: AppBar(
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        Fluttertoast.showToast(msg: "//TODO: 发布");
+                        provider.model;
+                      },
+                      icon: const Icon(Icons.publish_rounded))
+                ],
+                title: Consumer<UserProvider>(
+                  builder: (context, user, child) => Stack(
+                    children: [
+                      Text('${user.username} post'),
+                    ],
+                  ),
+                )),
+            body: ListView(
+              // 整个页面
               children: [
-                TextField(
-                  style: const TextStyle(
-                      fontSize: 25.0, fontWeight: FontWeight.w800),
-                  controller: titleController,
-                  decoration: const InputDecoration(
-                    hintText: "添加菜谱标题",
-                    hintStyle: TextStyle(fontSize: 25),
-                    border: InputBorder.none,
-                    // TODO: 修改样式
-                  ),
-                ),
-                Divider(
-                    thickness: 1,
-                    color: Theme
-                        .of(context)
-                        .colorScheme
-                        .primary
-                        .withAlpha(10)),
+                /// 封面
+                _buildCover(hasCover),
+
+                /// 标题
+                /// 简介
                 Container(
-                  margin: const EdgeInsets.only(bottom: 50),
-                  child: TextField(
-                    controller: introductionController,
-                    decoration: const InputDecoration(
-                      hintText: "输入这道美食背后的故事",
-                      border: InputBorder.none,
-                      // TODO: 修改样式
-                    ),
+                  margin: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                  child: Column(
+                    children: [
+                      TextField(
+                        style: const TextStyle(
+                            fontSize: 25.0, fontWeight: FontWeight.w800),
+                        // controller: titleController,
+                        onChanged: (value) {
+                          provider.model.name = value;
+                          // log(value);
+                        },
+                        decoration: const InputDecoration(
+                          hintText: "添加菜谱标题",
+                          hintStyle: TextStyle(fontSize: 25),
+                          border: InputBorder.none,
+                          // TODO: 修改样式
+                        ),
+                      ),
+                      Divider(
+                          thickness: 1,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha(10)),
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 50),
+                        child: TextField(
+                          onChanged: (value) {
+                            provider.model.introduction = value;
+                            // log(value);
+                          },
+                          decoration: const InputDecoration(
+                            hintText: "输入这道美食背后的故事",
+                            border: InputBorder.none,
+                            // TODO: 修改样式
+                          ),
+                        ),
+                      ),
+
+                      /// 用料 TEXT
+                      ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 0.0),
+                        leading: Text(
+                          "用料",
+                          style: titleStyle(),
+                        ),
+                      ),
+
+                      /// 配料表
+                      ValueListenableBuilder(
+                        valueListenable: countIngredient,
+                        builder: (context, value, child) {
+                          return Column(
+                            children:
+                                List.generate(countIngredient.value, (index) {
+                              if (index >=
+                                  provider.model.ingredientsName.length) {
+                                provider.model.ingredientsName.add("1");
+                                provider.model.ingredientsAmount.add("2");
+                              }
+                              return Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                          flex: 1,
+                                          child: TextSelect(
+                                            index: index,
+                                            onChange:
+                                                provider.changeIngredientName,
+                                            ops: const ["鸡蛋", "茄子", "狮子", "辣椒"],
+                                          )),
+                                      SizedBox(
+                                        height: 45,
+                                        child: VerticalDivider(
+                                          // 在两个TextField之间画一条竖线
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withAlpha(10), // 线的颜色
+                                          thickness: 1, // 线的厚度
+                                          width: 20,
+                                        ),
+                                      ),
+                                      Expanded(
+                                          flex: 1,
+                                          child: TextSelect(
+                                              index: index,
+                                              onChange: provider
+                                                  .changeIngredientAmout,ops: ["一个"],)),
+                                    ],
+                                  ),
+                                  Divider(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withAlpha(10), // 线的颜色
+                                    thickness: 1, // 线的厚度
+                                  )
+                                ],
+                              );
+                            }),
+                          );
+                        },
+                      ),
+
+                      /// 配料＋1 按钮
+                      ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 0.0),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            countIngredient.value += 1;
+                          },
+                        ),
+                      ),
+
+                      /// “做法”文字
+                      ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 0.0),
+                        leading: Text("做法", style: titleStyle()),
+                      ),
+                      ValueListenableBuilder(
+                          valueListenable: countStep,
+                          builder: (context, value, child) {
+                            return Column(
+                              children: List.generate(countStep.value, (index) {
+                                if (index >=
+                                    provider.model.stepContents.length) {
+                                  provider.model.stepContents.add("");
+                                }
+                                return singleStep(index, (value) {
+                                  provider.model.stepContents[index] = value;
+                                  log(value);
+                                });
+                              }),
+                            );
+                          }),
+
+                      /// 步骤＋1 按钮
+                      ListTile(
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 0.0),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            countStep.value += 1;
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
-                /// 用料 TEXT
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  leading: Text(
-                    "用料",
-                    style: titleStyle(),
-                  ),
-                ),
+                // const TextSelect(),
+                Container(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: TextButton(
+                    style: ButtonStyle(
+                        shape: MaterialStateProperty.all(
+                            const BeveledRectangleBorder())),
+                    child: const Text("发布菜谱",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)),
+                    onPressed: () async {
+                      if (!hasCover) {
+                        Fluttertoast.showToast(msg: "请上传封面～");
+                        return;
+                      }
+                      if (!hasStepsCover.any((element) => element == true)) {
+                        Fluttertoast.showToast(msg: "请上传步骤对应的图片哦～");
+                        return;
+                      }
+                      //检测provider的model中的ingredientsAmount和ingredientsName是否有元素为“”
+                      if (!provider.model.ingredientsName
+                          .any((element) => element != "")) {
+                        Fluttertoast.showToast(msg: "配料不要为空～");
+                        return;
+                      }
+                      if (!provider.model.ingredientsAmount
+                          .any((element) => element != "")) {
+                        Fluttertoast.showToast(msg: "用量不要为空～");
+                        return;
+                      }
+                      if (!provider.model.stepContents
+                          .any((element) => element != "")) {
+                        Fluttertoast.showToast(msg: "步骤描述不要为空～");
+                        return;
+                      }
+                      stepsCover.forEach((key, value) {
+                        provider.model.stepImages
+                            .add(FileConverter.xFile2File(value));
+                      });
 
-                /// 配料表
-                allIngredient(),
-                // const Row(
-                //   children: [
-                //     Expanded(child: TextSelect()),
-                //     Expanded(child: TextSelect()),
-                //   ],
-                // ),
-
-                /// 配料＋1 按钮
-
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () {
-                      countIngredient.value += 1;
-                    },
-                  ),
-                ),
-
-                /// “做法”文字
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  leading: Text("做法", style: titleStyle()),
-                ),
-                allSteps(),
-
-                /// 步骤＋1 按钮
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () {
-                      countStep.value += 1;
+                      provider.publish();
                     },
                   ),
                 ),
               ],
             ),
-          ),
-
-          // const TextSelect(),
-          sendButton(),
-        ],
-      ),
+          );
+        });
+      },
     );
   }
 
-  /// 所有步骤
-  Widget allSteps() {
-    return ValueListenableBuilder(
-        valueListenable: countStep,
-        builder: (context, value, child) {
-          return Column(
-            children: List.generate(countStep.value, (index) {
-              if (hasStepsCover.length <= index) {
-                hasStepsCover.add(false);
-              }
-              TextEditingController? stepInfoCT = stepContentsController[index];
-              if (stepInfoCT == null) {
-                stepInfoCT = TextEditingController();
-                stepContentsController[index] = stepInfoCT;
-              }
-              return singleStep(index, stepInfoCT);
-            }),
-          );
-        });
-  }
-
   /// 单个步骤
-  Widget singleStep(index, stepInfoCT) {
+  Widget singleStep(index, onchange) {
     return Column(
       children: [
         ListTile(
@@ -230,56 +316,31 @@ class _PublishRecipeState extends State<PublishRecipe> {
               child: Center(
                   child: hasStepsCover[index]
                       ? ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: Image.file(File(stepsCover[index]!.path),
-                          fit: BoxFit.fitWidth))
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Image.file(File(stepsCover[index]!.path),
+                              fit: BoxFit.fitWidth))
                       : Container(
-                    height: 250,
-                    alignment: Alignment.center,
-                    child: const Text(
-                      "+ 步骤图\n清晰的步骤图会让菜谱更加受欢迎 ～",
-                      style: TextStyle(color: Color(0xFF909090)),
-                      textAlign: TextAlign.center,
-                    ),
-                  )),
+                          height: 250,
+                          alignment: Alignment.center,
+                          child: const Text(
+                            "+ 步骤图\n清晰的步骤图会让菜谱更加受欢迎 ～",
+                            style: TextStyle(color: Color(0xFF909090)),
+                            textAlign: TextAlign.center,
+                          ),
+                        )),
             )),
         TextField(
-          controller: stepInfoCT,
           decoration: const InputDecoration(
             hintText: '添加步骤说明～',
             border: InputBorder.none,
-
             // TODO: 修改样式
           ),
+          onChanged: onchange,
         ),
         Divider(
             thickness: 1,
-            color: Theme
-                .of(context)
-                .colorScheme
-                .primary
-                .withAlpha(10)),
+            color: Theme.of(context).colorScheme.primary.withAlpha(10)),
       ],
-    );
-  }
-
-  /// 发布按钮
-  Widget sendButton() {
-    return Container(
-      color: Theme
-          .of(context)
-          .colorScheme
-          .primaryContainer,
-      child: TextButton(
-        style: ButtonStyle(
-            shape: MaterialStateProperty.all(const BeveledRectangleBorder())),
-        child: const Text("发布菜谱",
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 18)),
-        onPressed: () async {},
-      ),
     );
   }
 
@@ -294,46 +355,16 @@ class _PublishRecipeState extends State<PublishRecipe> {
       return;
     }
 
-    /// 配料
-    recipe.introduction = introductionController.text;
-    ingredientsNameController.forEach((key, value) {
-      recipe.ingredients
-          .add({value.text: ingredientsAmountController[key]!.text});
-    });
-    if (!recipe.ingredients.any(
-            (element) =>
-        element.keys.first != "" && element.values.first != "")) {
-      Fluttertoast.showToast(msg: "配料和用量不要为空～");
-      return;
-    }
-
-    /// 标题
-    recipe.name = titleController.text;
-
-    /// 封面
-    recipe.cover = FileConverter.xFile2File(cover);
-
-    /// 每一步的内容
-    stepContentsController.forEach((key, value) {
-      recipe.stepContents.add(value.text);
-    });
-
-    var a = 1;
-
-    /// 每一步的图片
-    stepsCover.forEach((key, value) async {
-      File toAdd = FileConverter.xFile2File(value);
-
-      recipe.stepImages.add(toAdd);
-    });
-    log(recipe.stepImages.length.toString());
-    var resp = await RecipeService.postRecipe(recipe).then((s) {
+    var resp = await RecipeService.publishRecipe(recipe).then((s) {
       return s;
     }, onError: (e) {
       log(e.toString());
       Fluttertoast.showToast(msg: "发布失败:${e.toString().split(":")[1]}");
     });
     ;
+    ingredientsName.forEach((key, value) {
+      // recipe.ingredientsName.add();
+    });
     log(resp.toString());
     if (!resp.isSuccess()) {
       Fluttertoast.showToast(msg: "发布失败: ${resp.message}");
@@ -342,69 +373,6 @@ class _PublishRecipeState extends State<PublishRecipe> {
       Navigator.pop(context);
     }
   }
-
-  /// 食材列表
-  Widget allIngredient() {
-    return ValueListenableBuilder(
-      valueListenable: countIngredient,
-      builder: (context, value, child) {
-        return Column(
-          children: List.generate(countIngredient.value, (index) {
-            // TextEditingController? nameCT = ingredientsNameController[index];
-            // TextEditingController? amountCT =
-            //     ingredientsAmountController[index];
-            // if (nameCT == null) {
-            //   nameCT = TextEditingController();
-            //   ingredientsNameController[index] = nameCT;
-            // }
-            // if (amountCT == null) {
-            //   amountCT = TextEditingController();
-            //   ingredientsAmountController[index] = amountCT;
-            // }
-            // return singleIngredient(nameCT, amountCT);
-            TextSelect? name = ingredientsName[index];
-            TextSelect? amount = ingredientsAmount[index];
-
-            if (name == null) {
-              name = const TextSelect();
-              ingredientsName[index] = name;
-            }
-            if (amount == null) {
-              amount = const TextSelect();
-              ingredientsAmount[index] = amount;
-            }
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                    flex: 1,
-                    child: name),
-                SizedBox(
-                  height: 45,
-                  child: VerticalDivider(
-                    // 在两个TextField之间画一条竖线
-                    color:
-                    Theme
-                        .of(context)
-                        .colorScheme
-                        .primary
-                        .withAlpha(5), // 线的颜色
-                    thickness: 1, // 线的厚度
-                    width: 20,
-                  ),
-                ),
-                Expanded(
-                    flex: 1,
-                    child: amount
-                ),
-              ],
-            );
-          }),
-        );
-      },
-    );
-  }
-
 
   /// 封面
   Widget _buildCover(hasCover) {
@@ -421,17 +389,17 @@ class _PublishRecipeState extends State<PublishRecipe> {
           child: Center(
             child: hasCover
                 ? Image.file(
-              File(cover.path),
-              fit: BoxFit.fitWidth,
-            )
+                    File(cover.path),
+                    fit: BoxFit.fitWidth,
+                  )
                 : Container(
-              height: 300,
-              alignment: Alignment.center,
-              child: const Text(
-                "+ 添加你的美食封面 ～",
-                style: TextStyle(color: Color(0xFF909090)),
-              ),
-            ),
+                    height: 300,
+                    alignment: Alignment.center,
+                    child: const Text(
+                      "+ 添加你的美食封面 ～",
+                      style: TextStyle(color: Color(0xFF909090)),
+                    ),
+                  ),
           ),
         ));
   }
@@ -441,11 +409,7 @@ class _PublishRecipeState extends State<PublishRecipe> {
     return TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 23,
-        color: Theme
-            .of(context)
-            .textTheme
-            .titleLarge
-            ?.color);
+        color: Theme.of(context).textTheme.titleLarge?.color);
   }
 
   void selectCover() async {

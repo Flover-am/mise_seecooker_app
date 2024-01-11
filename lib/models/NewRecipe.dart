@@ -7,10 +7,10 @@ class NewRecipe {
   late File cover;
 
   /// 标题
-  late String name;
+  late String name = "";
 
   /// 简介
-  late String introduction;
+  late String introduction = "";
 
   /// 每一步的图片
 

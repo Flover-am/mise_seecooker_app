@@ -33,7 +33,7 @@ class RecipeService {
     }
   }
 
-  static Future<HttpResult> postRecipe(NewRecipe recipe) async {
+  static Future<HttpResult> publishRecipe(NewRecipe recipe) async {
     String lastUrl = '$baseUrl/recipe';
     Options testOpt = Options(headers: {
       // await SharedPreferencesUtil.getString("tokenName"):
