@@ -10,6 +10,7 @@ import 'package:seecooker/utils/shared_preferences_util.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
 import 'package:skeletons/skeletons.dart';
 
+import '../../providers/other_user/other_user_provider.dart';
 import '../../providers/recipe/home_recipes_provider.dart';
 import '../../providers/post/community_posts_provider.dart';
 import '../../providers/recipe/search_recipes_provider.dart';
@@ -39,8 +40,6 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    UserProvider userProvider = Provider.of<UserProvider>(context,listen: false);
-    userProvider.loadLoginStatus();
 
     _scrollController.addListener(() {
       setState(() {
@@ -51,8 +50,8 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
 
   @override
   Widget build(BuildContext context){
-    UserProvider userProvider = Provider.of<UserProvider>(context);
-    int id = userProvider.id;
+    OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context);
+    int id = otherUserProvider.id;
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<UserRecipeProvider>(
@@ -71,7 +70,7 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
           body: buildBodyWidget(context),
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return [
-              buildSliverAppBar(userProvider),
+              buildSliverAppBar(otherUserProvider),
             ]; },
         ),
         floatingActionButton: isPinned ? FloatingActionButton(
@@ -99,7 +98,7 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
     ],);
   }
 
-  buildSliverAppBar(UserProvider userProvider) {
+  buildSliverAppBar(OtherUserProvider otherUserProvider) {
     return SliverAppBar(
               backgroundColor: Color.fromRGBO(244,164,96, 1),
               pinned: true,
@@ -119,7 +118,7 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
                     children: [
                       CircleAvatar(
                         radius: 15,
-                        backgroundImage: NetworkImage(userProvider.avatar),
+                        backgroundImage: NetworkImage(otherUserProvider.avatar),
                       ),
                     ],
                   ),
@@ -140,13 +139,7 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: MediaQuery.of(context).padding.top + 16),
-                      Consumer<UserProvider>(
-                        builder: (context, userProvider, child) {
-                          return userProvider.isLoggedIn
-                              ? _buildLoggedInProfileSection(userProvider,context)
-                              : _buildNotLoggedInProfileSection(context);
-                        },
-                      ),
+                      _buildLoggedInProfileSection(otherUserProvider,context)
                     ],
                   ),
                 ),
@@ -159,15 +152,7 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
                 unselectedLabelColor: Colors.black,
               ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
-              );
-            },
-          ),
+
         ]
     );
   }
@@ -176,7 +161,7 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
 }
 
 
-Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext context) {
+Widget _buildLoggedInProfileSection(OtherUserProvider otherUserProvider,BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -186,17 +171,14 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
             children: [
               CircleAvatar(
                 radius: 42,
-                // backgroundImage: NetworkImage(
-                //   'https://example.com/avatar.jpg',
-                // ),
-                backgroundImage: NetworkImage(userProvider.avatar),
+                backgroundImage: NetworkImage(otherUserProvider.avatar),
               ),
               SizedBox(width: 20),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    userProvider.username,
+                    otherUserProvider.username,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -204,7 +186,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                   ),
                   SizedBox(height: 8),
                   Text(
-                    userProvider.description,
+                    otherUserProvider.signature,
                     style: TextStyle(
                       fontSize: 16,
                     ),
@@ -220,30 +202,13 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
               SizedBox(width: 30),
               Column(
                 children: [
-                  Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(otherUserProvider.postNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
                   Text('发布数', style: TextStyle(fontSize: 12)),
                 ],
               ),
               SizedBox(width: 160),
-              ElevatedButton(
-                onPressed: () {
-                  //userProvider.logout();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ModifyPage()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.orange, // 按钮背景色
-                  onPrimary: Colors.white, // 文字颜色
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // 圆角大小
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // 按钮内边距
-                ),
-                child: Text('编辑信息'),
-              ),
+
             ],
           ),
         ],
@@ -252,92 +217,18 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
   }
 
 
-Widget _buildNotLoggedInProfileSection(BuildContext context) {
-  return Container(
-    padding: const EdgeInsets.all(60),
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Text(
-            '还未登录',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              // 在此处理登录操作，可以跳转到登录页面等
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
-            },
-            child: const Text('登录'),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-
 Widget _buildPostContent(BuildContext context) {
-    UserProvider userProvider = Provider.of<UserProvider>(context);
-    if (!userProvider.isLoggedIn) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '请先登录',
-              style: TextStyle(fontSize: 20), // 设置字体大小为24
-            ),
-          ],
-        ),
-      );
-    }
+
       return UserPostList();
 
   }
 
 Widget _buildRecipesContent(BuildContext context) {
-  UserProvider userProvider = Provider.of<UserProvider>(context);
-  if (!userProvider.isLoggedIn) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '请先登录',
-            style: TextStyle(fontSize: 20), // 设置字体大小为24
-          ),
-        ],
-      ),
-    );
-  }
   return UserRecipesList();
 
 }
 
 Widget _buildFavorRecipesContent(BuildContext context) {
-  UserProvider userProvider = Provider.of<UserProvider>(context);
-  if (!userProvider.isLoggedIn) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '请先登录',
-            style: TextStyle(fontSize: 20), // 设置字体大小为24
-          ),
-        ],
-      ),
-    );
-  }
   return UserFavorRecipesList();
 
 }
@@ -412,29 +303,4 @@ class _UserFavorRecipesListState extends State<UserFavorRecipesList> with Automa
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
-}
-
-
-
-Widget _buildSkeleton(BuildContext context) {
-  return Column(
-    children: [
-      const SizedBox(height: 8),
-      SkeletonLine(
-        style: SkeletonLineStyle(
-            height: MediaQuery.of(context).size.width - 48,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            borderRadius: BorderRadius.circular(12)
-        ),
-      ),
-      const SizedBox(height: 24),
-      SkeletonLine(
-        style: SkeletonLineStyle(
-            height: 368,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            borderRadius: BorderRadius.circular(12)
-        ),
-      ),
-    ],
-  );
 }

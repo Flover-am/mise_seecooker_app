@@ -7,6 +7,7 @@ import 'package:seecooker/pages/publish/publish_post_page.dart';
 import 'package:seecooker/pages/recipe/home_page.dart';
 import 'package:seecooker/pages/post/posts_page.dart';
 import 'package:flutter/material.dart';
+import 'package:seecooker/providers/other_user/other_user_provider.dart';
 import 'package:seecooker/providers/post/community_posts_provider.dart';
 import 'package:seecooker/providers/explore_post_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
@@ -27,6 +28,7 @@ void main() {
         ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
         ChangeNotifierProvider(create: (context) => HomeRecipesProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => OtherUserProvider()),
         ChangeNotifierProvider(create: (context) => RecommendProvider()),
 
       ],

@@ -21,6 +21,7 @@ import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
 import 'modify/modify_page.dart';
+import 'other_account_page.dart';
 import 'settings/settings_page.dart';
 
 class AccountPage extends StatefulWidget {
@@ -236,7 +237,6 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
               SizedBox(width: 160),
               ElevatedButton(
                 onPressed: () {
-                  //userProvider.logout();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => ModifyPage()),

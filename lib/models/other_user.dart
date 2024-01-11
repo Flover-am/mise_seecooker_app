@@ -11,7 +11,7 @@ class OtherUser {
 
   String avatar;
 
-  String? description;
+  String? signature;
 
 
   int postNum;
@@ -23,7 +23,7 @@ class OtherUser {
       this.id,
       this.username,
       this.avatar,
-      this.description,
+      this.signature,
       this.postNum,
       this.getLikedNum,);
 
