@@ -3,14 +3,18 @@ import 'package:seecooker/models/http_result.dart';
 
 import 'package:seecooker/utils/shared_preferences_util.dart';
 
+import '../utils/sa_token_util.dart';
+
 class PublishService{
-  static const String baseUrl ='https://mock.apifox.com/m1/3614939-0-default';//TODO:改为正式部署环境url
+  static const String baseUrl ='http://124.222.18.205:8080/v1';//TODO:改为正式部署环境url
   static Dio dio=Dio();
 
   static Future<HttpResult> publishPost(String title,String content,List<String> filePath)async{
 
-    String tokenType=await SharedPreferencesUtil.getString("tokenName");
-    String token=await SharedPreferencesUtil.getString("tokenValue");
+    // String tokenType=await SharedPreferencesUtil.getString("tokenName");
+    // String token=await SharedPreferencesUtil.getString("tokenValue");
+    String tokenType=await SaTokenUtil.getTokenName();
+    String token=await SaTokenUtil.getTokenValue();
 
     if(tokenType==null||token==null||tokenType.isEmpty||token.isEmpty){
       throw Exception("未登录");

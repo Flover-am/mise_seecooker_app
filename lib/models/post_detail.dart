@@ -9,8 +9,10 @@ class PostDetail {
   String posterName;
   String content;
   List<String> images;
+  bool like;
+  int likeNum;
 
-  PostDetail(this.title, this.posterAvatar, this.posterName, this.content, this.images);
+  PostDetail(this.title, this.posterAvatar, this.posterName, this.content, this.images, this.like, this.likeNum);
 
   factory PostDetail.fromJson(Map<String, dynamic> json) => _$PostDetailFromJson(json);
 

@@ -53,9 +53,18 @@ class HomePage extends StatelessWidget {
                   children: [
                     Image.asset('assets/images/wave-haikei.png',),
                     //SizedBox(height: MediaQuery.of(context).padding.top + 16),
-                    Provider.of<UserProvider>(context, listen: false).username != '未登录'
-                    ? Text('  亲爱的 ${Provider.of<UserProvider>(context, listen: false).username} ，', style: Theme.of(context).textTheme.titleMedium)
-                    : Text('  你好，', style: Theme.of(context).textTheme.headlineMedium),
+                    Consumer<UserProvider>(
+                      builder: (context, provider, child) {
+                        if(provider.username != '未登录') {
+                          return Text('   亲爱的 ${provider.username} ，', style: Theme.of(context).textTheme.titleMedium);
+                        } else {
+                          return Text('  你好，', style: Theme.of(context).textTheme.headlineMedium);
+                        }
+                      },
+                    ),
+                    // Provider.of<UserProvider>(context, listen: false).username != '未登录'
+                    // ? Text('  亲爱的 ${Provider.of<UserProvider>(context, listen: false).username} ，', style: Theme.of(context).textTheme.titleMedium)
+                    // : Text('  你好，', style: Theme.of(context).textTheme.headlineMedium),
                     const SizedBox(height: 12),
                     Text.rich(
                       TextSpan(
@@ -164,7 +173,7 @@ class RecipeList extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => RecipeDetail(id: index)));
+                        MaterialPageRoute(builder: (context) => RecipeDetail(id: provider.itemAt(index).id)));
                   },
                 ),
               );

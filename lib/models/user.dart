@@ -20,6 +20,10 @@ class User {
 
   List<int> posts;
 
+  int postNum;
+
+  int getLikedNum;
+
   String tokenName;
 
   String tokenValue;
@@ -36,6 +40,8 @@ class User {
       this.likeRecipes,
       this.postRecipes,
       this.posts,
+      this.postNum,
+      this.getLikedNum,
       this.tokenName,
       this.tokenValue,
       this.isLoggedIn);
