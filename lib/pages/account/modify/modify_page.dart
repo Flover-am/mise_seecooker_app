@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 
-import '../../../providers/user_provider.dart';
+import '../../../providers/user/user_provider.dart';
 
 
 
@@ -111,8 +111,8 @@ class _ModifyPageState extends State<ModifyPage> {
                           defaultUserName, _avatar_file.path);
                     }
                     if(!signatureFlag){
-                      //hasSignatureModified |= await userProvider.modifySignature(_signature);
-                      hasSignatureModified = true;
+                      hasSignatureModified |= await userProvider.modifySignature(_signature);
+                      //hasSignatureModified = true;
                     }
                     if(!usernameFlag){
                       hasUsernameModified |= await userProvider.modifyUsername(defaultUserName, _username);

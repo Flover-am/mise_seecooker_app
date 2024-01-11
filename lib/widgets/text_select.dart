@@ -35,6 +35,30 @@ class _TextSelectState extends State<TextSelect> {
   @override
   Widget build(BuildContext context) {
     return Autocomplete<String>(
+      optionsViewBuilder: (context, onSelected, options) {
+        return SizedBox(
+            height: 200.0,
+            width: 100.0,
+            child: Material(
+              elevation: 4.0,
+
+              child: ListView(
+
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                children: options.map((String option) {
+                  return GestureDetector(
+                    onTap: () {
+                      onSelected(option);
+                    },
+                    child: ListTile(
+                      title: Text(option),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ));
+      },
       optionsBuilder: (TextEditingValue textEditingValue) {
         widget.onChange(widget.index, textEditingValue.text);
         _text = textEditingValue.text;

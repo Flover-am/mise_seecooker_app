@@ -1,3 +1,6 @@
+/// 滑动卡面组件中展现的卡面，展示该菜品的名字，作者，简介，是否收藏
+
+
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -8,6 +11,7 @@ class ExpRecipeCard extends StatelessWidget {
   final String author;
   final String introduction;
   final String authorAvatar;
+  final bool favourite;
   const ExpRecipeCard({
     super.key,
     required this.id,
@@ -15,7 +19,8 @@ class ExpRecipeCard extends StatelessWidget {
     required this.coverUrl,
     required this.author,
     required this.introduction,
-    required this.authorAvatar
+    required this.authorAvatar,
+    required this.favourite,
   });
 
   @override
@@ -46,21 +51,13 @@ class ExpRecipeCard extends StatelessWidget {
                             style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w300),
                           )
                       ),
-                      // Positioned(
-                      //     left: 16,
-                      //     bottom: 130,
-                      //     child: Row(
-                      //       children: [
-                      //         const Icon(Icons.favorite_outline_rounded, color: Colors.white, size: 24),
-                      //         const SizedBox(width: 8),
-                      //         Text(
-                      //           '1',
-                      //           style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
-                      //         )
-                      //       ],
-                      //     )
-                      // )
-                    ]
+                      Positioned(
+                          left: 16,
+                          bottom: 130,
+                          child:
+                              this.favourite ? Icon(Icons.favorite, color: Colors.white, size: 24) : Icon(Icons.favorite_outline, color: Colors.white, size: 24),
+                      )],
+
                 ),
               ))
           ,
@@ -76,7 +73,7 @@ class ExpRecipeCard extends StatelessWidget {
                   backgroundImage: NetworkImage(authorAvatar),
                 ),
                 title: Text(author,style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27)),
-                subtitle: Text(introduction.substring(0,17)+"……",style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27)),
+                subtitle: Text(introduction.length>17 ? introduction.substring(0,17)+"……" : introduction,style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27)),
               ),
             ),
           ))
