@@ -155,7 +155,7 @@ class _PublishPostPageState extends State<PublishPostPage> {
       } catch (e) {
         Navigator.pop(ctx);
         Navigator.pop(ctx);
-        Fluttertoast.showToast(msg: "$e".substring(11));
+        Fluttertoast.showToast(msg: "$e");
       }
     }
   }

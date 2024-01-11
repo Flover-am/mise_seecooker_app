@@ -23,7 +23,7 @@ import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 import 'modify/modify_page.dart';
 import 'other_account_page.dart';
 import 'settings/settings_page.dart';
-
+///用户页面
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
 
@@ -183,7 +183,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
 
 }
 
-
+///用户登录后页面
 Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -260,7 +260,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
     );
   }
 
-
+///用户未登录页面
 Widget _buildNotLoggedInProfileSection(BuildContext context) {
   return Container(
     padding: const EdgeInsets.all(60),
@@ -293,7 +293,7 @@ Widget _buildNotLoggedInProfileSection(BuildContext context) {
   );
 }
 
-
+///构建用户帖子列表
 Widget _buildPostContent(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
     if (!userProvider.isLoggedIn) {
@@ -312,7 +312,7 @@ Widget _buildPostContent(BuildContext context) {
       return UserPostList();
 
   }
-
+///构建用户菜谱列表
 Widget _buildRecipesContent(BuildContext context) {
   UserProvider userProvider = Provider.of<UserProvider>(context);
   if (!userProvider.isLoggedIn) {
@@ -331,7 +331,7 @@ Widget _buildRecipesContent(BuildContext context) {
   return UserRecipesList();
 
 }
-
+///构建用户收藏列表
 Widget _buildFavorRecipesContent(BuildContext context) {
   UserProvider userProvider = Provider.of<UserProvider>(context);
   if (!userProvider.isLoggedIn) {
@@ -364,7 +364,7 @@ class _UserPostListState extends State<UserPostList> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
 
-    return const PostsWaterfall<UserPostsProvider>();
+    return const PostsWaterfall<UserPostsProvider>(private: true,);
   }
 
   @override

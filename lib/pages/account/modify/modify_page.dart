@@ -7,7 +7,7 @@ import 'dart:io';
 import '../../../providers/user/user_provider.dart';
 
 
-
+///修改页面
 class ModifyPage extends StatefulWidget {
   @override
   _ModifyPageState createState() => _ModifyPageState();
@@ -169,7 +169,7 @@ class _ModifyPageState extends State<ModifyPage> {
   void _updateDescription(String value) {
     _signature = value;
   }
-
+  ///构建头像
   Widget _buildAvatar() {
     ImageProvider defaultImageProvider =
     NetworkImage(avatar);
@@ -190,7 +190,7 @@ class _ModifyPageState extends State<ModifyPage> {
       ),
     );
   }
-
+  ///选择头像
   void selectAvatar() async {
     XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
     setState(() {

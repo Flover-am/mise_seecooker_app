@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'dart:io';
 
 import 'package:seecooker/providers/user/user_provider.dart';
-
+///修改密码页面
 class ModifyPasswordPage extends StatefulWidget {
   @override
   _ModifyPasswordPageState createState() => _ModifyPasswordPageState();
@@ -120,7 +120,7 @@ class _ModifyPasswordPageState extends State<ModifyPasswordPage> {
       ),
     );
   }
-
+  ///判断新密码是否有效
   bool isNewPasswordValid(String newPassword,String doubledPassword){
     if(newPassword != doubledPassword){
       Fluttertoast.showToast(
@@ -157,6 +157,7 @@ class _ModifyPasswordPageState extends State<ModifyPasswordPage> {
 
     return true;
   }
+  ///判断新密码是否合法
   bool isPasswordContainNumAndLetter(String newPassword) {
     // 判断密码是否同时包含字母和数字
     RegExp digitRegex = RegExp(r'\d');
