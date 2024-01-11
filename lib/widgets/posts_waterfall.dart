@@ -63,11 +63,11 @@ class _PostsWaterfallState<T extends PostsProvider> extends State<PostsWaterfall
               );
             } else {
               return widget.enableRefresh
-                  ? RefreshIndicator(
-                onRefresh: Provider.of<T>(context, listen: false).fetchPosts,
-                child: _buildWaterfall(),
-              )
-                  : _buildWaterfall();
+                ? RefreshIndicator(
+                    onRefresh: Provider.of<T>(context, listen: false).fetchPosts,
+                    child: _buildWaterfall(),
+                  )
+                : _buildWaterfall();
             }
           }
         }
@@ -100,33 +100,35 @@ class _PostsWaterfallState<T extends PostsProvider> extends State<PostsWaterfall
                       child: child,
                     );
                   },
+                  // TODO: refresh placeholder
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Center(child: Text(widget.endMessage, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)))),
                   ),
                 );
+              } else {
+                precacheImage(ExtendedNetworkImageProvider(provider.itemAt(index).cover), context);
+                return TweenAnimationBuilder(
+                  duration: const Duration(milliseconds: 500),
+                  tween: Tween<double>(begin: 0.0, end: 1.0),
+                  curve: Curves.easeOut,
+                  builder: (context, value, child) {
+                    return Opacity(
+                      opacity: value,
+                      child: child,
+                    );
+                  },
+                  child: PostCard(
+                    postId: provider.itemAt(index).postId,
+                    cover: provider.itemAt(index).cover,
+                    posterId: provider.itemAt(index).posterId,
+                    posterName: provider.itemAt(index).posterName,
+                    title: provider.itemAt(index).title,
+                    posterAvatar: provider.itemAt(index).posterAvatar,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailPage(postId: provider.itemAt(index).postId, private: widget.private))),
+                  ),
+                );
               }
-              precacheImage(ExtendedNetworkImageProvider(provider.itemAt(index).cover), context);
-              return TweenAnimationBuilder(
-                duration: const Duration(milliseconds: 500),
-                tween: Tween<double>(begin: 0.0, end: 1.0),
-                curve: Curves.easeOut,
-                builder: (context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: child,
-                  );
-                },
-                child: PostCard(
-                  postId: provider.itemAt(index).postId,
-                  cover: provider.itemAt(index).cover,
-                  posterId: provider.itemAt(index).posterId,
-                  posterName: provider.itemAt(index).posterName,
-                  title: provider.itemAt(index).title,
-                  posterAvatar: provider.itemAt(index).posterAvatar,
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PostDetailPage(postId: provider.itemAt(index).postId, private: widget.private))),
-                ),
-              );
             },
             itemCount: provider.count + 1,
           );

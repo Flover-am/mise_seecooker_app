@@ -11,7 +11,7 @@ import '../utils/shared_preferences_util.dart';
 
 class UserService {
   /// 测试阶段可以先用apiFox的Mock的url
-  static const String baseUrl = ServerUrlUtil.baseUrl;
+  static const String baseUrl = ServerUrlUtil.baseUrl+'/user';
   /// 使用Dio进行网络请求
   static var dio = Dio();
 
@@ -43,7 +43,7 @@ class UserService {
   }
 
   static Future<HttpResult> getUserById(int id) async {
-    String requestUrl = "$baseUrl/user/$id";
+    String requestUrl = "$baseUrl/info/$id";
 
 
     /// 发起get请求，拿到response
@@ -53,7 +53,7 @@ class UserService {
   }
 
   static Future<HttpResult> getUser() async {
-    String requestUrl = "$baseUrl/user";
+    String requestUrl = "$baseUrl";
     Options testOpt = Options(headers: {
       // await SharedPreferencesUtil.getString("tokenName"):
       // await SharedPreferencesUtil.getString("tokenValue")
@@ -68,7 +68,7 @@ class UserService {
   }
 
   static Future<HttpResult> register(String username,String password, String avatarFile) async {
-    String requestUrl = "$baseUrl/user";
+    String requestUrl = "$baseUrl";
     final FormData formData =FormData.fromMap(
 {     "username": username,
       "password": password,
@@ -102,7 +102,7 @@ class UserService {
     var data = formData;
 
     /// 发送请求，拿到 Response
-    var response = await dio.post(requestUrl, data: data,options: testOpt);
+    var response = await dio.put(requestUrl, data: data,options: testOpt);
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }
@@ -125,7 +125,7 @@ class UserService {
     var data = formData;
 
     /// 发送请求，拿到 Response
-    var response = await dio.post(requestUrl, data: data,options: testOpt);
+    var response = await dio.put(requestUrl, data: data,options: testOpt);
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }
@@ -133,17 +133,17 @@ class UserService {
   static Future<HttpResult> modifyPassword(String username,String password, String newPassword) async {
     String requestUrl = "$baseUrl/modify/password";
 
+    Map<String, dynamic> requestData = {
+      "username": username,
+      "password": password,
+      "newPassword":newPassword,
+    };
 
-    final FormData formData =FormData.fromMap(
-        {  "username": username,
-          "password":password,
-          "newPassword":newPassword,
-        });
+    dio.options.headers['Content-Type'] = 'application/json'; // Set the request content type to JSON
 
-    var data = formData;
+    var response = await dio.put(requestUrl, data: jsonEncode(requestData));
 
-    /// 发送请求，拿到 Response
-    var response = await dio.post(requestUrl, data: data);
+
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }

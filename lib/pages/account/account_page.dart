@@ -58,6 +58,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
           ]; },
       ),
       floatingActionButton: isPinned ? FloatingActionButton(
+        heroTag: UniqueKey(),
         onPressed: () {
           // 处理悬浮按钮点击事件
           _scrollController.jumpTo(0);
@@ -84,7 +85,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
     return SliverAppBar(
               backgroundColor: Color.fromRGBO(244,164,96, 1),
               pinned: true,
-              expandedHeight: 280,
+              expandedHeight: 230,
               toolbarHeight: 30,
               scrolledUnderElevation: 0,
               flexibleSpace: FlexibleSpaceBar(
@@ -133,9 +134,9 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                 ),
               ),
             bottom: TabBar(controller: _tabController, tabs: const [
-              Tab(text: '收藏',),
-              Tab(text: '收藏'),
-              Tab(text: '收藏'),
+              Tab(text: '收藏菜单',),
+              Tab(text: '发布菜单'),
+              Tab(text: '发布帖子'),
       ],        labelColor: Colors.black, // 设置选中标签的文本颜色为白色
                 unselectedLabelColor: Colors.black,
               ),
@@ -187,22 +188,21 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                     ),
                   ),
                   SizedBox(height: 8),
-                  Text('用户编号：xxxxxxxxx'), // 替换为用户描述
+                  Text(
+                    userProvider.description,
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ), // 替换为用户描述
                 ],
               ),
             ],
           ),
-          SizedBox(height: 20),
-          Text(
-            userProvider.description,
-            style: TextStyle(
-              fontSize: 16,
-            ),
-          ),
+
           SizedBox(height: 8),
           Row(
             children: [
-              SizedBox(width: 10),
+              SizedBox(width: 30),
               Column(
                 children: [
                   Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -210,15 +210,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                   Text('发布数', style: TextStyle(fontSize: 12)),
                 ],
               ),
-              SizedBox(width: 20),
-              Column(
-                children: [
-                  Text(userProvider.getLikedNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 4),
-                  Text('点赞数', style: TextStyle(fontSize: 12)),
-                ],
-              ),
-              SizedBox(width: 120),
+              SizedBox(width: 160),
               ElevatedButton(
                 onPressed: () {
                   //userProvider.logout();
