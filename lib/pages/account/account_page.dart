@@ -164,8 +164,8 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               Tab(text: '收藏菜谱',),
               Tab(text: '发布菜谱'),
               Tab(text: '发布帖子'),
-      ],        labelColor: Colors.black, // 设置选中标签的文本颜色为白色
-                unselectedLabelColor: Colors.black,
+      ],        labelColor: Colors.white, // 设置选中标签的文本颜色为白色
+                unselectedLabelColor: Colors.black, //
               ),
         actions: [
           IconButton(
@@ -209,6 +209,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                   SizedBox(height: 8),
@@ -216,6 +217,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                     userProvider.description,
                     style: TextStyle(
                       fontSize: 16,
+                      color: Colors.white,
                     ),
                   ), // 替换为用户描述
                 ],
@@ -229,9 +231,9 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
               SizedBox(width:15),
               Column(
                 children: [
-                  Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16,  color: Colors.white,fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
-                  Text('发布帖子数', style: TextStyle(fontSize: 12)),
+                  Text('发帖数', style: TextStyle(fontSize: 12,color: Colors.white,)),
                 ],
               ),
               SizedBox(width: 160),
@@ -243,7 +245,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.orange, // 按钮背景色
+                  primary: Theme.of(context).colorScheme.secondaryContainer, // 按钮背景色
                   onPrimary: Colors.white, // 文字颜色
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20), // 圆角大小
