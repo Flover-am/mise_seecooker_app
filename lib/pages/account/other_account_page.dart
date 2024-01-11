@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +12,10 @@ import 'package:seecooker/utils/shared_preferences_util.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
 import 'package:skeletons/skeletons.dart';
 
+import '../../providers/other_user/other_user_favor_recipe_provider.dart';
+import '../../providers/other_user/other_user_posts_provider.dart';
 import '../../providers/other_user/other_user_provider.dart';
+import '../../providers/other_user/other_user_recipe_provider.dart';
 import '../../providers/recipe/home_recipes_provider.dart';
 import '../../providers/post/community_posts_provider.dart';
 import '../../providers/recipe/search_recipes_provider.dart';
@@ -52,16 +57,17 @@ class _OtherAccountPageState extends State<OtherAccountPage> with SingleTickerPr
   Widget build(BuildContext context){
     OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context);
     int id = otherUserProvider.id;
+    print("id: " + id.toString());
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<UserRecipeProvider>(
-          create: (_) => UserRecipeProvider(id),
+        ChangeNotifierProvider<OtherUserRecipeProvider>(
+          create: (_) => OtherUserRecipeProvider(id),
         ),
-        ChangeNotifierProvider<UserFavorRecipesProvider>(
-          create: (_) => UserFavorRecipesProvider(id),
+        ChangeNotifierProvider<OtherUserFavorRecipesProvider>(
+          create: (_) => OtherUserFavorRecipesProvider(id),
         ),
-        ChangeNotifierProvider<UserPostsProvider>(
-          create: (_) => UserPostsProvider(id),
+        ChangeNotifierProvider<OtherUserPostsProvider>(
+          create: (_) => OtherUserPostsProvider(id),
         ),
       ],
       child: Scaffold(
@@ -246,7 +252,7 @@ class _UserPostListState extends State<UserPostList> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
 
-    return const PostsWaterfall<UserPostsProvider>();
+    return const PostsWaterfall<OtherUserPostsProvider>();
   }
 
   @override
@@ -267,7 +273,7 @@ class _UserRecipesListState extends State<UserRecipesList> with AutomaticKeepAli
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return const RecipesList<UserRecipeProvider>(
+    return const RecipesList<OtherUserRecipeProvider>(
       emptyMessage: '暂无菜谱',
       enableRefresh: false,
       private: false,
@@ -292,7 +298,7 @@ class _UserFavorRecipesListState extends State<UserFavorRecipesList> with Automa
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return const RecipesList<UserFavorRecipesProvider>(
+    return const RecipesList<OtherUserFavorRecipesProvider>(
       emptyMessage: '暂无菜谱',
       enableRefresh: false,
       private: false,

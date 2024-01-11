@@ -12,7 +12,7 @@ import 'dart:io';
 class OtherUserProvider extends ChangeNotifier{
   var defaultAvatar = "https://seecooker.oss-cn-shanghai.aliyuncs.com/avatar/ecff12a2-2986-4bd9-a393-cf8f1065397f.webp";
   late OtherUser _otherUser = OtherUser(112,"username", defaultAvatar, 'signature',0,0);
-  final int _id = 10;
+  late int _id;
 
   int get id => _id;
 
@@ -36,6 +36,8 @@ class OtherUserProvider extends ChangeNotifier{
     }
     /// 将数据转换成Model
     _otherUser = OtherUser.fromJson(res.data);
+    _id = id;
+    _otherUser.id = id;
     return _otherUser;
   }
 }
