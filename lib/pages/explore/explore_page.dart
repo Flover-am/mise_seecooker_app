@@ -5,6 +5,7 @@
 ///
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/Ingredients.dart';
 import 'package:seecooker/pages/explore/makeexp_page.dart';
@@ -33,8 +34,13 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(8.0),
+    return Container(
+
+      margin: EdgeInsets.all(5.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant,
+        borderRadius: BorderRadius.circular(20), // 圆角半径
+      ),
       child: Padding(
         padding: EdgeInsets.all(12.0),
         child:
@@ -47,15 +53,18 @@ class CategoryItem extends StatelessWidget {
                   Text(
                   category.category,
                   style: const TextStyle(
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 22.0,
                   ),
-                ),
+
+                ),Text(
+                      "${category.name[0]} ${category.name[1]}……",
+                      style: const TextStyle(
+                        fontSize: 15.0,
+                        color:Colors.grey,
+                      )),
                 ],),
-                SizedBox(width: MediaQuery.of(context).size.width/5,height: MediaQuery.of(context).size.height/16,child:  ElevatedButton(
-                  onPressed: onPressed,
-                  child: Icon(Icons.add),
-                ),)
+                TextButton(onPressed: onPressed, child: Icon(Icons.add))
+
               ],
             ),
       ),
@@ -85,23 +94,26 @@ void showCommentSection(BuildContext context, bool autofocus) {
               ),
               Expanded(
                   child: SizedBox(
-                width: MediaQuery.of(context).size.width / 2,
+                width: MediaQuery.of(context).size.width/1.1 ,
                 height: 45,
-                child: FloatingActionButton(
-                    child: const Text("生 成 菜 谱",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 30)),
-                    onPressed: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MakeExpPage()),
-                          ),
-                        }),
+                child: FilledButton(
+                  onPressed: () => {
+                    if(Provider.of<ExplorePostProvider>(context,
+                        listen: false).length>0){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) => const MakeExpPage()),
+                       )}
+                    else{
+                    Fluttertoast.showToast(msg: '请至少选择一道食材')}
+                  },
+                  child: Text('生 成 菜 谱', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.surface),),
+                )
               )
               ),
               const SizedBox(
-                height: 20,
+                height: 30,
               )
             ],
           ));
@@ -178,30 +190,28 @@ class _ExplorePageState extends State<ExplorePage> {
               listen: false).showlist();
           return Scaffold(
             body: Container(
-                margin: const EdgeInsets.fromLTRB(10, 30, 10, 0),
+                color: Theme.of(context).colorScheme.background,
+                margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                 child: ListView(
                   children: [
+                    Row(children: [SizedBox(width: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("挑选食材",style: TextStyle(fontSize: 33,fontWeight: FontWeight.bold),),
+                          Text("共${categories.length}个种类",style: TextStyle(fontSize: 18,color: Colors.grey))],
+                      ),],),
+                    SizedBox(height: 5),
                     MySearchBar(categories: categories),
-                    const SizedBox(height: 10),
-                    Container(
-                      height: MediaQuery.of(context).size.height /
-                          1.4, // Set a fixed or maximum height
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: categories.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return CategoryItem(
-                            category: categories[index],
-                            onPressed: () {
-                              _showCategoryIngredientsDialog(
-                                  context,
-                                 categories[index].category,
-                                  categories[index].name);
-                            },
-                          );
-                        },
-                      ),
-                    ),
+                    const SizedBox(height: 5),
+                    for(int index=0;index<categories.length;index++)
+                    CategoryItem(
+                    category: categories[index],
+                    onPressed: () {
+                    _showCategoryIngredientsDialog(context,
+                    categories[index].category,
+                    categories[index].name);
+                    },),
                   ],
                 )
             ),
