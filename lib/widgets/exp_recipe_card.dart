@@ -8,6 +8,7 @@ class ExpRecipeCard extends StatelessWidget {
   final String author;
   final String introduction;
   final String authorAvatar;
+  final bool favourite;
   const ExpRecipeCard({
     super.key,
     required this.id,
@@ -15,7 +16,8 @@ class ExpRecipeCard extends StatelessWidget {
     required this.coverUrl,
     required this.author,
     required this.introduction,
-    required this.authorAvatar
+    required this.authorAvatar,
+    required this.favourite,
   });
 
   @override
@@ -46,21 +48,13 @@ class ExpRecipeCard extends StatelessWidget {
                             style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w300),
                           )
                       ),
-                      // Positioned(
-                      //     left: 16,
-                      //     bottom: 130,
-                      //     child: Row(
-                      //       children: [
-                      //         const Icon(Icons.favorite_outline_rounded, color: Colors.white, size: 24),
-                      //         const SizedBox(width: 8),
-                      //         Text(
-                      //           '1',
-                      //           style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
-                      //         )
-                      //       ],
-                      //     )
-                      // )
-                    ]
+                      Positioned(
+                          left: 16,
+                          bottom: 130,
+                          child:
+                              this.favourite ? Icon(Icons.favorite, color: Colors.white, size: 24) : Icon(Icons.favorite_outline, color: Colors.white, size: 24),
+                      )],
+
                 ),
               ))
           ,

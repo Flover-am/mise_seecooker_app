@@ -2,23 +2,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/providers/explore_post_provider.dart';
-import 'package:seecooker/utils/categoryies.dart';
+import 'package:seecooker/models/Ingredients.dart';
+import 'package:seecooker/providers/explore/explore_post_provider.dart';
+
 
 
 class MySearchBar extends StatefulWidget {
-  const MySearchBar({super.key});
-
+  const MySearchBar({super.key ,required this.categories});
+  final List<Ingredients> categories;
   @override
-  _MySearchBarState createState() => _MySearchBarState();
+  _MySearchBarState createState() => _MySearchBarState(categories: this.categories);
 }
 
-String FindDish(String dish){
+String FindDish(String dish, List<Ingredients> categories){
   if(dish=="") {
     return "";
   }
   for(var category in categories){
-    for(String ingredient in category.ingredients) {
+    for(String ingredient in category.name) {
       if(ingredient==dish)
         return ingredient;
     }
@@ -29,18 +30,20 @@ class _MySearchBarState extends State<MySearchBar> {
   List<String> _searchHistory = [];
   String search = "0";
   String suggest = "没有对应食材";
+  _MySearchBarState({required this.categories});
+  final List<Ingredients> categories;
   Iterable<Widget> getSuggestions(SearchController controller) {
     setState(() {
-      if(FindDish(search)!="") {
-        suggest=FindDish(search);
+      if(FindDish(search, categories)!="") {
+        suggest=FindDish(search, categories);
       }
     });
     var searchItem = ListTile(
       leading: const Icon(Icons.arrow_outward),
       title: Text(suggest),
       onTap: () {
-        if(!Provider.of<ExplorePostProvider>(context, listen: false).contain(FindDish(search))) {
-          Provider.of<ExplorePostProvider>(context, listen: false).add(FindDish(search));
+        if(!Provider.of<ExplorePostProvider>(context, listen: false).contain(FindDish(search, categories))) {
+          Provider.of<ExplorePostProvider>(context, listen: false).add(FindDish(search, categories));
         }
       },
     );
@@ -49,7 +52,7 @@ class _MySearchBarState extends State<MySearchBar> {
       title: Text(item),
       onTap: () {
         if(!Provider.of<ExplorePostProvider>(context, listen: false).contain(item)) {
-          Provider.of<ExplorePostProvider>(context, listen: false).add(FindDish(item));
+          Provider.of<ExplorePostProvider>(context, listen: false).add(FindDish(item,categories));
         }
       },
     ));
@@ -85,11 +88,11 @@ class _MySearchBarState extends State<MySearchBar> {
           )],
           hintText: '搜索食材',
           onSubmitted: (text) {
-            if(FindDish(text)!=""){
-              if(!Provider.of<ExplorePostProvider>(context, listen: false).contain(FindDish(text))) {
-                Provider.of<ExplorePostProvider>(context, listen: false).add(FindDish(text));
+            if(FindDish(text,categories)!=""){
+              if(!Provider.of<ExplorePostProvider>(context, listen: false).contain(FindDish(text,categories))) {
+                Provider.of<ExplorePostProvider>(context, listen: false).add(FindDish(text,categories));
                 Fluttertoast.showToast(
-                    msg: "成功添加${FindDish(text)}！",
+                    msg: "成功添加${FindDish(text,categories)}！",
                     toastLength: Toast.LENGTH_SHORT,
                     gravity: ToastGravity.CENTER,
                     timeInSecForIosWeb: 1,
@@ -99,7 +102,7 @@ class _MySearchBarState extends State<MySearchBar> {
               }
               else {
                 Fluttertoast.showToast(
-                    msg: "您已添加过${FindDish(text)}！",
+                    msg: "您已添加过${FindDish(text,categories)}！",
                     toastLength: Toast.LENGTH_SHORT,
                     gravity: ToastGravity.CENTER,
                     timeInSecForIosWeb: 1,

@@ -1,16 +1,23 @@
+/// 发现页面的第二页面，通过左右滑动切换、收藏推荐菜品的卡片
+/// feat by： xhzai
+/// time： 2024/1/11
+///
+///
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/providers/recommend_provider.dart';
+import 'package:seecooker/providers/explore/recommend_provider.dart';
 import 'package:seecooker/services/explore_service.dart';
 import 'package:seecooker/widgets/tinder_card.dart';
 
 import 'package:seecooker/widgets/post_card.dart';
 import 'package:tcard/tcard.dart';
 
-import '../../widgets/exp_recipe_card.dart';
-import '../../widgets/recipe_card.dart';
-import '../recipe/recipe_detail.dart';
+import 'package:seecooker/providers/explore/explore_post_provider.dart';
+import 'package:seecooker/widgets/exp_recipe_card.dart';
+import 'package:seecooker/widgets/recipe_card.dart';
+import 'package:seecooker/pages/recipe/recipe_detail.dart';
 
 class MakeExpPage extends StatefulWidget {
   const MakeExpPage({super.key});
@@ -20,7 +27,7 @@ class MakeExpPage extends StatefulWidget {
 }
 
 class _MakeExpPageState extends State<MakeExpPage> {
-  var text = 'mkexp';
+  var text = 'mkexp';//默认显示文字
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +37,8 @@ class _MakeExpPageState extends State<MakeExpPage> {
         ),
         body: FutureBuilder(
             future: Provider.of<RecommendProvider>(context, listen: false)
-                .fetchPosts(),
+                .fetchPosts(Provider.of<ExplorePostProvider>(context,
+                listen: false).showlist()),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -55,6 +63,7 @@ class SwipeCard extends StatefulWidget{
   }
 }
 class SwipeCardState extends State<SwipeCard>{
+  //获取卡面状态(开始向左、右滑)以实现和底部收藏、跳过ICON的交互
   bool being_right = false;
   bool being_left = false;
   @override
@@ -67,6 +76,7 @@ class SwipeCardState extends State<SwipeCard>{
                 flex: 1,
                 child: Stack(
                   children: [
+                    //滑动卡面组件,实现类似探探的功能
                     TinderSwapCard(
                       swipeUp: false,
                       swipeDown: false,
@@ -80,7 +90,8 @@ class SwipeCardState extends State<SwipeCard>{
                       minHeight: (MediaQuery.of(context).size.width+300) * 0.90,
                       cardBuilder: (context, index) {
                         if (index == provider.length - 1) {
-                          provider.fetchMorePosts();
+                          provider.fetchMorePosts(Provider.of<ExplorePostProvider>(context,
+                              listen: false).showlist());
                         }
                         return GestureDetector(
                             onTap: () =>Navigator.push(
@@ -89,21 +100,20 @@ class SwipeCardState extends State<SwipeCard>{
                                     builder: (context) => RecipeDetail(id: index))
                             ),
                             child: ExpRecipeCard(
-                              id: index,
+                              id: provider.itemAt(index).recipeId,
                               title: provider.itemAt(index).name,
                               coverUrl: provider.itemAt(index).cover,
                               author: provider.itemAt(index).authorName,
                               introduction: provider.itemAt(index).introduction,
                               authorAvatar: provider.itemAt(index).authorAvatar,
-                              // author: provider.itemAt(index).author,
-                              // like: provider.itemAt(index).like,
-                              // rate: provider.itemAt(index).rate,
+                              favourite:  provider.itemAt(index).favourite,
                             )
                         );
                       },
                       cardController: CardController(),
                       swipeUpdateCallback:
                           (DragUpdateDetails details, Alignment align) {
+                        // 以5为触发条件，识别正在左滑还是右滑
                         if (align.x < 5) {
                           setState(() {
                             being_left = true;
@@ -128,8 +138,12 @@ class SwipeCardState extends State<SwipeCard>{
                           setState(() {
                             being_left = being_right = false;
                           });
-                          ExploreService.addToFavorite(index);
+
                           print("右滑！");
+
+                          // 探索界面不解除已收藏的菜品
+                          if(!provider.itemAt(index).favourite)
+                            ExploreService.favourite(provider.itemAt(index).recipeId);
                         }
                         else if(orientation.name == "recover")
                           setState(() {

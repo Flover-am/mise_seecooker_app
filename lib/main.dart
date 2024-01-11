@@ -7,10 +7,11 @@ import 'package:seecooker/pages/publish/publish_post_page.dart';
 import 'package:seecooker/pages/recipe/home_page.dart';
 import 'package:seecooker/pages/post/posts_page.dart';
 import 'package:flutter/material.dart';
+import 'package:seecooker/providers/explore/Ingredients_provider.dart';
 import 'package:seecooker/providers/post/community_posts_provider.dart';
-import 'package:seecooker/providers/explore_post_provider.dart';
+import 'package:seecooker/providers/explore/explore_post_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
-import 'package:seecooker/providers/recommend_provider.dart';
+import 'package:seecooker/providers/explore/recommend_provider.dart';
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:seecooker/utils/theme_util.dart';
@@ -26,7 +27,8 @@ void main() {
         ChangeNotifierProvider(create: (context) => CommunityPostsProvider()),
         ChangeNotifierProvider(create: (context) => HomeRecipesProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
-        ChangeNotifierProvider(create: (context) => RecommendProvider())
+        ChangeNotifierProvider(create: (context) => RecommendProvider()),
+        ChangeNotifierProvider(create: (context) => IngredientsProvider())
       ],
       child: const MyApp()
     )
@@ -46,7 +48,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ThemeProvider(
