@@ -14,13 +14,14 @@ class RecipeDetailProvider with ChangeNotifier {
 
   RecipeDetailProvider(this._recipeId);
 
-  Future<RecipeDetail> fetchRecipeDetail() async {
+  Future<void> fetchRecipeDetail() async {
     var res =  await RecipeService.getRecipe(_recipeId);
     if(!res.isSuccess()){
       throw Exception("未获取到食谱数据: ${res.message}");
     }
     _model = RecipeDetail.fromJson(res.data);
-    return _model;
+    print(_model.scored);
+    print(_recipeId);
   }
 
   Future<bool> favorRecipe() async {

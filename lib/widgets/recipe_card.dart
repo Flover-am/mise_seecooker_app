@@ -24,7 +24,6 @@ class RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("rebuild");
     _favorite.value = favorite;
 
     return Padding(

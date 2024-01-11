@@ -77,10 +77,16 @@ class RecipeService {
 
   static Future<HttpResult> getRecipe(int id) async {
     String lastUrl = '$baseUrl/detail/$id';
-
-    var response = await dio.get(lastUrl);
-
-    return HttpResult.fromJson(response.data);
+    Options options = Options(headers: {
+      await SaTokenUtil.getTokenName():
+      await SaTokenUtil.getTokenValue()
+    });
+    var response = await dio.get(lastUrl, options: options);
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
   }
 
   /// 收藏或取消收藏菜谱
@@ -105,7 +111,7 @@ class RecipeService {
       await SaTokenUtil.getTokenName():
       await SaTokenUtil.getTokenValue()
     });
-    final response = await dio.put(
+    final response = await dio.post(
       lastUrl,
       options: options,
       data: FormData.fromMap(

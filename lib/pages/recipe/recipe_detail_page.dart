@@ -277,9 +277,10 @@ class StepContentSection extends StatelessWidget {
 
 /// 底部工具栏
 class RecipeBar extends StatelessWidget {
-  final ValueNotifier<bool> _favorite = ValueNotifier(false);
 
   RecipeBar({super.key});
+
+  final ValueNotifier<bool> _favorite = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -303,48 +304,52 @@ class RecipeBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: List.generate(5, (index) {
-                      return SizedBox(
-                        height: 35,
-                        width: 35,
-                        child: IconButton(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          iconSize: 35,
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            provider.changeScore(index + 1);
-                          },
-                          icon: Icon(
-                            index >= provider.newScore
-                              ? Icons.favorite_border
-                              : Icons.favorite
-                          )
-                        ),
+                      return IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                        iconSize: 32,
+                        visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity),
+                        onPressed: () {
+                          provider.changeScore(index + 1);
+                        },
+                        icon: index >= provider.newScore
+                          ? const Icon(Icons.star_border_rounded, color: Colors.yellow)
+                          : const Icon(Icons.star_rounded, color: Colors.yellow),
+                        // icon: Icon(
+                        //   index >= provider.newScore
+                        //     ? Icons.star_border_rounded
+                        //     : Icons.star_rounded
+                        // )
                       );
                     }),
                   ),
                 ),
-                !model.scored?IconButton(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    onPressed: () {
-                      try {
-                        provider.scoreRecipe();
-                        Fluttertoast.showToast(msg: "评分成功");
-                      } catch(e) {
-                        Fluttertoast.showToast(msg: "$e");
-                      }
-                    },
-                    icon: Container(
-                      padding: const EdgeInsets.all(0),
-                      height: 35,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Center(child: Text('评价')),
-                    )):Container()
+                (!model.scored)
+                  ? IconButton(
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onPressed: () {
+                        _showBottomSheet(context);
+                        try {
+                          provider.scoreRecipe();
+                          Fluttertoast.showToast(msg: "评分成功");
+                        } catch(e) {
+                          Fluttertoast.showToast(msg: "$e");
+                        }
+                      },
+                      icon: Container(
+                        padding: const EdgeInsets.all(0),
+                        height: 35,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Center(child: Text('评价')),
+                      )
+                    )
+                  : Text("${model.averageScore}")
               ],
             ),
             IconButton(
@@ -364,16 +369,13 @@ class RecipeBar extends StatelessWidget {
                 }
                 _favorite.value = res;
               },
-              highlightColor:
-              Theme.of(context).colorScheme.primaryContainer,
-              splashColor: Colors.transparent,
               icon: ValueListenableBuilder<bool>(
                 valueListenable: _favorite,
                 builder: (context, value, child) {
                   if(value) {
                     return Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary);
                   } else {
-                    return Icon(Icons.favorite_outline_rounded, color: Theme.of(context).colorScheme.surface);
+                    return Icon(Icons.favorite_outline_rounded);
                   }
                 }
               )
@@ -382,5 +384,42 @@ class RecipeBar extends StatelessWidget {
         ),
       ),
   );
+  }
+
+  void _showBottomSheet(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      elevation: 0,
+      showDragHandle: true,
+      builder: (BuildContext context) {
+        return Consumer<RecipeDetailProvider>(
+          builder: (context, provider, child) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 32),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  return IconButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    padding: EdgeInsets.zero,
+                    iconSize: 32,
+                    visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity),
+                    onPressed: () {
+                      provider.changeScore(index + 1);
+                    },
+                    icon: index >= provider.newScore
+                      ? const Icon(Icons.star_border_rounded, color: Colors.yellow)
+                      : const Icon(Icons.star_rounded, color: Colors.yellow),
+                  );
+                }
+              ),
+            ),
+          );
+          },
+        );
+      },
+    );
   }
 }
