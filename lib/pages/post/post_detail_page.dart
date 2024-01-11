@@ -16,6 +16,9 @@ import 'package:seecooker/utils/image_util.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:skeletons/skeletons.dart';
 
+import '../../providers/other_user/other_user_provider.dart';
+import '../account/other_account_page.dart';
+
 class PostDetailPage extends StatefulWidget {
   final int postId;
 
@@ -170,10 +173,6 @@ class _PageContentState extends State<PageContent> {
               scrolledUnderElevation: 0,
               title: GestureDetector(
                 onTap: () async {
-                  // TODO: 用户个人主页
-                  // OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
-                  // PostDetailProvider postDetailProvider = Provider.of<PostDetailProvider>(context,listen: false);
-                  // await otherUserProvider.getUserById(postDetailProvider.model.posterId);
                   // Navigator.push(
                   //   context,
                   //   MaterialPageRoute(builder: (context) => OtherAccountPage()),
@@ -181,12 +180,23 @@ class _PageContentState extends State<PageContent> {
                 },
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: ExtendedNetworkImageProvider(
-                        model.posterAvatar,
-                        cache: true,
+                    GestureDetector(
+                      onTap: () async {
+                        OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
+                        PostDetailProvider postDetailProvider = Provider.of<PostDetailProvider>(context,listen: false);
+                        await otherUserProvider.getUserById(postDetailProvider.model.posterId);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => OtherAccountPage()),
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.transparent,
+                        backgroundImage: ExtendedNetworkImageProvider(
+                          model.posterAvatar,
+                          cache: true,
+                        ),
                       ),
                     ),
                     Padding(
@@ -774,14 +784,14 @@ class CommentItem extends StatelessWidget {
           InkWell(
             borderRadius: BorderRadius.circular(18),
             onTap: () async {
-              // TODO: 用户个人主页
-              // log("commenterId: ${comment.commenterId}");
-              // OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
-              // await otherUserProvider.getUserById(comment.commenterId);
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => OtherAccountPage()),
-              // );
+
+              log("commenterId: ${comment.commenterId}");
+              OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
+              await otherUserProvider.getUserById(comment.commenterId);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => OtherAccountPage()),
+              );
             },
             child: CircleAvatar(
               radius: 18,

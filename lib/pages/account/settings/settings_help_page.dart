@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/account/settings/settings_account_page.dart';
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 
 class SettingsHelpPage extends StatelessWidget {
   const SettingsHelpPage({Key? key}) : super(key: key);

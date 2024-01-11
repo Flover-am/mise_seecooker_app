@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/widgets/recipe_card.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:skeletons/skeletons.dart';

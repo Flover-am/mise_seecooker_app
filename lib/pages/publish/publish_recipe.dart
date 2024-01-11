@@ -11,7 +11,7 @@ import 'package:seecooker/models/NewRecipe.dart';
 import 'package:seecooker/models/recipe.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/services/recipe_service.dart';
 import 'package:seecooker/utils/FileConverter.dart';
 
@@ -206,7 +206,6 @@ class _PublishRecipeState extends State<PublishRecipe> {
             )),
         GestureDetector(
             onTap: () {
-              Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
               selectStepCover(index);
               log("hasStepsCover:$hasStepsCover");
             },
@@ -398,7 +397,6 @@ class _PublishRecipeState extends State<PublishRecipe> {
   Widget _buildCover(hasCover) {
     return GestureDetector(
         onTap: () {
-          Fluttertoast.showToast(msg: "//TODO: 跳转到相册添加图片");
           selectCover();
           setState(() {
             // this.hasCover = true;
