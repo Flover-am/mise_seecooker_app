@@ -4,9 +4,14 @@ import 'package:seecooker/services/ingredients_service.dart';
 
 
 class IngredientsProvider extends ChangeNotifier {
-  late List<Ingredients> _list;
+  late List<Ingredients> _list = [];
 
-  List<Ingredients> showlist() => _list;
+  List<Ingredients> showlist() {
+    if(_list == null){
+      return [];
+    }
+    return _list;
+  }
   Future<void> getIngredients() async {
     final res = await IngredientsService.getIngredients();
     _list = res.data
