@@ -305,7 +305,7 @@ class _PublishRecipeState extends State<PublishRecipe> {
                         provider.model.stepImages
                             .add(FileConverter.xFile2File(value));
                       });
-
+                      provider.model.cover = FileConverter.xFile2File(cover);
                       provider.publish();
                     },
                   ),
