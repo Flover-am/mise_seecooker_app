@@ -7,9 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:seecooker/providers/post/community_posts_provider.dart';
 
 import 'package:seecooker/providers/user_provider.dart';
-import 'package:seecooker/services/publish_service.dart';
+import 'package:seecooker/services/community_service.dart';
 import 'package:seecooker/models/http_result.dart';
-import 'package:seecooker/pages/account/login_page.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -358,7 +357,7 @@ class _PublishPostPageState extends State<PublishPostPage> {
   /// 发布
   Future<HttpResult> _issuePost() async{
     try {
-      return PublishService.publishPost(_titleInputController.text, _contentInputController.text, _userImage);
+      return CommunityService.publishPost(_titleInputController.text, _contentInputController.text, _userImage);
     } catch (e) {
       return HttpResult(200001, e.toString(), null);
     }

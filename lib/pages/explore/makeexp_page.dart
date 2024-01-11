@@ -10,7 +10,7 @@ import 'package:tcard/tcard.dart';
 
 import '../../widgets/exp_recipe_card.dart';
 import '../../widgets/recipe_card.dart';
-import '../recipe/recipe_detail.dart';
+import '../recipe/recipe_detail_page.dart';
 
 class MakeExpPage extends StatefulWidget {
   const MakeExpPage({super.key});
@@ -86,7 +86,7 @@ class SwipeCardState extends State<SwipeCard>{
                             onTap: () =>Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RecipeDetail(id: index))
+                                    builder: (context) => RecipeDetailPage(id: index))
                             ),
                             child: ExpRecipeCard(
                               id: index,

@@ -4,46 +4,44 @@ import 'package:seecooker/models/recipe_detail.dart';
 import 'package:seecooker/services/recipe_service.dart';
 
 class RecipeDetailProvider with ChangeNotifier {
-  late RecipeModel _model;
+  final int _recipeId;
+  late RecipeDetail _model;
+  int _newScore = 0;
 
-  RecipeModel get model => _model;
+  RecipeDetail get model => _model;
 
-  Future<RecipeModel> fetchRecipeDetail(int id) async {
-    _model = RecipeModel.empty();
-    /// 先进行请求，然后从请求中拿数据
-    var res =  await RecipeService.getRecipe(id);
-    /// 判断是否获取成功
+  int get newScore => _newScore;
+
+  RecipeDetailProvider(this._recipeId);
+
+  Future<RecipeDetail> fetchRecipeDetail() async {
+    var res =  await RecipeService.getRecipe(_recipeId);
     if(!res.isSuccess()){
-      throw Exception("未拿到菜谱数据:${res.message}");
+      throw Exception("未获取到食谱数据: ${res.message}");
     }
-    /// 将数据转换成Model
-    _model = RecipeModel.fromJson(res.data);
-    _model.starAmount ??= 0;
-    _model.isMarked ??= false;
-
+    _model = RecipeDetail.fromJson(res.data);
     return _model;
   }
 
-  void changeStarAmount(int SM2) {
-    _model.starAmount = SM2;
+  Future<bool> favorRecipe() async {
+    final res = await RecipeService.favorRecipe(_recipeId);
+    if(!res.isSuccess()) {
+      throw Exception('收藏失败: ${res.message}');
+    }
+    return res.data;
+  }
+
+  void changeScore(int score) async {
+    _newScore = score;
     notifyListeners();
   }
 
-  void addToFavorite() {
-    Fluttertoast.showToast(msg: "已收藏");
-    _model.isFavorite = true;
-    notifyListeners();
-  }
-
-  void removeToFavorite() {
-    Fluttertoast.showToast(msg: "取消收藏");
-    _model.isFavorite = false;
-    notifyListeners();
-  }
-
-  void sendMark() {
-    _model.isMarked = true;
-    Fluttertoast.showToast(msg: "评论成功");
+  void scoreRecipe() async {
+    model.scored = true;
+    final res = await RecipeService.scoreRecipe(_recipeId, _newScore.toDouble());
+    if(!res.isSuccess()) {
+      throw Exception('评分失败: ${res.message}');
+    }
     notifyListeners();
   }
 }

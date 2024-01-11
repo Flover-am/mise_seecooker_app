@@ -108,11 +108,15 @@ class _RecipesListState<T extends RecipesProvider> extends State<RecipesList<T>>
                   );
                 },
                 child: RecipeItem(
-                  id: provider.itemAt(index).id,
+                  id: provider.itemAt(index).recipeId,
                   name: provider.itemAt(index).name,
                   cover: provider.itemAt(index).cover,
+                  introduction: provider.itemAt(index).introduction,
+                  score: provider.itemAt(index).score,
+                  authorId: provider.itemAt(index).authorId,
                   authorName: provider.itemAt(index).authorName,
                   authorAvatar: provider.itemAt(index).authorAvatar,
+                  publishTime: provider.itemAt(index).publishTime,
                 ),
               );
             }

@@ -12,7 +12,6 @@ import 'package:seecooker/providers/explore_post_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/providers/recommend_provider.dart';
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:seecooker/utils/theme_util.dart';
 import 'package:theme_provider/theme_provider.dart';
 

@@ -207,7 +207,7 @@ class _PageContentState extends State<PageContent> {
                       onPressed: () {
                         Navigator.of(context).popUntil((route) => route.isFirst);
                       },
-                    ), // 设置图标之间的间距
+                    ),
                     widget.private
                         ? IconButton(
                       onPressed: () {

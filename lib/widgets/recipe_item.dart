@@ -1,22 +1,30 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
-import 'package:seecooker/pages/recipe/recipe_detail.dart';
+import 'package:skeletons/skeletons.dart';
+import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
 
 class RecipeItem extends StatelessWidget {
   final int id;
   final String name;
   final String cover;
+  final String introduction;
+  final double score;
+  final int authorId;
   final String authorName;
-  final String? authorAvatar;
+  final String authorAvatar;
+  final String publishTime;
 
   const RecipeItem({
     super.key,
     required this.id,
     required this.name,
     required this.cover,
+    required this.introduction,
+    required this.score,
+    required this.authorId,
     required this.authorName,
-    required this.authorAvatar
+    required this.authorAvatar,
+    required this.publishTime,
   });
 
   @override
@@ -33,7 +41,7 @@ class RecipeItem extends StatelessWidget {
           onTap: () {
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => RecipeDetail(id: id)));
+                MaterialPageRoute(builder: (context) => RecipeDetailPage(id: id)));
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,10 +50,37 @@ class RecipeItem extends StatelessWidget {
                 aspectRatio: 1.2,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: cover,
+                  child: ExtendedImage.network(
+                    cover,
+                    cache: true,
                     fit: BoxFit.cover,
+                    enableLoadState: true,
+                      loadStateChanged: (ExtendedImageState state) {
+                        if (state.extendedImageLoadState case LoadState.loading) {
+                          return SkeletonLine(
+                            style: SkeletonLineStyle(
+                                height: 128,
+                                borderRadius: BorderRadius.circular(12)
+                            ),
+                          );
+                        } else {
+                          return TweenAnimationBuilder(
+                              duration: const Duration(milliseconds: 500),
+                              tween: Tween<double>(begin: 0.0, end: 1.0),
+                              curve: Curves.easeOut,
+                              builder: (context, value, child) {
+                                return Opacity(
+                                  opacity: value,
+                                  child: child,
+                                );
+                              },
+                              child: ExtendedRawImage(
+                                image: state.extendedImageInfo?.image,
+                                fit: BoxFit.cover,
+                              )
+                          );
+                        }
+                      }
                   ),
                 ),
               ),
@@ -56,15 +91,13 @@ class RecipeItem extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(name, style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 8),
-                  // TODO: 食谱评分
                   Row(
                     children: [
                       const Icon(Icons.star_border_rounded, color: Colors.yellow, size: 18),
-                      Text('8.6分', style: Theme.of(context).textTheme.labelLarge),
+                      Text('${score.toStringAsFixed(1)}分', style: Theme.of(context).textTheme.labelLarge),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  // TODO: 食谱标签
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
@@ -72,7 +105,7 @@ class RecipeItem extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      '“我都不敢想象会有多好吃！”',
+                      "“$introduction”",
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -84,12 +117,10 @@ class RecipeItem extends StatelessWidget {
                       CircleAvatar(
                         radius: 12,
                         backgroundColor: Theme.of(context).colorScheme.outline,
-                        backgroundImage: authorAvatar != null
-                        ? ExtendedNetworkImageProvider(
-                          authorAvatar!,
+                        backgroundImage: ExtendedNetworkImageProvider(
+                          authorAvatar,
                           cache: false,
-                        )
-                        : null,
+                        ),
                       ),
                       const SizedBox(width: 8),  // add some space between the avatar and the text
                       Text(authorName, style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.outline)),

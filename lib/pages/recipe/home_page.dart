@@ -1,8 +1,10 @@
 import 'dart:developer';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/recipe/recipe_detail.dart';
+import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
 import 'package:seecooker/providers/user_provider.dart';
 import 'package:seecooker/widgets/recipe_card.dart';
@@ -39,7 +41,7 @@ class _HomePageState extends State<HomePage> {
         slivers: [
           SliverAppBar(
             pinned: true,
-            expandedHeight: 220,
+            expandedHeight: 192,
             scrolledUnderElevation: 0,
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(bottom: 16),
@@ -58,36 +60,45 @@ class _HomePageState extends State<HomePage> {
                     child: child,
                   );
                 },
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Image.asset('assets/images/wave-haikei.png',),
-                    //SizedBox(height: MediaQuery.of(context).padding.top + 16),
-                    Consumer<UserProvider>(
-                      builder: (context, provider, child) {
-                        if(provider.username != '未登录') {
-                          return Text('   亲爱的 ${provider.username} ，', style: Theme.of(context).textTheme.titleMedium);
-                        } else {
-                          return Text('  你好，', style: Theme.of(context).textTheme.headlineMedium);
-                        }
-                      },
-                    ),
-                    // Provider.of<UserProvider>(context, listen: false).username != '未登录'
-                    // ? Text('  亲爱的 ${Provider.of<UserProvider>(context, listen: false).username} ，', style: Theme.of(context).textTheme.titleMedium)
-                    // : Text('  你好，', style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 12),
-                    Text.rich(
-                      TextSpan(
-                        style: Theme.of(context).textTheme.headlineMedium,
-                        children: [
-                          const TextSpan(text: '  欢迎使用 '),
-                          TextSpan(text: 'seecooker', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-                          const TextSpan(text: ' ( \'◡\' )'),
-                        ]
-                      )
-                    ),
-                    //Text('欢迎使用 seecooker ( \'◡\' )', style: Theme.of(context).textTheme.titleMedium),
-                  ],
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.background
+                      ]
+                    )
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 96),
+                      Consumer<UserProvider>(
+                        builder: (context, provider, child) {
+                          if(provider.username != '未登录') {
+                            return Text('亲爱的 ${provider.username} ，', style: Theme.of(context).textTheme.titleMedium);
+                          } else {
+                            return Text('你好，', style: Theme.of(context).textTheme.titleMedium);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Text.rich(
+                        TextSpan(
+                          style: Theme.of(context).textTheme.titleMedium,
+                          children: [
+                            const TextSpan(text: '欢迎使用 '),
+                            TextSpan(text: 'seecooker', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                            const TextSpan(text: ' ( \'◡\' )'),
+                          ]
+                        )
+                      ),
+                      //Text('欢迎使用 seecooker ( \'◡\' )', style: Theme.of(context).textTheme.titleMedium),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -165,11 +176,10 @@ class RecipeCardList extends StatelessWidget {
     return Consumer<HomeRecipesProvider>(
       builder: (context, provider, child) {
         return SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              // if (index == provider.length - 1) {
-              //   provider.fetchMoreRecipes();
-              // }
+          delegate: SliverChildBuilderDelegate((context, index) {
+              if (index == provider.count - 1) {
+                provider.fetchMoreRecipes();
+              }
               return TweenAnimationBuilder(
                 duration: const Duration(milliseconds: 500),
                 tween: Tween<double>(begin: 0.0, end: 1.0),
@@ -182,14 +192,31 @@ class RecipeCardList extends StatelessWidget {
                 },
                 child: GestureDetector(
                   child: RecipeCard(
-                    recipeId: provider.itemAt(index).id,
+                    recipeId: provider.itemAt(index).recipeId,
                     name: provider.itemAt(index).name,
+                    introduction: provider.itemAt(index).introduction,
                     cover: provider.itemAt(index).cover,
+                    favorite: provider.itemAt(index).favorite,
+                    onFavorite: () async {
+                      bool res = false;
+                      try {
+                        res = await provider.favorRecipe(provider.itemAt(index).recipeId);
+                        if(res == true) {
+                          Fluttertoast.showToast(msg: '收藏成功');
+                        } else {
+                          Fluttertoast.showToast(msg: '取消收藏成功');
+                        }
+                      } catch(e) {
+                        log("$e");
+                        Fluttertoast.showToast(msg: '请登录');
+                      }
+                      return res;
+                    }
                   ),
                   onTap: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => RecipeDetail(id: provider.itemAt(index).id)));
+                        MaterialPageRoute(builder: (context) => RecipeDetailPage(id: provider.itemAt(index).recipeId)));
                   },
                 ),
               );

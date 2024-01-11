@@ -11,7 +11,7 @@ import 'package:skeletons/skeletons.dart';
 import '../../providers/recipe/home_recipes_provider.dart';
 import '../../providers/post/community_posts_provider.dart';
 import '../../widgets/recipe_card.dart';
-import '../recipe/recipe_detail.dart';
+import '../recipe/recipe_detail_page.dart';
 import '../search/search_page.dart';
 import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
 
