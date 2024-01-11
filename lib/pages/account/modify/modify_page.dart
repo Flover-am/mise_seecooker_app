@@ -4,7 +4,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 
-import 'package:seecooker/providers/user_provider.dart';
+import '../../../providers/user_provider.dart';
+
+
 
 class ModifyPage extends StatefulWidget {
   @override
@@ -18,8 +20,8 @@ class _ModifyPageState extends State<ModifyPage> {
   late String avatar;
   String _username = '张三';
   String defaultUserName = '';
-  String _description = '这是一个用户';
-  String defaultDescription  = '';
+  String _signature = '这是一个用户';
+  String defaultSignature  = '';
   String defaultAvatar = '';
   bool hasNewAvatar = false;
   bool hasModified = false;
@@ -33,8 +35,8 @@ class _ModifyPageState extends State<ModifyPage> {
     userProvider = Provider.of<UserProvider>(context,listen: false);
     _username = userProvider.username;
     defaultUserName = _username;
-    _description = userProvider.description;
-    defaultDescription = _description;
+    _signature = userProvider.description;
+    defaultSignature = _signature;
     avatar = userProvider.avatar;
     defaultAvatar = avatar;
 
@@ -48,19 +50,19 @@ class _ModifyPageState extends State<ModifyPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 50.0),
+              const SizedBox(height: 50.0),
               _buildAvatar(),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextFormField(
                 initialValue: _username,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: '用户名',
                 ),
                 onChanged: _updateUsername,
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextFormField(
-                initialValue: _description,
+                initialValue: _signature,
                 decoration: const InputDecoration(
                   labelText: '描述',
                 ),
@@ -69,6 +71,11 @@ class _ModifyPageState extends State<ModifyPage> {
               SizedBox(height: 32.0),
               ElevatedButton(
                 onPressed: () async {
+                  bool avatarFlag = !hasNewAvatar;
+                  bool signatureFlag = defaultSignature == _signature;
+                  bool usernameFlag = defaultUserName == _username;
+
+
                   if(_username == ""){
                     Fluttertoast.showToast(
                       msg: "用户名不能为空",
@@ -79,95 +86,56 @@ class _ModifyPageState extends State<ModifyPage> {
                       fontSize: 16.0,
                       //timeInSecForIosWeb: 1,// Toast文本字体大小
                     );
-                  }else {
-                    bool hasUsernameModified = false;
-                    bool hasAvatarModified = false;
-                    if (hasNewAvatar) {
-                      hasAvatarModified = await userProvider.modifyAvatar(
+                  }else if(avatarFlag && signatureFlag && usernameFlag){
+                    Fluttertoast.showToast(
+                      msg: "未修改用户信息",
+                      toastLength: Toast.LENGTH_SHORT,
+                      // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                      gravity: ToastGravity.BOTTOM,
+                      // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                      backgroundColor: Colors.black,
+                      // Toast背景颜色
+                      textColor: Colors.white,
+                      // Toast文本颜色
+                      fontSize: 16.0,
+                      timeInSecForIosWeb: 2, // Toast文本字体大小
+                    );
+                  }
+                  else {
+                    bool hasSignatureModified = signatureFlag;
+                    bool hasUsernameModified = usernameFlag;
+                    bool hasAvatarModified = avatarFlag;
+
+                    if(!avatarFlag){
+                      hasAvatarModified |= await userProvider.modifyAvatar(
                           defaultUserName, _avatar_file.path);
-                      if (!hasAvatarModified) {
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   const SnackBar(
-                        //     content: Text('错误:修改失败'),
-                        //     duration: Duration(seconds: 2),
-                        //   ),
-                        // );
-                      } else {
-                        hasNewAvatar = false;
-                      }
                     }
-                    if (defaultUserName != _username) {
-                      //CircularProgressIndicator();
-                      hasUsernameModified = await userProvider.modifyUsername(
-                          defaultUserName, _username);
-                      //TODO:wait for server make an api
-                      if (!hasUsernameModified) {
-                        Fluttertoast.showToast(
-                          msg: "用户名已经存在",
-                          toastLength: Toast.LENGTH_SHORT,
-                          // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
-                          gravity: ToastGravity.BOTTOM,
-                          // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
-                          backgroundColor: Colors.black,
-                          // Toast背景颜色
-                          textColor: Colors.white,
-                          // Toast文本颜色
-                          fontSize: 16.0,
-                          timeInSecForIosWeb: 2, // Toast文本字体大小
-                        );
-                      }
-
-
+                    if(!signatureFlag){
+                      hasSignatureModified |= await userProvider.modifySignature(_signature);
+                      //hasSignatureModified = true;
                     }
-                    if (hasUsernameModified || hasAvatarModified) {
-                      if(hasAvatarModified && hasUsernameModified) {
-                        Fluttertoast.showToast(
-                          msg: "头像和用户名修改成功！",
-                          toastLength: Toast.LENGTH_SHORT,
-                          // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
-                          gravity: ToastGravity.BOTTOM,
-                          // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
-                          backgroundColor: Colors.black,
-                          // Toast背景颜色
-                          textColor: Colors.white,
-                          // Toast文本颜色
-                          fontSize: 16.0,
-                          //timeInSecForIosWeb: 1,// Toast文本字体大小
-                        );
-                      }else if(hasAvatarModified){
-                        Fluttertoast.showToast(
-                          msg: "头像修改成功！",
-                          toastLength: Toast.LENGTH_SHORT,
-                          // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
-                          gravity: ToastGravity.BOTTOM,
-                          // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
-                          backgroundColor: Colors.black,
-                          // Toast背景颜色
-                          textColor: Colors.white,
-                          // Toast文本颜色
-                          fontSize: 16.0,
-                          //timeInSecForIosWeb: 1,// Toast文本字体大小
-                        );
-                      }else if(hasUsernameModified){
-                        Fluttertoast.showToast(
-                          msg: "用户名修改成功！",
-                          toastLength: Toast.LENGTH_SHORT,
-                          // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
-                          gravity: ToastGravity.BOTTOM,
-                          // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
-                          backgroundColor: Colors.black,
-                          // Toast背景颜色
-                          textColor: Colors.white,
-                          // Toast文本颜色
-                          fontSize: 16.0,
-                          timeInSecForIosWeb: 2, // Toast文本字体大小
-                        );
-                      }
+                    if(!usernameFlag){
+                      hasUsernameModified |= await userProvider.modifyUsername(defaultUserName, _username);
+                    }
 
+                    if(hasAvatarModified && hasUsernameModified && hasSignatureModified){
+                      Fluttertoast.showToast(
+                        msg: "修改成功！",
+                        toastLength: Toast.LENGTH_SHORT,
+                        // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                        gravity: ToastGravity.BOTTOM,
+                        // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                        backgroundColor: Colors.black,
+                        // Toast背景颜色
+                        textColor: Colors.white,
+                        // Toast文本颜色
+                        fontSize: 16.0,
+                        timeInSecForIosWeb: 2, // Toast文本字体大小
+                      );
                       Navigator.pop(context);
                     }else{
                       Fluttertoast.showToast(
-                        msg: "未修改用户信息",
+                        msg: "修改失败",
                         toastLength: Toast.LENGTH_SHORT,
                         // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
                         gravity: ToastGravity.BOTTOM,
@@ -180,6 +148,8 @@ class _ModifyPageState extends State<ModifyPage> {
                         timeInSecForIosWeb: 2, // Toast文本字体大小
                       );
                     }
+
+
                   }
                 },
                 child: Text('保存更改'),
@@ -197,7 +167,7 @@ class _ModifyPageState extends State<ModifyPage> {
   }
 
   void _updateDescription(String value) {
-    _description = value;
+    _signature = value;
   }
 
   Widget _buildAvatar() {

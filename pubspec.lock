@@ -17,6 +17,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.2.0"
+  animated_text_kit:
+    dependency: "direct main"
+    description:
+      name: animated_text_kit
+      sha256: "37392a5376c9a1a503b02463c38bc0342ef814ddbb8f9977bc90f2a84b22fa92"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.2.2"
   archive:
     dependency: transitive
     description:
@@ -970,6 +978,14 @@ packages:
     description:
       name: test_api
       sha256: "75760ffd7786fffdfb9597c35c5b27eaeec82be8edfb6d71d32651128ed7aab8"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.6.0"
+  theme_provider:
+    dependency: "direct main"
+    description:
+      name: theme_provider
+      sha256: "6a2839ee1bd539ceb789f25ea9696fe90f9dfad28e3228f209b8ff9255c58099"
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.6.0"

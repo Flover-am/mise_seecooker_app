@@ -10,7 +10,7 @@ import 'dart:io';
 
 class UserProvider extends ChangeNotifier{
   var defaultAvatar = "https://seecooker.oss-cn-shanghai.aliyuncs.com/avatar/ecff12a2-2986-4bd9-a393-cf8f1065397f.webp";
-  late User _user = User("未登录", "未登录", defaultAvatar,"请填写一段用户描述",[],[],[],999,999,"","",false);
+  late User _user = User("未登录", "未登录", defaultAvatar,"编辑个签，展示我的独特态度",[],[],[],999,999,"","",false);
   late UserLogin _userLogin;
   late UserInfo _userInfo;
   get isLoggedIn => _user.isLoggedIn;
@@ -83,7 +83,7 @@ class UserProvider extends ChangeNotifier{
       SharedPreferencesUtil.setBool("isLoggedIn", false);
       SharedPreferencesUtil.setString("tokenName","");
       SharedPreferencesUtil.setString("tokenValue","");
-      SharedPreferencesUtil.setString("description", "请填写一段用户描述");
+      SharedPreferencesUtil.setString("description", "编辑个签，展示我的独特态度");
       notifyListeners();
   }
 
@@ -110,8 +110,9 @@ class UserProvider extends ChangeNotifier{
     _userInfo = UserInfo.fromJson(res.data);
     _user.username = _userInfo.username;
     _user.postNum = _userInfo.postNum;
-    _user.getLikedNum = _userInfo.getLikedNum;
+    //_user.getLikedNum = _userInfo.getLikedNum;
     _user.avatar = _userInfo.avatar;
+    _user.description = _userInfo.signature;
     notifyListeners();
 
   }
@@ -161,10 +162,24 @@ class UserProvider extends ChangeNotifier{
 
     /// 判断是否获取成功
     if(!res.isSuccess()){
+      print(res.message);
       return false;
     }
     getUser();
     await SharedPreferencesUtil.setString("password",newPassword);
+
+    return true;
+  }
+
+  Future<bool> modifySignature(String newSignature) async {
+    /// 先进行请求，然后从请求中拿数据
+    var res =  await UserService.modifySignature(newSignature);
+
+    /// 判断是否获取成功
+    if(!res.isSuccess()){
+      return false;
+    }
+    getUser();
 
     return true;
   }
