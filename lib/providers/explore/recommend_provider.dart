@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:seecooker/models/Ingredients.dart';
@@ -12,16 +13,31 @@ class RecommendProvider extends ChangeNotifier {
   List<ExploreRecipe> _list = [];
   int get length => _list.length;
   ExploreRecipe itemAt(int index) => _list[index];
-
   Future<void> fetchPosts(List<String> ingredients) async {
     final res = await ExploreService.fetchPosts(ingredients);
-    _list.add(ExploreRecipe.fromJson(res.data));
+    print("!!!!!!!!!!!!!1");
+    print(res.data);
+    List<ExploreRecipe> cardlist = [];
+    cardlist = res.data
+        .map((e) => ExploreRecipe.fromJson(e))
+        .toList()
+        .cast<ExploreRecipe>();
+    for(ExploreRecipe item in cardlist) {
+      _list.add(item);
+    }
     notifyListeners();
   }
 
   Future<void> fetchMorePosts(List<String> ingredients) async {
     final res = await ExploreService.fetchPosts(ingredients);
-    _list.add(ExploreRecipe.fromJson(res.data));
+    List<ExploreRecipe> cardlist = [];
+    cardlist = res.data
+        .map((e) => ExploreRecipe.fromJson(e))
+        .toList()
+        .cast<ExploreRecipe>();
+    for(ExploreRecipe item in cardlist) {
+      _list.add(item);
+    }
     notifyListeners();
   }
 }

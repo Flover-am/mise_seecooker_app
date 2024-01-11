@@ -106,7 +106,7 @@ class SwipeCardState extends State<SwipeCard>{
                               author: provider.itemAt(index).authorName,
                               introduction: provider.itemAt(index).introduction,
                               authorAvatar: provider.itemAt(index).authorAvatar,
-                              favourite:  provider.itemAt(index).favourite,
+                              favourite:  provider.itemAt(index).favorite,
                             )
                         );
                       },
@@ -142,7 +142,7 @@ class SwipeCardState extends State<SwipeCard>{
                           print("右滑！");
 
                           // 探索界面不解除已收藏的菜品
-                          if(!provider.itemAt(index).favourite)
+                          if(!provider.itemAt(index).favorite)
                             ExploreService.favourite(provider.itemAt(index).recipeId);
                         }
                         else if(orientation.name == "recover")

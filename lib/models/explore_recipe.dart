@@ -10,13 +10,13 @@ part 'explore_recipe.g.dart';
 class ExploreRecipe {
 
   late int recipeId;
-  late bool favourite;
+  late bool favorite;
   late String name;
   late String cover;
   late String introduction;
   late String authorName;
   late String authorAvatar;
-  ExploreRecipe({required this.favourite, required this.recipeId, required this.name, required this.cover, required this.introduction,required this.authorName,required this.authorAvatar});
+  ExploreRecipe({required this.favorite, required this.recipeId, required this.name, required this.cover, required this.introduction,required this.authorName,required this.authorAvatar});
   factory  ExploreRecipe.fromJson(Map<String, dynamic> json) => _$ExploreRecipeFromJson(json);
   Map<String, dynamic> toJson() => _$ExploreRecipeToJson(this);
 }

@@ -21,7 +21,7 @@ class ExploreService {
     String lastUrl = '$baseUrl/recipe/explore';
     Map<String, List<String> > map = Map();
     map["ingredients"] = ingredients;
-    final FormData formData =FormData.fromMap(map);
+    // final FormData formData =FormData.fromMap(map);
     final response = await dio.get(lastUrl,queryParameters: map);
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
@@ -35,7 +35,7 @@ class ExploreService {
     String lastUrl = '$baseUrl/recipe/explore';
     Map<String, List<String>> map = Map();
     map["ingredients"] = ingredients;
-    final FormData formData =FormData.fromMap(map);
+    // final FormData formData =FormData.fromMap(map);
     final response = await dio.get(lastUrl,queryParameters: map);
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
