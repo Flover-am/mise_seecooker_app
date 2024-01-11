@@ -102,7 +102,7 @@ class UserService {
     var data = formData;
 
     /// 发送请求，拿到 Response
-    var response = await dio.post(requestUrl, data: data,options: testOpt);
+    var response = await dio.put(requestUrl, data: data,options: testOpt);
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }
@@ -125,7 +125,7 @@ class UserService {
     var data = formData;
 
     /// 发送请求，拿到 Response
-    var response = await dio.post(requestUrl, data: data,options: testOpt);
+    var response = await dio.put(requestUrl, data: data,options: testOpt);
     /// 将Response的data转换成封装对象HttpResult
     return HttpResult.fromJson(response.data);
   }
