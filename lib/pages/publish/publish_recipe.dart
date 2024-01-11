@@ -7,8 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import 'package:seecooker/models/NewRecipe.dart';
+import 'package:seecooker/providers/explore/Ingredients_provider.dart';
 import 'package:seecooker/providers/recipe/new_recipe_provider.dart';
-import 'package:seecooker/providers/user_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/services/recipe_service.dart';
 import 'package:seecooker/utils/FileConverter.dart';
 import 'package:seecooker/widgets/text_select.dart';
@@ -131,63 +132,76 @@ class _PublishRecipeState extends State<PublishRecipe> {
                       ),
 
                       /// 配料表
-                      ValueListenableBuilder(
-                        valueListenable: countIngredient,
-                        builder: (context, value, child) {
-                          return Column(
-                            children:
-                                List.generate(countIngredient.value, (index) {
-                              if (index >=
-                                  provider.model.ingredientsName.length) {
-                                provider.model.ingredientsName.add("1");
-                                provider.model.ingredientsAmount.add("2");
-                              }
-                              return Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                          flex: 1,
-                                          child: TextSelect(
-                                            index: index,
-                                            onChange:
-                                                provider.changeIngredientName,
-                                            ops: const ["鸡蛋", "茄子", "狮子", "辣椒"],
-                                          )),
-                                      SizedBox(
-                                        height: 45,
-                                        child: VerticalDivider(
-                                          // 在两个TextField之间画一条竖线
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                              .withAlpha(10), // 线的颜色
-                                          thickness: 1, // 线的厚度
-                                          width: 20,
-                                        ),
-                                      ),
-                                      Expanded(
-                                          flex: 1,
-                                          child: TextSelect(
-                                              index: index,
-                                              onChange: provider
-                                                  .changeIngredientAmout,ops: ["一个"],)),
-                                    ],
-                                  ),
-                                  Divider(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .withAlpha(10), // 线的颜色
-                                    thickness: 1, // 线的厚度
-                                  )
-                                ],
-                              );
-                            }),
-                          );
-                        },
-                      ),
+                      Consumer<IngredientsProvider>(
+                          builder: (context, inProvider, child) =>
+                              ValueListenableBuilder(
+                                valueListenable: countIngredient,
+                                builder: (context, value, child) {
+                                  return Column(
+                                    children: List.generate(
+                                        countIngredient.value, (index) {
+                                      if (index >=
+                                          provider
+                                              .model.ingredientsName.length) {
+                                        provider.model.ingredientsName.add("1");
+                                        provider.model.ingredientsAmount
+                                            .add("2");
+                                      }
+                                      return Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: TextSelect(
+                                                    index: index,
+                                                    onChange: provider
+                                                        .changeIngredientName,
+                                                    //  把showList()的的name属性（List<String>）合并成String的list
+                                                    ops: inProvider
+                                                        .showlist()
+                                                        .map((e) => e.name)
+                                                        .expand((element) =>
+                                                            element)
+                                                        .toList(),
+                                                  )),
+                                              SizedBox(
+                                                height: 45,
+                                                child: VerticalDivider(
+                                                  // 在两个TextField之间画一条竖线
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary
+                                                      .withAlpha(10), // 线的颜色
+                                                  thickness: 1, // 线的厚度
+                                                  width: 20,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                  flex: 1,
+                                                  child: TextSelect(
+                                                    index: index,
+                                                    onChange: provider
+                                                        .changeIngredientAmout,
+                                                    ops: ["一个"],
+                                                  )),
+                                            ],
+                                          ),
+                                          Divider(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                                .withAlpha(10), // 线的颜色
+                                            thickness: 1, // 线的厚度
+                                          )
+                                        ],
+                                      );
+                                    }),
+                                  );
+                                },
+                              )),
 
                       /// 配料＋1 按钮
                       ListTile(
