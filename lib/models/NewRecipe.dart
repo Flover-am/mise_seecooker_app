@@ -40,8 +40,8 @@ class NewRecipe {
       'stepContents': stepContents,
       'cover': await FileConverter.file2MultipartFile(cover),
       'stepImages': s,
-      'ingredientsName': ingredientsName,
-      'ingredientsAmount': ingredientsAmount
+      'ingredients': ingredientsName,
+      'amounts': ingredientsAmount
     });
     return formData;
   }
