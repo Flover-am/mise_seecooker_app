@@ -192,7 +192,12 @@ class _ModifyPageState extends State<ModifyPage> {
   }
   ///选择头像
   void selectAvatar() async {
-    XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
+    XFile image = (await picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1080,
+      maxHeight: 1080,
+      imageQuality: 80
+    ))!;
     setState(() {
       avatar_xfile = image;
       _avatar_file = File(avatar_xfile.path);

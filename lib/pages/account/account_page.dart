@@ -81,7 +81,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
             // 处理悬浮按钮点击事件
             _scrollController.jumpTo(0);
           },
-          child: Icon(Icons.rocket),
+          child: Icon(Icons.rocket, color: Theme.of(context).colorScheme.surface),
         ) : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       )

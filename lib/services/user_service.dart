@@ -11,7 +11,7 @@ import '../utils/shared_preferences_util.dart';
 
 class UserService {
   /// 测试阶段可以先用apiFox的Mock的url
-  static const String baseUrl = ServerUrlUtil.baseUrl;
+  static const String baseUrl = ServerUrl.baseUrl;
   /// 使用Dio进行网络请求
   static var dio = Dio();
 

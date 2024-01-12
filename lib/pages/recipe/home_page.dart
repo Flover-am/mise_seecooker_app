@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:seecooker/pages/publish/publish_recipe.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
@@ -10,7 +11,6 @@ import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/widgets/recipe_card.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:seecooker/pages/search/search_page.dart';
-import 'package:seecooker/pages/publish/publish_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,7 +30,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () => {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const PublishPage(param: "",)),
+            MaterialPageRoute(builder: (context) => const PublishRecipe(param: "")),
           ),
         },
         child: Icon(Icons.restaurant_menu_outlined, color: Theme.of(context).colorScheme.surface),

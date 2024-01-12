@@ -1,9 +1,9 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
-import 'package:seecooker/pages/post/post_detail_page.dart';
 
-class PostCard  extends StatelessWidget {
+/// 用于分栏展示帖子的单个卡片组件
+class PostCard extends StatelessWidget {
   final int postId;
   final String cover;
   final int posterId;
@@ -88,24 +88,11 @@ class PostCard  extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Row(
                 children: <Widget>[
-                  InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () async {
-                      // TODO: 跳转到个人主页
-                      // log("posterId: $posterId");
-                      // OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
-                      // await otherUserProvider.getUserById(posterId);
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => const OtherAccountPage()),
-                      // );
-                    },
-                    child: CircleAvatar(
-                      radius: 12,
-                      backgroundImage: ExtendedNetworkImageProvider(
-                        posterAvatar,
-                        cache: false,
-                      ),
+                  CircleAvatar(
+                    radius: 12,
+                    backgroundImage: ExtendedNetworkImageProvider(
+                      posterAvatar,
+                      cache: false,
                     ),
                   ),
                   const SizedBox(width: 12),  // add some space between the avatar and the text

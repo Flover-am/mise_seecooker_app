@@ -12,12 +12,14 @@ import 'package:seecooker/models/post_detail.dart';
 import 'package:seecooker/models/comment.dart';
 import 'package:seecooker/providers/comments_provider.dart';
 import 'package:seecooker/providers/post_detail_provider.dart';
+import 'package:seecooker/providers/user/user_posts_provider.dart';
 import 'package:seecooker/utils/image_util.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:seecooker/providers/other_user/other_user_provider.dart';
 import 'package:seecooker/pages/account/other_account_page.dart';
 import 'package:skeletons/skeletons.dart';
 
+/// 帖子详情页
 class PostDetailPage extends StatefulWidget {
   final int postId;
 
@@ -485,20 +487,20 @@ class _PageContentState extends State<PageContent> {
                                 TextButton(
                                   child: const Text('确认'),
                                   onPressed: () async {
-                                    // TODO: 删除帖子
-                                    // try {
-                                    //   await Provider.of<PostDetailProvider>(ctx, listen: false).deletePost();
-                                    //   Provider.of<UserPostsProvider>(context, listen: false).fetchPosts();
-                                    //
-                                    //   Fluttertoast.showToast(msg: "帖子已删除");
-                                    //   Navigator.pop(context);
-                                    //   Navigator.pop(context);
-                                    //   Navigator.pop(context);
-                                    // } catch (e) {
-                                    //   Fluttertoast.showToast(msg: "删除失败");
-                                    //   Navigator.pop(context);
-                                    //   Navigator.pop(context);
-                                    // }
+                                    try {
+                                      await Provider.of<PostDetailProvider>(ctx, listen: false).deletePost();
+                                      Provider.of<UserPostsProvider>(context, listen: false).fetchPosts();
+
+                                      Fluttertoast.showToast(msg: "帖子已删除");
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    } catch (e) {
+                                      log("$e");
+                                      Fluttertoast.showToast(msg: "删除失败");
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    }
                                   },
                                 )
                               ]

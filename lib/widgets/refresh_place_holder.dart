@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// 用于展示错误信息及刷新按钮的占位组件
 class RefreshPlaceholder extends StatelessWidget {
+  /// 点击刷新按钮回调
   final void Function()? onRefresh;
+
+  /// 展示的错误信息
   final String message;
 
   const RefreshPlaceholder({super.key, required this.message, this.onRefresh});

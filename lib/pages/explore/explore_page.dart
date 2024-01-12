@@ -216,7 +216,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 )
             ),
             floatingActionButton: FloatingActionButton(
-                child: const Icon(Icons.shopping_bag),
+                child: Icon(Icons.shopping_bag, color: Theme.of(context).colorScheme.surface),
                 onPressed: () => showCommentSection(context, false)),
           );
         }

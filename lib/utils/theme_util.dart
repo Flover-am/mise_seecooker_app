@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:theme_provider/theme_provider.dart';
 
+/// 配色主题
 List<AppTheme> themes = [
   _m3AppTheme('阳光橙', orangeLightColorScheme),
   _m3AppTheme('活力蓝', blueLightColorScheme),
@@ -179,11 +180,12 @@ const greenNightColorScheme = ColorScheme(
   scrim: Color(0xFF000000),
 );
 
+/// 封装色彩主题
 AppTheme _m3AppTheme(String title, ColorScheme colorScheme) {
   return AppTheme(
-    id: title, // Id(or name) of the theme(Has to be unique)
-    description: title, // Description of theme
-    data: ThemeData(  // Real theme data
+    id: title,
+    description: title,
+    data: ThemeData(
       colorScheme: colorScheme,//TODO:更改颜色
       useMaterial3: true,
     ),

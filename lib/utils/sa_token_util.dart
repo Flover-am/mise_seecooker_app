@@ -1,5 +1,6 @@
 import 'package:seecooker/utils/shared_preferences_util.dart';
 
+/// SaToken相关功能
 class SaTokenUtil {
   SaTokenUtil._internal();
   factory SaTokenUtil() => _instance;

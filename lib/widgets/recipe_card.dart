@@ -2,6 +2,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
 
+/// 食谱封面图大卡片
 class RecipeCard extends StatelessWidget {
   final int recipeId;
   final String name;
@@ -10,6 +11,9 @@ class RecipeCard extends StatelessWidget {
   final bool favorite;
   final Function onFavorite;
 
+  /// 是否允许收藏
+  final bool favorable;
+
   RecipeCard({
     super.key,
     required this.recipeId,
@@ -17,7 +21,8 @@ class RecipeCard extends StatelessWidget {
     required this.introduction,
     required this.cover,
     required this.favorite,
-    required this.onFavorite
+    required this.onFavorite,
+    this.favorable = true,
   });
 
   final ValueNotifier<bool> _favorite = ValueNotifier(false);
@@ -88,23 +93,25 @@ class RecipeCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
                   ),
                 ),
-                ValueListenableBuilder<bool>(
-                  valueListenable: _favorite,
-                  builder: (context, value, child) {
-                    return Positioned(
-                      left: 4,
-                      bottom: 4,
-                      child: IconButton(
-                        icon: value
-                          ? Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary)
-                          : const Icon(Icons.favorite_outline_rounded, color: Colors.white),
-                        onPressed: () async {
-                          _favorite.value = await onFavorite();
-                        },
-                      )
-                    );
-                  },
-                )
+                favorable
+                  ? ValueListenableBuilder<bool>(
+                      valueListenable: _favorite,
+                      builder: (context, value, child) {
+                        return Positioned(
+                          left: 4,
+                          bottom: 4,
+                          child: IconButton(
+                            icon: value
+                              ? Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary)
+                              : const Icon(Icons.favorite_outline_rounded, color: Colors.white),
+                            onPressed: () async {
+                              _favorite.value = await onFavorite();
+                            },
+                          )
+                        );
+                      },
+                    )
+                  : const SizedBox()
               ]
             ),
           ),

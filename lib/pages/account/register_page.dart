@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:seecooker/utils/FileConverter.dart';
+import 'package:seecooker/utils/file_converter.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 import 'login_page.dart';

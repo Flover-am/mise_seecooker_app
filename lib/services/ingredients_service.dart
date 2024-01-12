@@ -7,7 +7,7 @@ import 'package:seecooker/utils/server_url_util.dart';
 
 
 class IngredientsService {
-  static const String baseUrl =ServerUrlUtil.baseUrl;
+  static const String baseUrl =ServerUrl.baseUrl;
 
   static Dio dio = Dio();
   static Future<HttpResult> getIngredients() async {

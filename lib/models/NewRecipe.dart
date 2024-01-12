@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:seecooker/utils/FileConverter.dart';
+import 'package:seecooker/utils/file_converter.dart';
 
 class NewRecipe {
   /// 封面
