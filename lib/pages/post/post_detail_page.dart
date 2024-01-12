@@ -198,7 +198,7 @@ class _PageContentState extends State<PageContent> {
                         backgroundColor: Colors.transparent,
                         backgroundImage: ExtendedNetworkImageProvider(
                           model.posterAvatar,
-                          cache: true,
+                          cache: false,
                         ),
                       ),
                     ),
@@ -671,7 +671,7 @@ class _ImageCardSwiperState extends State<ImageCardSwiper> {
                       tag: widget.images[index],
                       child: ExtendedImage.network(
                         widget.images[index],
-                        cache: true,
+                        cache: false,
                         enableLoadState: false,
                         fit: BoxFit.cover,
                       ),

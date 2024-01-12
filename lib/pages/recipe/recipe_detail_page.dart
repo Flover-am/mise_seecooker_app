@@ -77,7 +77,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                               backgroundColor: Colors.transparent,
                               backgroundImage: ExtendedNetworkImageProvider(
                                 model.authorAvatar,
-                                cache: true,
+                                cache: false,
                               ),
                             ),
                           ),
@@ -120,7 +120,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                                     child: ExtendedImage.network(
                                       model.cover,
                                       fit: BoxFit.fitWidth,
-                                      cache: true,
+                                      cache: false,
                                       enableLoadState: false,
                                     )
                                   ),
@@ -143,7 +143,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                                     child: ExtendedImage.network(
                                       model.stepImages[index],
                                       fit: BoxFit.fitWidth,
-                                      cache: true,
+                                      cache: false,
                                       enableLoadState: true,
                                         loadStateChanged: (ExtendedImageState state) {
                                           if (state.extendedImageLoadState case LoadState.loading) {
