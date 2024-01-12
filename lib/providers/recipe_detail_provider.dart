@@ -27,12 +27,12 @@ class RecipeDetailProvider with ChangeNotifier {
   }
 
 
-  void scoreRecipe(int score) async {
-    model.scored = true;
+  Future<void> scoreRecipe(int score) async {
     final res = await RecipeService.scoreRecipe(_recipeId, score.toDouble());
     if(!res.isSuccess()) {
       throw Exception('评分失败: ${res.message}');
     }
+    model.scored = true;
     notifyListeners();
   }
 }

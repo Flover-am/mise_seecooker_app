@@ -460,17 +460,21 @@ class RecipeBar extends StatelessWidget {
                     child: Text("取消", style: TextStyle(color: Theme.of(context).colorScheme.outline))
                   ),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if(_score.value == 0) {
                         Fluttertoast.showToast(msg: "评分至少一分");
                       } else {
                         try {
-                          provider.scoreRecipe(_score.value);
+                          await provider.scoreRecipe(_score.value);
                           Navigator.pop(context);
                           Fluttertoast.showToast(msg: "评分成功");
                         } catch(e) {
                           log("$e");
-                          Fluttertoast.showToast(msg: "评分失败");
+                          if(e.toString() == "Exception: 请登录"){
+                            Fluttertoast.showToast(msg: "请登录");
+                          } else {
+                            Fluttertoast.showToast(msg: "$e");
+                          }
                         }
                       }
                     },

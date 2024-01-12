@@ -77,10 +77,15 @@ class RecipeService {
 
   static Future<HttpResult> getRecipe(int id) async {
     String lastUrl = '$baseUrl/detail/$id';
-    Options options = Options(headers: {
-      await SaTokenUtil.getTokenName():
-      await SaTokenUtil.getTokenValue()
-    });
+    Options? options;
+    try {
+      options = Options(headers: {
+        await SaTokenUtil.getTokenName():
+        await SaTokenUtil.getTokenValue()
+      });
+    } catch (e) {
+      log("用户未登录");
+    }
     var response = await dio.get(lastUrl, options: options);
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
