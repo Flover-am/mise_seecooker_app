@@ -1,32 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/models/user.dart';
-import 'package:seecooker/pages/account/login_page.dart';
-import 'package:seecooker/providers/recipe/user_favor_recipe_provider.dart';
-import 'package:seecooker/providers/user/user_provider.dart';
-import 'package:seecooker/providers/recipe/user_recipe_provider.dart';
-import 'package:seecooker/utils/shared_preferences_util.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:seecooker/providers/recipe/other_user_favor_recipe_provider.dart';
+import 'package:seecooker/providers/post/other_user_posts_provider.dart';
+import 'package:seecooker/providers/user/other_user_provider.dart';
+import 'package:seecooker/providers/recipe/other_user_recipe_provider.dart';
+import 'package:seecooker/widgets/recipes_list.dart';
 
-import '../../providers/recipe/other_user_favor_recipe_provider.dart';
-import '../../providers/post/other_user_posts_provider.dart';
-import '../../providers/user/other_user_provider.dart';
-import '../../providers/recipe/other_user_recipe_provider.dart';
-import '../../providers/recipe/home_recipes_provider.dart';
-import '../../providers/post/community_posts_provider.dart';
-import '../../providers/recipe/search_recipes_provider.dart';
-import '../../providers/post/user_posts_provider.dart';
-import '../../widgets/recipe_card.dart';
-import '../../widgets/recipes_list.dart';
-import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
-
-import 'modify/modify_page.dart';
-import 'settings/settings_page.dart';
-///其他用户界面
+/// 其他用户界面
 class OtherAccountPage extends StatefulWidget {
   const OtherAccountPage({super.key});
 

@@ -5,12 +5,12 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/models/recipe_detail.dart';
 import 'package:seecooker/pages/account/other_account_page.dart';
 import 'package:seecooker/providers/user/other_user_provider.dart';
-import 'package:seecooker/providers/recipe_detail_provider.dart';
+import 'package:seecooker/providers/recipe/recipe_detail_provider.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
-import 'package:skeletons/skeletons.dart';
 
 class RecipeDetailPage extends StatefulWidget {
   const RecipeDetailPage({super.key, required this.id});
@@ -41,7 +41,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
               log("${snapshot.error}");
               return Scaffold(
                 body: RefreshPlaceholder(
-                  message: "悲报！食谱在网络中迷路了",
+                  message: "悲报！菜谱在网络中迷路了",
                   onRefresh: () {
                     setState(() {
                       future = Provider.of<RecipeDetailProvider>(context, listen: false).fetchRecipeDetail();
@@ -61,43 +61,34 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                   return Scaffold(
                     appBar: AppBar(
                       scrolledUnderElevation: 0,
-                      title: GestureDetector(
-                        onTap: () async {
-                          // TODO: 跳转到个人页面
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => OtherAccountPage()),
-                          // );
-                        },
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
-                                await otherUserProvider.getUserById(model.authorId);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => OtherAccountPage()),
-                                );
-                              },
-                              child: CircleAvatar(
-                                radius: 16,
-                                backgroundColor: Colors.transparent,
-                                backgroundImage: ExtendedNetworkImageProvider(
-                                  model.authorAvatar,
-                                  cache: true,
-                                ),
+                      title: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
+                              await otherUserProvider.getUserById(model.authorId);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => OtherAccountPage()),
+                              );
+                            },
+                            child: CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.transparent,
+                              backgroundImage: ExtendedNetworkImageProvider(
+                                model.authorAvatar,
+                                cache: false,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16),
-                              child: Text(
-                                model.authorName,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              model.authorName,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       )
                     ),
                     body: GestureDetector(
@@ -129,7 +120,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                                     child: ExtendedImage.network(
                                       model.cover,
                                       fit: BoxFit.fitWidth,
-                                      cache: true,
+                                      cache: false,
                                       enableLoadState: false,
                                     )
                                   ),
@@ -152,7 +143,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                                     child: ExtendedImage.network(
                                       model.stepImages[index],
                                       fit: BoxFit.fitWidth,
-                                      cache: true,
+                                      cache: false,
                                       enableLoadState: true,
                                         loadStateChanged: (ExtendedImageState state) {
                                           if (state.extendedImageLoadState case LoadState.loading) {
@@ -309,7 +300,7 @@ class Ingredients extends StatelessWidget {
   }
 }
 
-/// 食谱步骤文本内容
+/// 菜谱步骤文本内容
 class StepContentSection extends StatelessWidget {
   final String content;
   final int index;
@@ -465,21 +456,23 @@ class RecipeBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     child: Text("取消", style: TextStyle(color: Theme.of(context).colorScheme.outline))
                   ),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if(_score.value == 0) {
                         Fluttertoast.showToast(msg: "评分至少一分");
                       } else {
                         try {
-                          provider.scoreRecipe(_score.value);
+                          await provider.scoreRecipe(_score.value);
                           Navigator.pop(context);
                           Fluttertoast.showToast(msg: "评分成功");
                         } catch(e) {
                           log("$e");
-                          Fluttertoast.showToast(msg: "评分失败");
+                          Fluttertoast.showToast(msg: "$e".substring(11));
                         }
                       }
                     },

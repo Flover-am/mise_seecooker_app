@@ -1,10 +1,9 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:seecooker/models/NewRecipe.dart';
+import 'package:seecooker/models/new_recipe.dart';
 import 'package:seecooker/models/http_result.dart';
-import 'package:seecooker/utils/server_url_util.dart';
-import 'package:seecooker/utils/shared_preferences_util.dart';
+import 'package:seecooker/utils/server_url.dart';
 import 'package:seecooker/utils/sa_token_util.dart';
 
 class RecipeService {
@@ -77,10 +76,15 @@ class RecipeService {
 
   static Future<HttpResult> getRecipe(int id) async {
     String lastUrl = '$baseUrl/detail/$id';
-    Options options = Options(headers: {
-      await SaTokenUtil.getTokenName():
-      await SaTokenUtil.getTokenValue()
-    });
+    Options? options;
+    try {
+      options = Options(headers: {
+        await SaTokenUtil.getTokenName():
+        await SaTokenUtil.getTokenValue()
+      });
+    } catch (e) {
+      log("用户未登录");
+    }
     var response = await dio.get(lastUrl, options: options);
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
@@ -96,6 +100,26 @@ class RecipeService {
       await SaTokenUtil.getTokenName():
       await SaTokenUtil.getTokenValue()
     });
+    final response = await dio.put(lastUrl, options: options);
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
+  }
+
+  /// 收藏或取消收藏菜谱（未检查登录）
+  static Future<HttpResult> favorRecipeWithoutCheckLogin(int id) async {
+    String lastUrl = '$baseUrl/favorite/$id';
+    Options? options;
+    try {
+      options = Options(headers: {
+        await SaTokenUtil.getTokenName():
+        await SaTokenUtil.getTokenValue()
+      });
+    } catch (e) {
+      log("未登录");
+    }
     final response = await dio.put(lastUrl, options: options);
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
@@ -128,7 +152,7 @@ class RecipeService {
     }
   }
 
-  /// 获取随机推荐菜谱
+  /// 获取随机推荐菜谱名
   static Future<HttpResult> getRandomRecommend() async {
     String lastUrl = '$baseUrl/recommend';
     final response = await dio.get(lastUrl);
@@ -143,6 +167,31 @@ class RecipeService {
   static Future<HttpResult> getAiResponse(String query) async {
     String lastUrl = "$baseUrl/llm";
     final response = await dio.get(lastUrl, queryParameters: {'prompt': query});
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
+  }
+
+  /// 获取定制推荐菜谱
+  static Future<HttpResult> getRecommendRecipes(List<String> ingredients) async {
+    String lastUrl = '$baseUrl/explore';
+    Map<String, List<String> > map = {};
+    map["ingredients"] = ingredients;
+    // final FormData formData =FormData.fromMap(map);
+    final response = await dio.get(lastUrl,queryParameters: map);
+    if(response.statusCode == 200) {
+      return HttpResult.fromJson(response.data);
+    } else {
+      throw Exception('Network exception: ${response.statusCode}');
+    }
+  }
+
+  /// 获取所有配料
+  static Future<HttpResult> getIngredients() async {
+    String lastUrl = '$baseUrl/ingredients';
+    final response = await dio.get(lastUrl);
     if(response.statusCode == 200) {
       return HttpResult.fromJson(response.data);
     } else {

@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:seecooker/pages/post/post_detail_page.dart';
 import 'package:seecooker/providers/post/posts_provider.dart';
@@ -42,7 +39,6 @@ class _PostsWaterfallState<T extends PostsProvider> extends State<PostsWaterfall
           if (snapshot.connectionState == ConnectionState.waiting){
             return Center(child: _buildSkeleton());
           } else if (snapshot.hasError) {
-            log('${snapshot.error}');
             return RefreshPlaceholder(
               message: '悲报！帖子在网络中迷路了',
               onRefresh: () {
@@ -100,7 +96,6 @@ class _PostsWaterfallState<T extends PostsProvider> extends State<PostsWaterfall
                       child: child,
                     );
                   },
-                  // TODO: refresh placeholder
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Center(child: Text(widget.endMessage, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)))),

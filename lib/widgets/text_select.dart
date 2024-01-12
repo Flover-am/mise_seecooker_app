@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 class TextSelect extends StatefulWidget {
@@ -67,7 +65,6 @@ class _TextSelectState extends State<TextSelect> {
       optionsBuilder: (TextEditingValue textEditingValue) {
         widget.onChange(widget.index, textEditingValue.text);
         _text = textEditingValue.text;
-        log(_text);
 
         if (textEditingValue.text == '') {
           return const Iterable<String>.empty();
@@ -79,7 +76,6 @@ class _TextSelectState extends State<TextSelect> {
       onSelected: (String selection) {
         widget.onChange(widget.index, selection);
 
-        log(_text);
         _text = selection;
         debugPrint('You just selected $selection');
       },

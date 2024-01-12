@@ -2,7 +2,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
 
-/// 食谱封面图大卡片
+/// 菜谱封面图大卡片
 class RecipeCard extends StatelessWidget {
   final int recipeId;
   final String name;
@@ -45,7 +45,7 @@ class RecipeCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: ExtendedImage.network(
                       cover,
-                      cache: true,
+                      cache: false,
                       fit: BoxFit.cover,
                       enableLoadState: true,
                       loadStateChanged: (ExtendedImageState state) {

@@ -1,9 +1,7 @@
-/// 滑动卡面组件中展现的卡面，展示该菜品的名字，作者，简介，是否收藏
-
-
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+/// 滑动卡面组件中展现的卡面，展示该菜品的名字，作者，简介，是否收藏
 class ExpRecipeCard extends StatelessWidget {
   final int id;
   final String title;

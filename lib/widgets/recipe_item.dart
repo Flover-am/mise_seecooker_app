@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
 
-/// 用于以列表形式展示食谱得单个卡片组件
+/// 用于以列表形式展示菜谱得单个卡片组件
 class RecipeItem extends StatelessWidget {
   final int id;
   final String name;
@@ -54,7 +54,7 @@ class RecipeItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: ExtendedImage.network(
                     cover,
-                    cache: true,
+                    cache: false,
                     fit: BoxFit.cover,
                     enableLoadState: true,
                       loadStateChanged: (ExtendedImageState state) {
@@ -91,7 +91,7 @@ class RecipeItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 4),
-                  // 食谱名
+                  // 菜谱名
                   Text(name, style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 8),
                   // 评分

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:theme_provider/theme_provider.dart';
 import 'package:seecooker/pages/account/settings/settings_aboutUs_page.dart';
 import 'package:seecooker/pages/account/settings/settings_account_page.dart';
 import 'package:seecooker/pages/account/settings/settings_help_page.dart';
 import 'package:seecooker/pages/account/settings/settings_support_page.dart';
-import 'package:theme_provider/theme_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 
-import '../../../providers/user/user_provider.dart';
-
-
+/// 设置页面
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
 

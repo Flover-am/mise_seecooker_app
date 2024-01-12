@@ -1,13 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:seecooker/models/user_login.dart';
-import 'package:seecooker/utils/sa_token_util.dart';
-import 'package:seecooker/utils/shared_preferences_util.dart';
-
-import '../../models/other_user.dart';
-import '../../models/user.dart';
-import '../../models/user_info.dart';
-import '../../services/user_service.dart';
-import 'dart:io';
+import 'package:seecooker/models/other_user.dart';
+import 'package:seecooker/services/user_service.dart';
 
 class OtherUserProvider extends ChangeNotifier{
   var defaultAvatar = "https://seecooker.oss-cn-shanghai.aliyuncs.com/avatar/ecff12a2-2986-4bd9-a393-cf8f1065397f.webp";

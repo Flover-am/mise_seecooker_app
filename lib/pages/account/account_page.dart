@@ -1,28 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
 import 'package:seecooker/providers/recipe/user_favor_recipe_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/providers/recipe/user_recipe_provider.dart';
-import 'package:seecooker/utils/shared_preferences_util.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:seecooker/providers/post/user_posts_provider.dart';
+import 'package:seecooker/widgets/recipes_list.dart';
+import 'package:seecooker/pages/account/modify/modify_page.dart';
+import 'package:seecooker/pages/account/settings/settings_page.dart';
 
-import '../../providers/recipe/home_recipes_provider.dart';
-import '../../providers/post/community_posts_provider.dart';
-import '../../providers/recipe/search_recipes_provider.dart';
-import '../../providers/post/user_posts_provider.dart';
-import '../../widgets/recipe_card.dart';
-import '../recipe/recipe_detail_page.dart';
-import '../../widgets/recipes_list.dart';
-import '../search/search_page.dart';
-import 'package:tabbed_sliverlist/tabbed_sliverlist.dart';
-
-import 'modify/modify_page.dart';
-import 'other_account_page.dart';
-import 'settings/settings_page.dart';
 ///用户页面
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});

@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
-import 'package:seecooker/models/NewRecipe.dart';
+import 'package:flutter/material.dart';
+import 'package:seecooker/models/new_recipe.dart';
 import 'package:seecooker/services/recipe_service.dart';
 
 class NewRecipeProvider with ChangeNotifier {

@@ -186,7 +186,7 @@ AppTheme _m3AppTheme(String title, ColorScheme colorScheme) {
     id: title,
     description: title,
     data: ThemeData(
-      colorScheme: colorScheme,//TODO:更改颜色
+      colorScheme: colorScheme,
       useMaterial3: true,
     ),
   );

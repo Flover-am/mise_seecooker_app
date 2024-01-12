@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/publish/publish_recipe.dart';
 import 'package:skeletons/skeletons.dart';
+import 'package:seecooker/pages/publish/publish_recipe_page.dart';
 import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
@@ -12,6 +12,7 @@ import 'package:seecooker/widgets/recipe_card.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:seecooker/pages/search/search_page.dart';
 
+/// 主页（菜谱列表页面）
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -27,11 +28,15 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         heroTag: UniqueKey(),
-        onPressed: () => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PublishRecipe(param: "")),
-          ),
+        onPressed: () {
+          if(Provider.of<UserProvider>(context, listen: false).isLoggedIn == false){
+            Fluttertoast.showToast(msg: "请登录");
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PublishRecipePage(param: "")),
+            );
+          }
         },
         child: Icon(Icons.restaurant_menu_outlined, color: Theme.of(context).colorScheme.surface),
       ),
@@ -39,14 +44,14 @@ class _HomePageState extends State<HomePage> {
         slivers: [
           SliverAppBar(
             pinned: true,
-            expandedHeight: 192,
+            expandedHeight: 144,
             scrolledUnderElevation: 0,
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(bottom: 16),
               expandedTitleScale: 1,
               title: Padding(
                 padding: const EdgeInsets.only(left: 16),
-                child: Text('食谱推荐', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                child: Text('菜谱推荐', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
               ),
               background: TweenAnimationBuilder(
                 duration: const Duration(milliseconds: 2000),
@@ -62,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      height: 88,
+                      height: 64,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                               begin: Alignment.topCenter,
@@ -74,22 +79,12 @@ class _HomePageState extends State<HomePage> {
                           )
                       )
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 24),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Consumer<UserProvider>(
-                            builder: (context, provider, child) {
-                              if(provider.username != '未登录') {
-                                return Text('亲爱的 ${provider.username} ，', style: Theme.of(context).textTheme.titleMedium);
-                              } else {
-                                return Text('你好，', style: Theme.of(context).textTheme.titleMedium);
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 12),
                           Text.rich(
                             TextSpan(
                               style: Theme.of(context).textTheme.titleMedium,
@@ -131,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                 log('${snapshot.error}');
                 return SliverToBoxAdapter(
                   child: RefreshPlaceholder(
-                    message: '悲报！食谱在网络中迷路了',
+                    message: '悲报！菜谱在网络中迷路了',
                     onRefresh: () {
                       setState((){
                         future = Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes();

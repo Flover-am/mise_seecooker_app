@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'dart:io';
-
 import 'package:seecooker/providers/user/user_provider.dart';
-///修改密码页面
+
+/// 修改密码页面
 class ModifyPasswordPage extends StatefulWidget {
+  const ModifyPasswordPage({super.key});
+
   @override
-  _ModifyPasswordPageState createState() => _ModifyPasswordPageState();
+  State<ModifyPasswordPage> createState() => _ModifyPasswordPageState();
 }
 
 class _ModifyPasswordPageState extends State<ModifyPasswordPage> {

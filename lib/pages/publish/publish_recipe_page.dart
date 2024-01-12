@@ -1,29 +1,28 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
-import 'package:seecooker/models/NewRecipe.dart';
-import 'package:seecooker/providers/explore/Ingredients_provider.dart';
-import 'package:seecooker/providers/new_recipe_provider.dart';
+import 'package:seecooker/models/new_recipe.dart';
+import 'package:seecooker/providers/explore/ingredients_provider.dart';
+import 'package:seecooker/providers/recipe/new_recipe_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/services/recipe_service.dart';
 import 'package:seecooker/utils/file_converter.dart';
 import 'package:seecooker/widgets/text_select.dart';
 
-class PublishRecipe extends StatefulWidget {
+/// 菜谱发布页面
+class PublishRecipePage extends StatefulWidget {
   final String param;
 
-  const PublishRecipe({super.key, required this.param});
+  const PublishRecipePage({super.key, required this.param});
 
   @override
-  State<PublishRecipe> createState() => _PublishRecipeState();
+  State<PublishRecipePage> createState() => _PublishRecipePageState();
 }
 
-class _PublishRecipeState extends State<PublishRecipe> {
+class _PublishRecipePageState extends State<PublishRecipePage> {
   /// 是否有封面
   bool hasCover = false;
   final ImagePicker picker = ImagePicker();
@@ -105,7 +104,7 @@ class _PublishRecipeState extends State<PublishRecipe> {
                 title: Consumer<UserProvider>(
                   builder: (context, user, child) => const Stack(
                     children: [
-                      Text('食谱发布'),
+                      Text('菜谱发布'),
                     ],
                   ),
                 )),
@@ -280,7 +279,6 @@ class _PublishRecipeState extends State<PublishRecipe> {
                                 }
                                 return singleStep(index, (value) {
                                   provider.model.stepContents[index] = value;
-                                  log(value);
                                 });
                               }),
                             );
@@ -384,7 +382,6 @@ class _PublishRecipeState extends State<PublishRecipe> {
         GestureDetector(
             onTap: () {
               selectStepCover(index);
-              log("hasStepsCover:$hasStepsCover");
             },
             child: Container(
               decoration: BoxDecoration(
@@ -435,14 +432,12 @@ class _PublishRecipeState extends State<PublishRecipe> {
     var resp = await RecipeService.publishRecipe(recipe).then((s) {
       return s;
     }, onError: (e) {
-      log(e.toString());
       Fluttertoast.showToast(msg: "发布失败:${e.toString().split(":")[1]}");
     });
     ;
     ingredientsName.forEach((key, value) {
       // recipe.ingredientsName.add();
     });
-    log(resp.toString());
     if (!resp.isSuccess()) {
       Fluttertoast.showToast(msg: "发布失败: ${resp.message}");
     } else {
@@ -497,7 +492,6 @@ class _PublishRecipeState extends State<PublishRecipe> {
     setState(() {
       cover = image;
       hasCover = true;
-      log("path: ${image.path}");
     });
   }
 
@@ -513,7 +507,6 @@ class _PublishRecipeState extends State<PublishRecipe> {
       tmp[index] = true;
       stepsCover[index] = image;
       hasStepsCover = tmp;
-      log("hasStepsCover2:$hasStepsCover");
     });
   }
 }
