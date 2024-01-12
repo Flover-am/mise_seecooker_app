@@ -84,7 +84,6 @@ class _ModifyPageState extends State<ModifyPage> {
                       backgroundColor: Colors.black, // Toast背景颜色
                       textColor: Colors.white, // Toast文本颜色
                       fontSize: 16.0,
-                      //timeInSecForIosWeb: 1,// Toast文本字体大小
                     );
                   }else if(avatarFlag && signatureFlag && usernameFlag){
                     Fluttertoast.showToast(
@@ -112,7 +111,6 @@ class _ModifyPageState extends State<ModifyPage> {
                     }
                     if(!signatureFlag){
                       hasSignatureModified |= await userProvider.modifySignature(_signature);
-                      //hasSignatureModified = true;
                     }
                     if(!usernameFlag){
                       hasUsernameModified |= await userProvider.modifyUsername(defaultUserName, _username);

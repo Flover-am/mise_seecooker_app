@@ -125,10 +125,6 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                         backgroundImage: NetworkImage(userProvider.avatar),
                       )
                           : Container(),
-                      //       const CircleAvatar(
-                      //       radius: 15,
-                      //       backgroundImage: AssetImage('assets/images/nju_community_logo_origin.png'),
-                      // ),
                     ],
                   ),
                 ),
@@ -198,9 +194,6 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
             children: [
               CircleAvatar(
                 radius: 42,
-                // backgroundImage: NetworkImage(
-                //   'https://example.com/avatar.jpg',
-                // ),
                 backgroundImage: NetworkImage(userProvider.avatar),
               ),
               SizedBox(width: 20),
@@ -428,27 +421,3 @@ class _UserFavorRecipesListState extends State<UserFavorRecipesList> with Automa
   bool get wantKeepAlive => true;
 }
 
-
-
-Widget _buildSkeleton(BuildContext context) {
-  return Column(
-    children: [
-      const SizedBox(height: 8),
-      SkeletonLine(
-        style: SkeletonLineStyle(
-            height: MediaQuery.of(context).size.width - 48,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            borderRadius: BorderRadius.circular(12)
-        ),
-      ),
-      const SizedBox(height: 24),
-      SkeletonLine(
-        style: SkeletonLineStyle(
-            height: 368,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            borderRadius: BorderRadius.circular(12)
-        ),
-      ),
-    ],
-  );
-}
