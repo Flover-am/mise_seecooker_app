@@ -1,17 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/providers/user/user_provider.dart';
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:seecooker/utils/file_converter.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:seecooker/providers/user/user_provider.dart';
 
-import 'login_page.dart';
-
+/// 注册页面
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({Key? key});
+  const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +18,8 @@ class RegisterPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('注册'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: const Padding(
+        padding: EdgeInsets.all(16.0),
         child: RegisterForm(),
       ),
     );

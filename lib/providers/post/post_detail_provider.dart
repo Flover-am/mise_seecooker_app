@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:flutter/material.dart';
 import 'package:seecooker/models/post_detail.dart';
 import 'package:seecooker/services/community_service.dart';
 

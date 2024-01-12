@@ -1,24 +1,21 @@
 import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:theme_provider/theme_provider.dart';
 import 'package:seecooker/pages/account/account_page.dart';
 import 'package:seecooker/pages/explore/explore_page.dart';
-import 'package:seecooker/pages/publish/publish_post_page.dart';
 import 'package:seecooker/pages/recipe/home_page.dart';
 import 'package:seecooker/pages/post/posts_page.dart';
-import 'package:flutter/material.dart';
-
-import 'package:seecooker/providers/explore/Ingredients_provider.dart';
+import 'package:seecooker/providers/explore/ingredients_provider.dart';
 import 'package:seecooker/providers/user/other_user_provider.dart';
 import 'package:seecooker/providers/post/community_posts_provider.dart';
 import 'package:seecooker/providers/explore/explore_post_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/providers/explore/recommend_provider.dart';
-
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
-
-import 'package:seecooker/utils/theme_util.dart';
-import 'package:theme_provider/theme_provider.dart';
+import 'package:seecooker/utils/custom_themes.dart';
 
 void main() {
   // WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -110,22 +107,22 @@ class _MainPageState extends State<MainPage> with AutomaticKeepAliveClientMixin 
         destinations: <Widget>[
           NavigationDestination(
             selectedIcon: Icon(Icons.home, color: Theme.of(context).colorScheme.surface),
-            icon: Icon(Icons.home_outlined),
+            icon: const Icon(Icons.home_outlined),
             label: '首页',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.explore, color: Theme.of(context).colorScheme.surface),
-            icon: Icon(Icons.explore_outlined),
+            icon: const Icon(Icons.explore_outlined),
             label: '发现',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.camera, color: Theme.of(context).colorScheme.surface),
-            icon: Icon(Icons.camera_outlined),
+            icon: const Icon(Icons.camera_outlined),
             label: '社区',
           ),
           NavigationDestination(
             selectedIcon: Icon(Icons.account_circle, color: Theme.of(context).colorScheme.surface),
-            icon: Icon(Icons.account_circle_outlined),
+            icon: const Icon(Icons.account_circle_outlined),
             label: '我的',
           ),
         ],

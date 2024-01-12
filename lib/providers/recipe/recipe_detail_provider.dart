@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:seecooker/models/recipe_detail.dart';
 import 'package:seecooker/services/recipe_service.dart';
 
@@ -13,7 +13,7 @@ class RecipeDetailProvider with ChangeNotifier {
   Future<void> fetchRecipeDetail() async {
     var res =  await RecipeService.getRecipe(_recipeId);
     if(!res.isSuccess()){
-      throw Exception("未获取到食谱数据: ${res.message}");
+      throw Exception("未获取到菜谱数据: ${res.message}");
     }
     _model = RecipeDetail.fromJson(res.data);
   }

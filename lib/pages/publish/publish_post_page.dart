@@ -1,19 +1,15 @@
 import 'dart:io';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:seecooker/providers/post/community_posts_provider.dart';
-
-import 'package:seecooker/providers/user/user_provider.dart';
-import 'package:seecooker/models/http_result.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:seecooker/providers/post/community_posts_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
+import 'package:seecooker/models/http_result.dart';
 import 'package:seecooker/services/community_service.dart';
 
-
+/// 帖子发布页面
 class PublishPostPage extends StatefulWidget {
   final String param;
   const PublishPostPage({super.key,required this.param});
@@ -373,7 +369,7 @@ class _PublishPostPageState extends State<PublishPostPage> {
   }
 }
 
-/// 加载页
+/// 加载页面
 class LoadingPage extends StatelessWidget{
   final String prompt;
   const LoadingPage({super.key, required this.prompt});
@@ -401,7 +397,7 @@ class LoadingPage extends StatelessWidget{
   }
 }
 
-/// 图片详情页
+/// 图片详情页面
 class DetailImagePage extends StatelessWidget{
 
   final String path;

@@ -7,6 +7,7 @@ import 'package:seecooker/providers/post/community_posts_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
 
+/// 帖子列表页面
 class PostsPage extends StatefulWidget {
   const PostsPage({super.key});
 

@@ -5,13 +5,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/Ingredients.dart';
 import 'package:seecooker/pages/explore/makeexp_page.dart';
-import 'package:seecooker/providers/explore/Ingredients_provider.dart';
+import 'package:seecooker/providers/explore/ingredients_provider.dart';
 import 'package:seecooker/providers/explore/explore_post_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/widgets/chosen_line.dart';
 import 'package:seecooker/widgets/my_search_bar.dart';
 import 'package:skeletons/skeletons.dart';
 
+/// 探索页面
 class ExplorePage extends StatefulWidget {
   const ExplorePage({super.key});
 

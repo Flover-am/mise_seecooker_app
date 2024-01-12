@@ -1,16 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'dart:io';
+import 'package:seecooker/providers/user/user_provider.dart';
 
-import '../../../providers/user/user_provider.dart';
-
-
-///修改页面
+/// 个人信息修改页面
 class ModifyPage extends StatefulWidget {
+  const ModifyPage({super.key});
+
   @override
-  _ModifyPageState createState() => _ModifyPageState();
+  State<ModifyPage> createState() => _ModifyPageState();
 }
 
 class _ModifyPageState extends State<ModifyPage> {
@@ -21,18 +22,15 @@ class _ModifyPageState extends State<ModifyPage> {
   String _username = '张三';
   String defaultUserName = '';
   String _signature = '这是一个用户';
-  String defaultSignature  = '';
+  String defaultSignature = '';
   String defaultAvatar = '';
   bool hasNewAvatar = false;
   bool hasModified = false;
   late UserProvider userProvider;
 
-
-
-
   @override
   Widget build(BuildContext context) {
-    userProvider = Provider.of<UserProvider>(context,listen: false);
+    userProvider = Provider.of<UserProvider>(context, listen: false);
     _username = userProvider.username;
     defaultUserName = _username;
     _signature = userProvider.description;
@@ -75,17 +73,18 @@ class _ModifyPageState extends State<ModifyPage> {
                   bool signatureFlag = defaultSignature == _signature;
                   bool usernameFlag = defaultUserName == _username;
 
-
-                  if(_username == ""){
+                  if (_username == "") {
                     Fluttertoast.showToast(
                       msg: "用户名不能为空",
-                      toastLength: Toast.LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
-                      gravity: ToastGravity.BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
+                      toastLength: Toast
+                          .LENGTH_SHORT, // Toast持续时间，可以是Toast.LENGTH_SHORT或Toast.LENGTH_LONG
+                      gravity: ToastGravity
+                          .BOTTOM, // Toast位置，可以是ToastGravity.TOP、ToastGravity.CENTER或ToastGravity.BOTTOM
                       backgroundColor: Colors.black, // Toast背景颜色
                       textColor: Colors.white, // Toast文本颜色
                       fontSize: 16.0,
                     );
-                  }else if(avatarFlag && signatureFlag && usernameFlag){
+                  } else if (avatarFlag && signatureFlag && usernameFlag) {
                     Fluttertoast.showToast(
                       msg: "未修改用户信息",
                       toastLength: Toast.LENGTH_SHORT,
@@ -99,24 +98,27 @@ class _ModifyPageState extends State<ModifyPage> {
                       fontSize: 16.0,
                       timeInSecForIosWeb: 2, // Toast文本字体大小
                     );
-                  }
-                  else {
+                  } else {
                     bool hasSignatureModified = signatureFlag;
                     bool hasUsernameModified = usernameFlag;
                     bool hasAvatarModified = avatarFlag;
 
-                    if(!avatarFlag){
+                    if (!avatarFlag) {
                       hasAvatarModified |= await userProvider.modifyAvatar(
                           defaultUserName, _avatar_file.path);
                     }
-                    if(!signatureFlag){
-                      hasSignatureModified |= await userProvider.modifySignature(_signature);
+                    if (!signatureFlag) {
+                      hasSignatureModified |=
+                          await userProvider.modifySignature(_signature);
                     }
-                    if(!usernameFlag){
-                      hasUsernameModified |= await userProvider.modifyUsername(defaultUserName, _username);
+                    if (!usernameFlag) {
+                      hasUsernameModified |= await userProvider.modifyUsername(
+                          defaultUserName, _username);
                     }
 
-                    if(hasAvatarModified && hasUsernameModified && hasSignatureModified){
+                    if (hasAvatarModified &&
+                        hasUsernameModified &&
+                        hasSignatureModified) {
                       Fluttertoast.showToast(
                         msg: "修改成功！",
                         toastLength: Toast.LENGTH_SHORT,
@@ -131,7 +133,7 @@ class _ModifyPageState extends State<ModifyPage> {
                         timeInSecForIosWeb: 2, // Toast文本字体大小
                       );
                       Navigator.pop(context);
-                    }else{
+                    } else {
                       Fluttertoast.showToast(
                         msg: "修改失败",
                         toastLength: Toast.LENGTH_SHORT,
@@ -146,8 +148,6 @@ class _ModifyPageState extends State<ModifyPage> {
                         timeInSecForIosWeb: 2, // Toast文本字体大小
                       );
                     }
-
-
                   }
                 },
                 child: Text('保存更改'),
@@ -167,10 +167,10 @@ class _ModifyPageState extends State<ModifyPage> {
   void _updateDescription(String value) {
     _signature = value;
   }
+
   ///构建头像
   Widget _buildAvatar() {
-    ImageProvider defaultImageProvider =
-    NetworkImage(avatar);
+    ImageProvider defaultImageProvider = NetworkImage(avatar);
 
     return GestureDetector(
       onTap: () {
@@ -179,23 +179,23 @@ class _ModifyPageState extends State<ModifyPage> {
       },
       child: hasNewAvatar
           ? CircleAvatar(
-        radius: 100, // 设置圆形头像的半径
-        backgroundImage: FileImage(File(avatar_xfile.path)),
-      )
+              radius: 100, // 设置圆形头像的半径
+              backgroundImage: FileImage(File(avatar_xfile.path)),
+            )
           : CircleAvatar(
-        radius: 100,
-        backgroundImage: defaultImageProvider,
-      ),
+              radius: 100,
+              backgroundImage: defaultImageProvider,
+            ),
     );
   }
+
   ///选择头像
   void selectAvatar() async {
     XFile image = (await picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1080,
-      maxHeight: 1080,
-      imageQuality: 90
-    ))!;
+        source: ImageSource.gallery,
+        maxWidth: 1080,
+        maxHeight: 1080,
+        imageQuality: 90))!;
     setState(() {
       avatar_xfile = image;
       _avatar_file = File(avatar_xfile.path);

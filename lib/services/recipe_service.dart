@@ -1,10 +1,9 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:seecooker/models/NewRecipe.dart';
+import 'package:seecooker/models/new_recipe.dart';
 import 'package:seecooker/models/http_result.dart';
-import 'package:seecooker/utils/server_url_util.dart';
-import 'package:seecooker/utils/shared_preferences_util.dart';
+import 'package:seecooker/utils/server_url.dart';
 import 'package:seecooker/utils/sa_token_util.dart';
 
 class RecipeService {

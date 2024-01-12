@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/pages/search/search_result_page.dart';
 import 'package:seecooker/providers/search/search_history_provider.dart';
 import 'package:seecooker/providers/search/search_recommend_provider.dart';
-import 'package:skeletons/skeletons.dart';
 
 /// 搜索页面
 class SearchPage extends StatelessWidget {
@@ -42,7 +42,7 @@ class SearchPage extends StatelessWidget {
               focusNode: _focusNode,
               maxLength: 100,
               decoration: InputDecoration(
-                hintText: '搜索食谱',
+                hintText: '搜索菜谱',
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
@@ -186,7 +186,7 @@ class SearchPage extends StatelessWidget {
                                   const SizedBox(width: 8),
                                   const Icon(Icons.whatshot_outlined),
                                   const SizedBox(width: 4),
-                                  Text('推荐食谱', style: Theme.of(context).textTheme.titleMedium,),
+                                  Text('推荐菜谱', style: Theme.of(context).textTheme.titleMedium,),
                                   const Spacer(),
                                   IconButton(
                                     onPressed: () => provider.refreshSearchRecommend(),

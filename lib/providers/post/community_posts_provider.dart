@@ -1,10 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:seecooker/providers/post/posts_provider.dart';
 import 'package:seecooker/services/community_service.dart';
-
-import '../../models/post.dart';
+import 'package:seecooker/models/post.dart';
 
 class CommunityPostsProvider with ChangeNotifier implements PostsProvider {
   List<Post>? _list;

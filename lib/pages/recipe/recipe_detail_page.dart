@@ -5,12 +5,12 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/models/recipe_detail.dart';
 import 'package:seecooker/pages/account/other_account_page.dart';
 import 'package:seecooker/providers/user/other_user_provider.dart';
-import 'package:seecooker/providers/recipe_detail_provider.dart';
+import 'package:seecooker/providers/recipe/recipe_detail_provider.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
-import 'package:skeletons/skeletons.dart';
 
 class RecipeDetailPage extends StatefulWidget {
   const RecipeDetailPage({super.key, required this.id});
@@ -41,7 +41,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
               log("${snapshot.error}");
               return Scaffold(
                 body: RefreshPlaceholder(
-                  message: "悲报！食谱在网络中迷路了",
+                  message: "悲报！菜谱在网络中迷路了",
                   onRefresh: () {
                     setState(() {
                       future = Provider.of<RecipeDetailProvider>(context, listen: false).fetchRecipeDetail();
@@ -300,7 +300,7 @@ class Ingredients extends StatelessWidget {
   }
 }
 
-/// 食谱步骤文本内容
+/// 菜谱步骤文本内容
 class StepContentSection extends StatelessWidget {
   final String content;
   final int index;

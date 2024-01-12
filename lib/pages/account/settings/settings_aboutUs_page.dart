@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:seecooker/pages/account/settings/settings_account_page.dart';
-import 'package:seecooker/providers/user/user_provider.dart';
 
+/// 关于我们页面
 class SettingsAboutUsPage extends StatelessWidget {
   const SettingsAboutUsPage({Key? key}) : super(key: key);
 

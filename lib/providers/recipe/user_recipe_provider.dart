@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:seecooker/models/recipe.dart';
 import 'package:seecooker/providers/recipe/recipes_provider.dart';
-import 'package:seecooker/services/recipe_service.dart';
-
-import '../../services/user_service.dart';
+import 'package:seecooker/services/user_service.dart';
 
 class UserRecipeProvider  with ChangeNotifier implements RecipesProvider {
   List<Recipe>? _list;

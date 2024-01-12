@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:seecooker/models/explore_recipe.dart';
 import 'package:seecooker/services/recipe_service.dart';
 

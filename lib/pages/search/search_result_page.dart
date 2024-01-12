@@ -1,18 +1,16 @@
-import 'dart:developer';
-
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:seecooker/pages/search/search_page.dart';
 import 'package:seecooker/providers/recipe/search_recipes_provider.dart';
 import 'package:seecooker/providers/search/search_ai_provider.dart';
 import 'package:seecooker/utils/my_icons.dart';
 import 'package:seecooker/widgets/recipes_list.dart';
-import 'package:skeletons/skeletons.dart';
 
-/// 搜索结果页
+/// 搜索结果页面
 class SearchResultPage extends StatelessWidget {
   /// 搜索内容
   final String query;
@@ -46,7 +44,7 @@ class SearchResultPage extends StatelessWidget {
               controller: _textEditingController,
               maxLength: 100,
               decoration: InputDecoration(
-                hintText: '搜索食谱',
+                hintText: '搜索菜谱',
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
@@ -69,7 +67,7 @@ class SearchResultPage extends StatelessWidget {
               ];
             },
             body: RecipesList<SearchRecipesProvider>(
-              emptyMessage: '抱歉，没有找到$query相关的食谱，换个关键词再试试吧 ~',
+              emptyMessage: '抱歉，没有找到$query相关的菜谱，换个关键词再试试吧 ~',
               enableRefresh: false,
               private: false,
             ),
@@ -121,7 +119,6 @@ class AIResponseTextSection extends StatelessWidget {
                         Clipboard.setData(ClipboardData(text: Provider.of<SearchAiProvider>(context, listen: false).response));
                         Fluttertoast.showToast(msg: '已复制到剪贴板');
                       } catch(e) {
-                        log("$e");
                         Fluttertoast.showToast(msg: '复制失败');
                       }
                     },
@@ -145,7 +142,6 @@ class AIResponseTextSection extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting){
                   return const SkeletonLine(style: SkeletonLineStyle(borderRadius: BorderRadius.all(Radius.circular(4))));
                 } else if (snapshot.hasError) {
-                  log('${snapshot.error}');
                   return Text('悲报！AI小助手好像出错了', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)));
                 } else {
                   return Consumer<SearchAiProvider>(

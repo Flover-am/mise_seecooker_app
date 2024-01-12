@@ -1,10 +1,4 @@
-/// 发现页面的第二页面，通过左右滑动切换、收藏推荐菜品的卡片
-/// feat by： xhzai
-/// time： 2024/1/11
-///
-///
 import 'package:flutter/material.dart';
-import 'package:card_swiper/card_swiper.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/pages/account/login_page.dart';
 import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
@@ -12,14 +6,10 @@ import 'package:seecooker/providers/explore/recommend_provider.dart';
 import 'package:seecooker/utils/sa_token_util.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:seecooker/widgets/tinder_card.dart';
-
-import 'package:seecooker/widgets/post_card.dart';
-import 'package:tcard/tcard.dart';
-
 import 'package:seecooker/providers/explore/explore_post_provider.dart';
-import 'package:seecooker/widgets/exp_recipe_card.dart';
 import 'package:seecooker/widgets/recipe_card.dart';
 
+/// 探索结果页面
 class MakeExpPage extends StatefulWidget {
   const MakeExpPage({super.key});
 
@@ -54,7 +44,7 @@ class _MakeExpPageState extends State<MakeExpPage> {
               } else if (snapshot.hasError) {
                 return const Center(
                   child: RefreshPlaceholder(
-                    message: "悲报！食谱在网络中迷路了",
+                    message: "悲报！菜谱在网络中迷路了",
                   ),
                 );
               } else {

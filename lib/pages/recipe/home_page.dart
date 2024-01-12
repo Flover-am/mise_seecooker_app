@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:seecooker/pages/publish/publish_recipe.dart';
 import 'package:skeletons/skeletons.dart';
+import 'package:seecooker/pages/publish/publish_recipe_page.dart';
 import 'package:seecooker/pages/recipe/recipe_detail_page.dart';
 import 'package:seecooker/providers/recipe/home_recipes_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
@@ -12,6 +12,7 @@ import 'package:seecooker/widgets/recipe_card.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:seecooker/pages/search/search_page.dart';
 
+/// 主页（菜谱列表页面）
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -33,7 +34,7 @@ class _HomePageState extends State<HomePage> {
           } else {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const PublishRecipe(param: "")),
+              MaterialPageRoute(builder: (context) => const PublishRecipePage(param: "")),
             );
           }
         },
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> {
               expandedTitleScale: 1,
               title: Padding(
                 padding: const EdgeInsets.only(left: 16),
-                child: Text('食谱推荐', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                child: Text('菜谱推荐', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
               ),
               background: TweenAnimationBuilder(
                 duration: const Duration(milliseconds: 2000),
@@ -125,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                 log('${snapshot.error}');
                 return SliverToBoxAdapter(
                   child: RefreshPlaceholder(
-                    message: '悲报！食谱在网络中迷路了',
+                    message: '悲报！菜谱在网络中迷路了',
                     onRefresh: () {
                       setState((){
                         future = Provider.of<HomeRecipesProvider>(context, listen: false).fetchRecipes();
