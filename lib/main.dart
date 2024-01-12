@@ -9,7 +9,7 @@ import 'package:seecooker/pages/post/posts_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:seecooker/providers/explore/Ingredients_provider.dart';
-import 'package:seecooker/providers/other_user/other_user_provider.dart';
+import 'package:seecooker/providers/user/other_user_provider.dart';
 import 'package:seecooker/providers/post/community_posts_provider.dart';
 import 'package:seecooker/providers/explore/explore_post_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
