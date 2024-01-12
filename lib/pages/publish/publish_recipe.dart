@@ -95,9 +95,9 @@ class _PublishRecipeState extends State<PublishRecipe> {
                       icon: const Icon(Icons.publish_rounded))
                 ],
                 title: Consumer<UserProvider>(
-                  builder: (context, user, child) => Stack(
+                  builder: (context, user, child) => const Stack(
                     children: [
-                      Text('${user.username} post'),
+                      Text('食谱发布'),
                     ],
                   ),
                 )),
