@@ -16,7 +16,7 @@ class RecipeDetail {
   double score;
   double averageScore;
   bool favorite;
-  List<Map<String,String>>? ingredients;
+  List<Map<String,String>>? ingredientAmount;
   String? publishTime;
 
   RecipeDetail(
@@ -32,7 +32,7 @@ class RecipeDetail {
       this.score,
       this.averageScore,
       this.favorite,
-      this.ingredients,
+      this.ingredientAmount,
       this.publishTime
     );
 

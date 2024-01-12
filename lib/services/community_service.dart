@@ -46,7 +46,7 @@ class CommunityService {
 
   /// 点赞或取消点赞帖子
   static Future<HttpResult> likePost(int postId) async {
-    String lastUrl = '$baseUrl/post/like/$postId';
+    String lastUrl = '$baseUrl/like/$postId';
     Options options = Options(headers: {
       await SaTokenUtil.getTokenName():
       await SaTokenUtil.getTokenValue()
