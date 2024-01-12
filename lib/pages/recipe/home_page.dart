@@ -27,11 +27,15 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         heroTag: UniqueKey(),
-        onPressed: () => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PublishRecipe(param: "")),
-          ),
+        onPressed: () {
+          if(Provider.of<UserProvider>(context, listen: false).isLoggedIn == false){
+            Fluttertoast.showToast(msg: "请登录");
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PublishRecipe(param: "")),
+            );
+          }
         },
         child: Icon(Icons.restaurant_menu_outlined, color: Theme.of(context).colorScheme.surface),
       ),

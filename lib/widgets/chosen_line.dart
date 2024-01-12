@@ -16,7 +16,7 @@ class ChosenLine extends StatelessWidget{
         return Column(
             children: [
               Expanded(child: Text(title,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),),
+                  style: Theme.of(context).textTheme.titleLarge)),
               Expanded(
                 flex: 4,
                   child:

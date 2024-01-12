@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:seecooker/pages/publish/publish_post_page.dart';
 import 'package:seecooker/pages/search/search_page.dart';
 import 'package:seecooker/providers/post/community_posts_provider.dart';
+import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
 
 class PostsPage extends StatefulWidget {
@@ -35,11 +38,15 @@ class _PostsPageState extends State<PostsPage> {
       // 浮动按钮，跳转到帖子发布页
       floatingActionButton: FloatingActionButton(
         heroTag: UniqueKey(),
-        onPressed: () => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PublishPostPage(param: "")),
-          ),
+        onPressed: (){
+          if(Provider.of<UserProvider>(context, listen: false).isLoggedIn == false){
+            Fluttertoast.showToast(msg: "请登录");
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PublishPostPage(param: "")),
+            );
+          }
         },
         child: Icon(Icons.edit, color: Theme.of(context).colorScheme.surface),
       ),

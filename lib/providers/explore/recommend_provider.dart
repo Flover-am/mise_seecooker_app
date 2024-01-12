@@ -1,41 +1,30 @@
-/// 发布用户选择
-
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
-import 'package:seecooker/models/Ingredients.dart';
 import 'package:seecooker/models/explore_recipe.dart';
-import 'package:seecooker/services/explore_service.dart';
-
-
+import 'package:seecooker/services/recipe_service.dart';
 
 class RecommendProvider extends ChangeNotifier {
   //从服务端拿到的Recipe
   List<ExploreRecipe> _list = [];
+
   int get length => _list.length;
+
   ExploreRecipe itemAt(int index) => _list[index];
-  Future<void> fetchPosts(List<String> ingredients) async {
-    final res = await ExploreService.fetchPosts(ingredients);
-    print(res.data);
-    List<ExploreRecipe> cardlist = [];
-    cardlist = res.data
+
+  Future<void> fetchRecommendRecipes(List<String> ingredients) async {
+    final res = await RecipeService.getRecommendRecipes(ingredients);
+    List<ExploreRecipe> list = [];
+    list = res.data
         .map((e) => ExploreRecipe.fromJson(e))
         .toList()
         .cast<ExploreRecipe>();
-    _list = cardlist;
-    notifyListeners();
+    _list = list;
   }
 
-  Future<void> fetchMorePosts(List<String> ingredients) async {
-    final res = await ExploreService.fetchPosts(ingredients);
-    List<ExploreRecipe> cardlist = [];
-    cardlist = res.data
-        .map((e) => ExploreRecipe.fromJson(e))
-        .toList()
-        .cast<ExploreRecipe>();
-    for(ExploreRecipe item in cardlist) {
-      _list.add(item);
+  Future<bool> favorRecipe(int recipeId) async {
+    final res = await RecipeService.favorRecipeWithoutCheckLogin(recipeId);
+    if(!res.isSuccess()) {
+      throw Exception('收藏失败: ${res.message}');
     }
-    notifyListeners();
+    return res.data;
   }
 }
