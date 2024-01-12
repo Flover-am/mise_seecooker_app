@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/recipe_detail.dart';
+import 'package:seecooker/pages/account/other_account_page.dart';
+import 'package:seecooker/providers/other_user/other_user_provider.dart';
 import 'package:seecooker/providers/recipe_detail_provider.dart';
 import 'package:seecooker/widgets/author_info_bar.dart';
+import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:skeletons/skeletons.dart';
 
 class RecipeDetailPage extends StatefulWidget {
@@ -20,7 +23,7 @@ class RecipeDetailPage extends StatefulWidget {
 }
 
 class _RecipeDetailPageState extends State<RecipeDetailPage> {
-  SwiperController swiperController = SwiperController();
+  SwiperController _swiperController = SwiperController();
 
   @override
   Widget build(BuildContext context) {
@@ -33,16 +36,20 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
           future: future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                // TODO: refresh
-                child: CircularProgressIndicator(),
-              );
+              return _buildSkeleton();
             }
             else if (snapshot.hasError){
-              // TODO: error
               log("${snapshot.error}");
-              log("${snapshot.stackTrace}");
-              return Text('1');
+              return Scaffold(
+                body: RefreshPlaceholder(
+                  message: "悲报！食谱在网络中迷路了",
+                  onRefresh: () {
+                    setState(() {
+                      future = Provider.of<RecipeDetailProvider>(context, listen: false).fetchRecipeDetail();
+                    });
+                  },
+                ),
+              );
             } else {
               return Consumer<RecipeDetailProvider>(
                 builder: (context, provider, child) {
@@ -54,9 +61,44 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
 
                   return Scaffold(
                     appBar: AppBar(
-                      title: AuthorInfoBar(
-                        authorAvatar: model.authorAvatar,
-                        authorName: model.authorName,
+                      scrolledUnderElevation: 0,
+                      title: GestureDetector(
+                        onTap: () async {
+                          // TODO: 跳转到个人页面
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => OtherAccountPage()),
+                          // );
+                        },
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
+                                await otherUserProvider.getUserById(model.authorId);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => OtherAccountPage()),
+                                );
+                              },
+                              child: CircleAvatar(
+                                radius: 16,
+                                backgroundColor: Colors.transparent,
+                                backgroundImage: ExtendedNetworkImageProvider(
+                                  model.authorAvatar,
+                                  cache: true,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16),
+                              child: Text(
+                                model.authorName,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     ),
                     body: GestureDetector(
@@ -64,16 +106,16 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                         var x = details.globalPosition.dx; // 获取点击的全局x坐标
                         var screenWidth = MediaQuery.of(context).size.width; // 获取屏幕的宽度
                         if (x < screenWidth / 3) {
-                          swiperController.previous();
+                          _swiperController.previous();
                         } else if (x > screenWidth * 2 / 3) {
-                          swiperController.next();
+                          _swiperController.next();
                         }
                       },
                       child: Container(
                         decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12)),
                         child: Swiper(
-                          controller: swiperController,
+                          controller: _swiperController,
                           scrollDirection: Axis.horizontal,
                           itemCount: model.stepContents.length + 1,
                           loop: false,
@@ -153,7 +195,11 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                         ),
                       ),
                     ),
-                    bottomNavigationBar: RecipeBar(),
+                    bottomNavigationBar: RecipeBar(
+                      onBack: () {
+                        _swiperController.move(0);
+                      },
+                    ),
                   );
                 },
               );
@@ -161,6 +207,29 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
           }
         );
       },
+    );
+  }
+
+  Widget _buildSkeleton(){
+    return Scaffold(
+      appBar: AppBar(),
+      body: Column(
+        children: [
+          SkeletonLine(
+            style: SkeletonLineStyle(
+              height: 256,
+              padding: EdgeInsets.all(16),
+              borderRadius: BorderRadius.circular(12)
+            ),
+          ),
+          const SkeletonLine(
+            style: SkeletonLineStyle(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              height: 32
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -181,7 +250,7 @@ class RecipeHead extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Text(introduction, style: Theme.of(context).textTheme.bodyLarge),
         ],
       ),
@@ -278,9 +347,13 @@ class StepContentSection extends StatelessWidget {
 /// 底部工具栏
 class RecipeBar extends StatelessWidget {
 
-  RecipeBar({super.key});
+  final void Function() onBack;
+
+  RecipeBar({super.key, required this.onBack});
 
   final ValueNotifier<bool> _favorite = ValueNotifier(false);
+
+  final ValueNotifier<int> _score = ValueNotifier(0);
 
   @override
   Widget build(BuildContext context) {
@@ -292,66 +365,22 @@ class RecipeBar extends StatelessWidget {
       height: 80,
       child: BottomAppBar(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IgnorePointer(
-                  ignoring: model.scored,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: List.generate(5, (index) {
-                      return IconButton(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        padding: EdgeInsets.zero,
-                        iconSize: 32,
-                        visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity),
-                        onPressed: () {
-                          provider.changeScore(index + 1);
-                        },
-                        icon: index >= provider.newScore
-                          ? const Icon(Icons.star_border_rounded, color: Colors.yellow)
-                          : const Icon(Icons.star_rounded, color: Colors.yellow),
-                        // icon: Icon(
-                        //   index >= provider.newScore
-                        //     ? Icons.star_border_rounded
-                        //     : Icons.star_rounded
-                        // )
-                      );
-                    }),
-                  ),
-                ),
-                (!model.scored)
-                  ? IconButton(
-                      highlightColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                      onPressed: () {
-                        _showBottomSheet(context);
-                        try {
-                          provider.scoreRecipe();
-                          Fluttertoast.showToast(msg: "评分成功");
-                        } catch(e) {
-                          Fluttertoast.showToast(msg: "$e");
-                        }
-                      },
-                      icon: Container(
-                        padding: const EdgeInsets.all(0),
-                        height: 35,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Center(child: Text('评价')),
-                      )
-                    )
-                  : Text("${model.averageScore}")
-              ],
+            IconButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                if(model.scored){
+                  Fluttertoast.showToast(msg: "只允许评分一次");
+                } else {
+                  _showBottomSheet(context);
+                }
+              },
+              icon: model.scored
+                ? const Icon(Icons.star_rounded, color: Colors.yellow, size: 28)
+                : const Icon(Icons.star_border_rounded, color: Colors.yellow, size: 28)
             ),
+            Text("${model.averageScore}分", style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(width: 12),
             IconButton(
               padding: EdgeInsets.zero,
               onPressed: () async {
@@ -375,10 +404,16 @@ class RecipeBar extends StatelessWidget {
                   if(value) {
                     return Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary);
                   } else {
-                    return Icon(Icons.favorite_outline_rounded);
+                    return const Icon(Icons.favorite_outline_rounded);
                   }
                 }
               )
+            ),
+            const Spacer(),
+            IconButton(
+              onPressed: onBack,
+              padding: EdgeInsets.zero,
+              icon: const Icon(Icons.keyboard_double_arrow_left_rounded, size: 28)
             )
           ],
         ),
@@ -387,38 +422,75 @@ class RecipeBar extends StatelessWidget {
   }
 
   void _showBottomSheet(BuildContext ctx) {
+    RecipeDetailProvider provider = Provider.of<RecipeDetailProvider>(ctx, listen: false);
+
     showModalBottomSheet(
       context: ctx,
       elevation: 0,
       showDragHandle: true,
       builder: (BuildContext context) {
-        return Consumer<RecipeDetailProvider>(
-          builder: (context, provider, child) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 32),
-              child: Row(
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(64, 0, 64, 48),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('留下你的评分吧~', style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.outline)),
+              const SizedBox(height: 8),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: List.generate(5, (index) {
-                  return IconButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    padding: EdgeInsets.zero,
-                    iconSize: 32,
-                    visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity),
-                    onPressed: () {
-                      provider.changeScore(index + 1);
+                  return ValueListenableBuilder<int>(
+                    valueListenable: _score,
+                    builder: (context, value, child) {
+                      return IconButton(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        padding: EdgeInsets.zero,
+                        iconSize: 36,
+                        visualDensity: const VisualDensity(horizontal: VisualDensity.minimumDensity),
+                        onPressed: () {
+                          _score.value = index + 1;
+                        },
+                        icon: index >= value
+                            ? const Icon(Icons.star_border_rounded, color: Colors.yellow)
+                            : const Icon(Icons.star_rounded, color: Colors.yellow),
+                      );
                     },
-                    icon: index >= provider.newScore
-                      ? const Icon(Icons.star_border_rounded, color: Colors.yellow)
-                      : const Icon(Icons.star_rounded, color: Colors.yellow),
                   );
                 }
               ),
-            ),
+        ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    onPressed: () {},
+                    child: Text("取消", style: TextStyle(color: Theme.of(context).colorScheme.outline))
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if(_score.value == 0) {
+                        Fluttertoast.showToast(msg: "评分至少一分");
+                      } else {
+                        try {
+                          provider.scoreRecipe(_score.value);
+                          Navigator.pop(context);
+                          Fluttertoast.showToast(msg: "评分成功");
+                        } catch(e) {
+                          log("$e");
+                          Fluttertoast.showToast(msg: "评分失败");
+                        }
+                      }
+                    },
+                    child: const Text("确认")
+                  )
+                ],
+              )
+            ],
+          ),
           );
-          },
-        );
       },
     );
   }

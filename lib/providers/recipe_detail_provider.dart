@@ -1,16 +1,12 @@
 import 'package:flutter/cupertino.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:seecooker/models/recipe_detail.dart';
 import 'package:seecooker/services/recipe_service.dart';
 
 class RecipeDetailProvider with ChangeNotifier {
   final int _recipeId;
   late RecipeDetail _model;
-  int _newScore = 0;
 
   RecipeDetail get model => _model;
-
-  int get newScore => _newScore;
 
   RecipeDetailProvider(this._recipeId);
 
@@ -20,8 +16,6 @@ class RecipeDetailProvider with ChangeNotifier {
       throw Exception("未获取到食谱数据: ${res.message}");
     }
     _model = RecipeDetail.fromJson(res.data);
-    print(_model.scored);
-    print(_recipeId);
   }
 
   Future<bool> favorRecipe() async {
@@ -32,14 +26,10 @@ class RecipeDetailProvider with ChangeNotifier {
     return res.data;
   }
 
-  void changeScore(int score) async {
-    _newScore = score;
-    notifyListeners();
-  }
 
-  void scoreRecipe() async {
+  void scoreRecipe(int score) async {
     model.scored = true;
-    final res = await RecipeService.scoreRecipe(_recipeId, _newScore.toDouble());
+    final res = await RecipeService.scoreRecipe(_recipeId, score.toDouble());
     if(!res.isSuccess()) {
       throw Exception('评分失败: ${res.message}');
     }

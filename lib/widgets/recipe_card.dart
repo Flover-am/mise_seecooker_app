@@ -99,13 +99,7 @@ class RecipeCard extends StatelessWidget {
                           ? Icon(Icons.favorite_rounded, color: Theme.of(context).colorScheme.primary)
                           : const Icon(Icons.favorite_outline_rounded, color: Colors.white),
                         onPressed: () async {
-                          print("before: ${_favorite.value}");
-                          bool res = await onFavorite();
-                          if(res == _favorite.value) {
-                            print("Error! id: $recipeId");
-                          }
-                          _favorite.value = res;
-                          print("after: ${_favorite.value}");
+                          _favorite.value = await onFavorite();
                         },
                       )
                     );
