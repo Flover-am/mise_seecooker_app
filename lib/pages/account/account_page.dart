@@ -102,7 +102,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
   buildSliverAppBar(UserProvider userProvider) {
     return SliverAppBar(
               //backgroundColor: Color.fromRGBO(244,164,96, 1),
-              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               pinned: true,
               expandedHeight: 230,
               toolbarHeight: 30,
@@ -139,7 +139,7 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
                       end: Alignment.bottomRight,
                       colors: [
                         Theme.of(context).colorScheme.primaryContainer, // 起始颜色
-                        Theme.of(context).colorScheme.secondaryContainer, // 结束颜色
+                        Theme.of(context).colorScheme.primary,// 结束颜色
                       ],
                     ),
                   ),
@@ -163,8 +163,12 @@ class _AccountPageState extends State<AccountPage> with SingleTickerProviderStat
               Tab(text: '收藏菜谱',),
               Tab(text: '发布菜谱'),
               Tab(text: '发布帖子'),
-      ],        labelColor: Colors.white, // 设置选中标签的文本颜色为白色
-                unselectedLabelColor: Colors.black, //
+              ],
+                labelColor: Theme.of(context).colorScheme.secondary, // 设置选中标签的文本颜色为白色
+                unselectedLabelColor: Theme.of(context).colorScheme.surface,
+                indicatorColor: Theme.of(context).colorScheme.secondary, // 设置选中项的指示器颜色
+                dividerColor: Colors.transparent,
+                splashBorderRadius: BorderRadius.circular(12),
               ),
         actions: [
           IconButton(
@@ -208,7 +212,7 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface
                     ),
                   ),
                   SizedBox(height: 8),
@@ -216,7 +220,8 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                     userProvider.description,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white,
+                        color:
+                        Theme.of(context).colorScheme.surface
                     ),
                   ), // 替换为用户描述
                 ],
@@ -232,7 +237,9 @@ Widget _buildLoggedInProfileSection(UserProvider userProvider,BuildContext conte
                 children: [
                   Text(userProvider.postNum.toString(), style: TextStyle(fontSize: 16,  color: Colors.white,fontWeight: FontWeight.bold)),
                   SizedBox(height: 4),
-                  Text('发帖数', style: TextStyle(fontSize: 12,color: Colors.white,)),
+                  Text('发帖数', style: TextStyle(fontSize: 12,
+                    color:
+                  Theme.of(context).colorScheme.surface,)),
                 ],
               ),
               SizedBox(width: 160),
