@@ -29,7 +29,7 @@ class _PublishRecipeState extends State<PublishRecipe> {
   final ImagePicker picker = ImagePicker();
 
   late XFile cover;
-  List<bool> hasStepsCover = [false, false, false, false];
+  List<bool> hasStepsCover = [false, false];
   late Map<int, XFile> stepsCover = {};
   ValueNotifier<int> countIngredient = ValueNotifier<int>(1);
   ValueNotifier<int> countStep = ValueNotifier<int>(2);
@@ -293,13 +293,21 @@ class _PublishRecipeState extends State<PublishRecipe> {
                   ),
                 ),
 
-                // const TextSelect(),
+                // 发布按钮 圆角20
                 Container(
-                  color: Theme.of(context).colorScheme.primaryContainer,
+                  margin: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                  // 圆角
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(38),
+                      color: Theme.of(context).colorScheme.primaryContainer),
                   child: TextButton(
                     style: ButtonStyle(
-                        shape: MaterialStateProperty.all(
-                            const BeveledRectangleBorder())),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
                     child: const Text("发布菜谱",
                         style: TextStyle(
                             color: Colors.white,
@@ -465,7 +473,11 @@ class _PublishRecipeState extends State<PublishRecipe> {
   }
 
   void selectCover() async {
-    XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
+    XFile image = (await picker.pickImage(
+        source: ImageSource.gallery,
+        maxHeight: 1080,
+        maxWidth: 1080,
+        imageQuality: 90))!;
     setState(() {
       cover = image;
       hasCover = true;
@@ -474,7 +486,11 @@ class _PublishRecipeState extends State<PublishRecipe> {
   }
 
   void selectStepCover(index) async {
-    XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
+    XFile image = (await picker.pickImage(
+        source: ImageSource.gallery,
+        maxHeight: 1080,
+        maxWidth: 1080,
+        imageQuality: 90))!;
     var tmp = hasStepsCover;
 
     setState(() {
