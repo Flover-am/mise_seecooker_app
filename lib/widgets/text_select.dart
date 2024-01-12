@@ -24,7 +24,6 @@ class _TextSelectState extends State<TextSelect> {
   @override
   void initState() {
     _kOptions = widget.ops;
-    // TODO: implement initState
     super.initState();
   }
 
@@ -85,9 +84,8 @@ class _TextSelectState extends State<TextSelect> {
           controller: controller,
           focusNode: focusNode,
           decoration: const InputDecoration(
-            hintText: '用量：比如一只',
+            hintText: '填写配料和用量',
             border: InputBorder.none,
-            // TODO: 修改样式
           ),
         );
       },

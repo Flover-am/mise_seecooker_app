@@ -128,8 +128,8 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                                     title: model.name,
                                     introduction: model.introduction
                                   ),
-                                  model.ingredients != null
-                                  ? Ingredients(ingredients: model.ingredients!)
+                                  model.ingredientAmount != null
+                                  ? Ingredients(ingredients: model.ingredientAmount!)
                                   : Container()
                                 ],
                               );

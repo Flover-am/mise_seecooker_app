@@ -93,7 +93,7 @@ class SwipeCardState extends State<SwipeCard>{
                             onTap: () =>Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RecipeDetailPage(id: index))
+                                    builder: (context) => RecipeDetailPage(id: provider.itemAt(index).recipeId))
                             ),
                             child: RecipeCard(
                               recipeId: provider.itemAt(index).recipeId,

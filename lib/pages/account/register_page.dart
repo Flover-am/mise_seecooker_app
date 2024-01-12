@@ -183,7 +183,12 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
   void selectAvatar() async {
-    XFile image = (await picker.pickImage(source: ImageSource.gallery))!;
+    XFile image = (await picker.pickImage(
+      source: ImageSource.gallery,
+      maxHeight: 1080,
+      maxWidth: 1080,
+      imageQuality: 90
+    ))!;
     setState((){
       hasNewAvatar = true;
       avatar_xfile = image;
