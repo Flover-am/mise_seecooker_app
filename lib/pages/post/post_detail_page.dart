@@ -179,34 +179,38 @@ class _PageContentState extends State<PageContent> {
             // 发布者头像及昵称栏
             appBar: AppBar(
               scrolledUnderElevation: 0,
-              title: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
-                      await otherUserProvider.getUserById(model.posterId);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => OtherAccountPage()),
-                      );
-                    },
-                    child: CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: ExtendedNetworkImageProvider(
-                        model.posterAvatar,
-                        cache: true,
+              title: GestureDetector(
+                onTap: () async {
+                },
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
+                        await otherUserProvider.getUserById(model.posterId);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => OtherAccountPage()),
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.transparent,
+                        backgroundImage: ExtendedNetworkImageProvider(
+                          model.posterAvatar,
+                          cache: true,
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Text(
-                      model.posterName,
-                      style: Theme.of(context).textTheme.titleMedium,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16),
+                      child: Text(
+                        model.posterName,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               actions: [
                 Row(
