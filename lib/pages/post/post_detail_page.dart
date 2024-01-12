@@ -181,11 +181,6 @@ class _PageContentState extends State<PageContent> {
               scrolledUnderElevation: 0,
               title: GestureDetector(
                 onTap: () async {
-                  // TODO: 跳转到个人页面
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => OtherAccountPage()),
-                  // );
                 },
                 child: Row(
                   children: [

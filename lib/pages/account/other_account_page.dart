@@ -254,7 +254,6 @@ class _UserPostListState extends State<UserPostList> with AutomaticKeepAliveClie
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
 
@@ -276,11 +275,9 @@ class _UserRecipesListState extends State<UserRecipesList> with AutomaticKeepAli
       enableRefresh: false,
       private: false,
     );
-    //return const PostsWaterfall<CommunityPostsProvider>();
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
 
@@ -301,7 +298,6 @@ class _UserFavorRecipesListState extends State<UserFavorRecipesList> with Automa
       enableRefresh: false,
       private: false,
     );
-    //return const PostsWaterfall<CommunityPostsProvider>();
   }
 
   @override
