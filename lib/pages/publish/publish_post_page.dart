@@ -72,7 +72,7 @@ class _PublishPostPageState extends State<PublishPostPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        title: const Text('发布'),
+        title: const Text('帖子发布'),
       ),
       body: Stack(
         children: [
