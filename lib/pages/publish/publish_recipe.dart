@@ -29,7 +29,7 @@ class _PublishRecipeState extends State<PublishRecipe> {
   final ImagePicker picker = ImagePicker();
 
   late XFile cover;
-  List<bool> hasStepsCover = [false, false];
+  List<bool> hasStepsCover = [false, false, false, false];
   late Map<int, XFile> stepsCover = {};
   ValueNotifier<int> countIngredient = ValueNotifier<int>(1);
   ValueNotifier<int> countStep = ValueNotifier<int>(2);
@@ -60,9 +60,37 @@ class _PublishRecipeState extends State<PublishRecipe> {
             appBar: AppBar(
                 actions: [
                   IconButton(
-                      onPressed: () {
-                        Fluttertoast.showToast(msg: "//TODO: 发布");
-                        provider.model;
+                      onPressed: () async {
+                        if (!hasCover) {
+                          Fluttertoast.showToast(msg: "请上传封面～");
+                          return;
+                        }
+                        if (!hasStepsCover.any((element) => element == true)) {
+                          Fluttertoast.showToast(msg: "请上传步骤对应的图片哦～");
+                          return;
+                        }
+                        //检测provider的model中的ingredientsAmount和ingredientsName是否有元素为“”
+                        if (!provider.model.ingredientsName
+                            .any((element) => element != "")) {
+                          Fluttertoast.showToast(msg: "配料不要为空～");
+                          return;
+                        }
+                        if (!provider.model.ingredientsAmount
+                            .any((element) => element != "")) {
+                          Fluttertoast.showToast(msg: "用量不要为空～");
+                          return;
+                        }
+                        if (!provider.model.stepContents
+                            .any((element) => element != "")) {
+                          Fluttertoast.showToast(msg: "步骤描述不要为空～");
+                          return;
+                        }
+                        stepsCover.forEach((key, value) {
+                          provider.model.stepImages
+                              .add(FileConverter.xFile2File(value));
+                        });
+                        provider.model.cover = FileConverter.xFile2File(cover);
+                        provider.publish();
                       },
                       icon: const Icon(Icons.publish_rounded))
                 ],
@@ -240,6 +268,7 @@ class _PublishRecipeState extends State<PublishRecipe> {
                                 if (index >=
                                     provider.model.stepContents.length) {
                                   provider.model.stepContents.add("");
+                                  hasStepsCover.add(false);
                                 }
                                 return singleStep(index, (value) {
                                   provider.model.stepContents[index] = value;
