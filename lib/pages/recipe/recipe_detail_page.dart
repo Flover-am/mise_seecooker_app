@@ -456,7 +456,9 @@ class RecipeBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     child: Text("取消", style: TextStyle(color: Theme.of(context).colorScheme.outline))
                   ),
                   TextButton(
