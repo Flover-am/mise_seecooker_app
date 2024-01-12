@@ -90,9 +90,9 @@ class SwipeCardState extends State<SwipeCard>{
                       stackNum: 3,
                       swipeEdge: 2.0,
                       maxWidth: MediaQuery.of(context).size.width ,
-                      maxHeight: MediaQuery.of(context).size.width+300,
+                      maxHeight: MediaQuery.of(context).size.width+200,
                       minWidth: (MediaQuery.of(context).size.width) *0.90,
-                      minHeight: (MediaQuery.of(context).size.width+300) * 0.90,
+                      minHeight: (MediaQuery.of(context).size.width+200) * 0.90,
                       cardBuilder: (context, index) {
                         if (index == provider.length - 1) {
                           provider.fetchMorePosts(Provider.of<ExplorePostProvider>(context,
@@ -104,14 +104,13 @@ class SwipeCardState extends State<SwipeCard>{
                                 MaterialPageRoute(
                                     builder: (context) => RecipeDetailPage(id: index))
                             ),
-                            child: ExpRecipeCard(
-                              id: provider.itemAt(index).recipeId,
-                              title: provider.itemAt(index).name,
-                              coverUrl: provider.itemAt(index).cover,
-                              author: provider.itemAt(index).authorName,
+                            child: RecipeCard(
+                              recipeId: provider.itemAt(index).recipeId,
+                              name: provider.itemAt(index).name,
+                              cover: provider.itemAt(index).cover,
                               introduction: provider.itemAt(index).introduction,
-                              authorAvatar: provider.itemAt(index).authorAvatar,
-                              favourite:  provider.itemAt(index).favorite,
+                              favorite:  provider.itemAt(index).favorite,
+                              onFavorite: () => null,
                             )
                         );
                       },
@@ -119,7 +118,7 @@ class SwipeCardState extends State<SwipeCard>{
                       swipeUpdateCallback:
                           (DragUpdateDetails details, Alignment align) {
                         // 以5为触发条件，识别正在左滑还是右滑
-                        if (align.x < 5) {
+                        if (align.x < -5) {
                           setState(() {
                             being_left = true;
                             being_right = false;
@@ -132,20 +131,20 @@ class SwipeCardState extends State<SwipeCard>{
                         }
                       },
                       swipeCompleteCallback:
-                          (CardSwipeOrientation orientation, int index) {
+                          (CardSwipeOrientation orientation, int index) async {
                         if (orientation.name == "left"){
                           setState(() {
                             being_left = being_right = false;
                           });
-                          print("左滑！");
+
                         }
                         else if (orientation.name == "right") {
                           setState(() {
                             being_left = being_right = false;
                           });
 
-                          print("右滑！");
-                          try{SaTokenUtil.getTokenName();
+                          try{
+                            final res = await SaTokenUtil.getTokenName();
                           }
                           catch(e){
                             Navigator.push(
@@ -154,6 +153,7 @@ class SwipeCardState extends State<SwipeCard>{
                                   builder: (context) => const LoginPage()),
                             );
                           }
+
                           // 探索界面不解除已收藏的菜品
                           if(!provider.itemAt(index).favorite)
                             ExploreService.favourite(provider.itemAt(index).recipeId);
@@ -166,18 +166,18 @@ class SwipeCardState extends State<SwipeCard>{
                       },
                     ),
                     Positioned(
-                      bottom: 16,
-                      left: 16,
+                      bottom: 40,
+                      left: 70,
                       child: being_left
-                          ? const Icon(Icons.arrow_back, color: Colors.red, size: 80)
-                          : const Icon(Icons.arrow_back_outlined, size: 80),
+                          ? const Icon(Icons.undo, color: Colors.red, size: 60)
+                          : const Icon(Icons.undo_outlined, size: 60),
                     ),
                     Positioned(
-                      bottom: 16,
-                      right: 16,
+                      bottom: 40,
+                      right: 70,
                       child: being_right
-                          ? const Icon(Icons.star, color: Colors.red, size: 80)
-                          : const Icon(Icons.star_outlined, size: 80),
+                          ? const Icon(Icons.star, color: Colors.red, size: 60)
+                          : const Icon(Icons.star_outlined, size: 60),
                     ),
                   ],
                 ),

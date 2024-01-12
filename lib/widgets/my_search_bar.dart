@@ -82,10 +82,6 @@ class _MySearchBarState extends State<MySearchBar> {
           padding: const MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16)),
           controller: controller,
           leading: const Icon(Icons.search),
-          trailing: [const CircleAvatar(
-            radius: 12,
-            backgroundImage: NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
-          )],
           hintText: '搜索食材',
           onSubmitted: (text) {
             if(FindDish(text,categories)!=""){
