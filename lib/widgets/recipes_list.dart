@@ -8,7 +8,6 @@ import 'package:seecooker/widgets/recipe_item.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:skeletons/skeletons.dart';
 
-// TODO: 完成组件
 /// 用于展示菜谱的列表组件
 /// 使用前应在父Widget处声明实现了RecipesProvider接口的自定义Provider，并作为泛型参数传入
 /// 使用前无需提前获取数据

@@ -3,9 +3,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:seecooker/models/user.dart';
 import 'package:seecooker/pages/account/login_page.dart';
-import 'package:seecooker/providers/user/user_favor_recipe_provider.dart';
+import 'package:seecooker/providers/recipe/user_favor_recipe_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
-import 'package:seecooker/providers/user/user_recipe_provider.dart';
+import 'package:seecooker/providers/recipe/user_recipe_provider.dart';
 import 'package:seecooker/utils/shared_preferences_util.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
 import 'package:skeletons/skeletons.dart';
@@ -13,7 +13,7 @@ import 'package:skeletons/skeletons.dart';
 import '../../providers/recipe/home_recipes_provider.dart';
 import '../../providers/post/community_posts_provider.dart';
 import '../../providers/recipe/search_recipes_provider.dart';
-import '../../providers/user/user_posts_provider.dart';
+import '../../providers/post/user_posts_provider.dart';
 import '../../widgets/recipe_card.dart';
 import '../recipe/recipe_detail_page.dart';
 import '../../widgets/recipes_list.dart';
@@ -364,11 +364,10 @@ class _UserPostListState extends State<UserPostList> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
 
-    return const PostsWaterfall<UserPostsProvider>(private: true,);
+    return const PostsWaterfall<UserPostsProvider>(private: true);
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
 
@@ -387,14 +386,13 @@ class _UserRecipesListState extends State<UserRecipesList> with AutomaticKeepAli
     super.build(context);
     return const RecipesList<UserRecipeProvider>(
       emptyMessage: '暂无菜谱',
-      enableRefresh: false,
-      private: false,
+      enableRefresh: true,
+      private: true,
     );
     //return const PostsWaterfall<CommunityPostsProvider>();
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
 
@@ -412,7 +410,7 @@ class _UserFavorRecipesListState extends State<UserFavorRecipesList> with Automa
     super.build(context);
     return const RecipesList<UserFavorRecipesProvider>(
       emptyMessage: '暂无菜谱',
-      enableRefresh: false,
+      enableRefresh: true,
       private: false,
     );
     //return const PostsWaterfall<CommunityPostsProvider>();
