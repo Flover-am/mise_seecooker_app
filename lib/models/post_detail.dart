@@ -1,21 +1,22 @@
-class PostDetailModel {
-  int id;
-  String author;
+import 'package:json_annotation/json_annotation.dart';
+
+part 'post_detail.g.dart';
+
+@JsonSerializable()
+class PostDetail {
   String title;
-  String avatarUrl;
+  String posterAvatar;
+  int posterId;
+  String posterName;
   String content;
-  List<String> imageUrls;
-  List<CommentModel> comments;
+  List<String> images;
+  bool like;
+  int likeNum;
+  String publishTime;
 
-  PostDetailModel(this.id, this.author, this.title, this.avatarUrl, this.content, this.imageUrls, this.comments);
-}
+  PostDetail(this.title, this.posterAvatar, this.posterId, this.posterName, this.content, this.images, this.like, this.likeNum, this.publishTime);
 
-class CommentModel {
-  int id;
-  String author;
-  DateTime date;
-  String content;
-  String avatarUrl;
+  factory PostDetail.fromJson(Map<String, dynamic> json) => _$PostDetailFromJson(json);
 
-  CommentModel(this.id, this.author, this.date, this.content, this.avatarUrl);
+  Map<String, dynamic> toJson() => _$PostDetailToJson(this);
 }

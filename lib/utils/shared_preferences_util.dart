@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Shared Preferences相关功能
 class SharedPreferencesUtil {
   SharedPreferencesUtil._internal();
   factory SharedPreferencesUtil() => _instance;
@@ -35,6 +36,16 @@ class SharedPreferencesUtil {
   static Future<bool> getBool(String key) async {
     final SharedPreferences prefs = await _prefs;
     return prefs.getBool(key) ?? false;
+  }
+
+  static Future<bool> setStringList(String key, List<String> value) async {
+    final SharedPreferences prefs = await _prefs;
+    return prefs.setStringList(key, value);
+  }
+
+  static Future<List<String>> getStringList(String key) async {
+    final SharedPreferences prefs = await _prefs;
+    return prefs.getStringList(key) ?? [];
   }
 
   static Future<bool> remove(String key) async {
