@@ -100,7 +100,6 @@ class _PostsWaterfallState<T extends PostsProvider> extends State<PostsWaterfall
                       child: child,
                     );
                   },
-                  // TODO: refresh placeholder
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Center(child: Text(widget.endMessage, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)))),

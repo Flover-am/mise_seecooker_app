@@ -61,43 +61,34 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
                   return Scaffold(
                     appBar: AppBar(
                       scrolledUnderElevation: 0,
-                      title: GestureDetector(
-                        onTap: () async {
-                          // TODO: 跳转到个人页面
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => OtherAccountPage()),
-                          // );
-                        },
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
-                                await otherUserProvider.getUserById(model.authorId);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => OtherAccountPage()),
-                                );
-                              },
-                              child: CircleAvatar(
-                                radius: 16,
-                                backgroundColor: Colors.transparent,
-                                backgroundImage: ExtendedNetworkImageProvider(
-                                  model.authorAvatar,
-                                  cache: true,
-                                ),
+                      title: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              OtherUserProvider otherUserProvider = Provider.of<OtherUserProvider>(context,listen: false);
+                              await otherUserProvider.getUserById(model.authorId);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => OtherAccountPage()),
+                              );
+                            },
+                            child: CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.transparent,
+                              backgroundImage: ExtendedNetworkImageProvider(
+                                model.authorAvatar,
+                                cache: true,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16),
-                              child: Text(
-                                model.authorName,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16),
+                            child: Text(
+                              model.authorName,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       )
                     ),
                     body: GestureDetector(

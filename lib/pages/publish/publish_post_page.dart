@@ -444,7 +444,6 @@ class DetailImagePage extends StatelessWidget{
                                     title: const Text('是否删除图片'),
                                     content: const Text('这将从已选图片中删除该图片。'),
                                     actions:<Widget>[
-                                      // TODO: 修改按钮样式
                                       TextButton(
                                         onPressed: () => Navigator.of(context).pop(),
                                         child: const Text('取消'),

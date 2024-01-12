@@ -17,7 +17,6 @@ class RecipeDetail {
   double averageScore;
   bool favorite;
   List<Map<String,String>>? ingredients;
-  // TODO: 空校验
   String? publishTime;
 
   RecipeDetail(
