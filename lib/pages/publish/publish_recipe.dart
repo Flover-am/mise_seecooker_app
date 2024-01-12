@@ -11,7 +11,7 @@ import 'package:seecooker/providers/explore/Ingredients_provider.dart';
 import 'package:seecooker/providers/recipe/new_recipe_provider.dart';
 import 'package:seecooker/providers/user/user_provider.dart';
 import 'package:seecooker/services/recipe_service.dart';
-import 'package:seecooker/utils/FileConverter.dart';
+import 'package:seecooker/utils/file_converter.dart';
 import 'package:seecooker/widgets/text_select.dart';
 
 class PublishRecipe extends StatefulWidget {

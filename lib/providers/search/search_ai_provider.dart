@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:seecooker/services/ai_service.dart';
+import 'package:seecooker/services/recipe_service.dart';
 
 class SearchAiProvider with ChangeNotifier {
   late String _response;
@@ -11,7 +11,7 @@ class SearchAiProvider with ChangeNotifier {
   String get response => _response;
 
   Future<void> fetchAiResponse() async {
-    final res = await AiService.getAiResponse(query);
+    final res = await RecipeService.getAiResponse(query);
     if(!res.isSuccess()) {
       throw Exception('未获取到大模型返回结果: ${res.message}');
     }
