@@ -324,9 +324,9 @@ class _PublishPostPageState extends State<PublishPostPage> {
   Future<void> _pickMultipleImages() async{
     try{
       List<XFile> pickedFile = await picker.pickMultiImage(
-        maxWidth: 100,
-        maxHeight: 100,
-        imageQuality: 80
+        maxWidth: 1080,
+        maxHeight: 1080,
+        imageQuality: 90
       );
       setState(() {
         for(var i = 0;i < pickedFile.length;i++){
@@ -349,7 +349,7 @@ class _PublishPostPageState extends State<PublishPostPage> {
         source: ImageSource.camera,
         maxWidth: 1080,
         maxHeight: 1080,
-        imageQuality: 80
+        imageQuality: 90
       );
       if(pickedFile!=null){
         setState(() {
