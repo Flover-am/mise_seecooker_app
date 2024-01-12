@@ -145,6 +145,8 @@ class _PublishPostPageState extends State<PublishPostPage> {
           Navigator.pop(ctx);
           Fluttertoast.showToast(msg: "发布成功");
           Provider.of<CommunityPostsProvider>(ctx, listen: false).fetchPosts();
+          Provider.of<UserProvider>(ctx, listen: false).getUser();
+
         } else {
           throw Exception("发布失败");
         }

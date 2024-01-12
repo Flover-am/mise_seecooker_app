@@ -12,12 +12,14 @@ import 'package:seecooker/models/post_detail.dart';
 import 'package:seecooker/models/comment.dart';
 import 'package:seecooker/providers/comments_provider.dart';
 import 'package:seecooker/providers/post_detail_provider.dart';
-import 'package:seecooker/providers/post/user_posts_provider.dart';
 import 'package:seecooker/utils/image_util.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:seecooker/providers/user/other_user_provider.dart';
 import 'package:seecooker/pages/account/other_account_page.dart';
 import 'package:skeletons/skeletons.dart';
+
+import '../../providers/post/user_posts_provider.dart';
+import '../../providers/user/user_provider.dart';
 
 /// 帖子详情页
 class PostDetailPage extends StatefulWidget {
@@ -489,6 +491,10 @@ class _PageContentState extends State<PageContent> {
                                   onPressed: () async {
                                     try {
                                       await Provider.of<PostDetailProvider>(ctx, listen: false).deletePost();
+                                      //Provider.of<UserPostsProvider>(context, listen: false).fetchPosts();
+                                      Provider.of<UserProvider>(context, listen: false).getUser();
+
+
                                       Fluttertoast.showToast(msg: "帖子已删除");
                                       Navigator.pop(context);
                                       Navigator.pop(context);
@@ -496,6 +502,8 @@ class _PageContentState extends State<PageContent> {
                                     } catch (e) {
                                       log("$e");
                                       Fluttertoast.showToast(msg: "删除失败");
+                                      Provider.of<UserProvider>(context, listen: false).getUser();
+
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                     }
