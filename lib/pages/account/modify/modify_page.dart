@@ -196,7 +196,7 @@ class _ModifyPageState extends State<ModifyPage> {
       source: ImageSource.gallery,
       maxWidth: 1080,
       maxHeight: 1080,
-      imageQuality: 80
+      imageQuality: 90
     ))!;
     setState(() {
       avatar_xfile = image;
