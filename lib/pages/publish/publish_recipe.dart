@@ -34,6 +34,8 @@ class _PublishRecipeState extends State<PublishRecipe> {
   ValueNotifier<int> countIngredient = ValueNotifier<int>(1);
   ValueNotifier<int> countStep = ValueNotifier<int>(2);
 
+  bool hasPicAsync = false;
+
   /// 标题和简介的监听
   // final titleController = TextEditingController();
   // final introductionController = TextEditingController();
@@ -90,7 +92,13 @@ class _PublishRecipeState extends State<PublishRecipe> {
                               .add(FileConverter.xFile2File(value));
                         });
                         provider.model.cover = FileConverter.xFile2File(cover);
-                        provider.publish();
+                        provider.publish().then((value) {
+                          Fluttertoast.showToast(msg: "发布成功！");
+                          Navigator.pop(context);
+                        }).onError((error, stackTrace) {
+                          Fluttertoast.showToast(
+                              msg: "发布失败！${error.toString()}");
+                        });
                       },
                       icon: const Icon(Icons.publish_rounded))
                 ],
@@ -338,12 +346,20 @@ class _PublishRecipeState extends State<PublishRecipe> {
                         Fluttertoast.showToast(msg: "步骤描述不要为空～");
                         return;
                       }
-                      stepsCover.forEach((key, value) {
-                        provider.model.stepImages
-                            .add(FileConverter.xFile2File(value));
-                      });
+                      if (!hasPicAsync) {
+                        stepsCover.forEach((key, value) {
+                          provider.model.stepImages
+                              .add(FileConverter.xFile2File(value));
+                        });
+                        hasPicAsync = true;
+                      }
                       provider.model.cover = FileConverter.xFile2File(cover);
-                      provider.publish();
+                      provider.publish().then((value) {
+                        Fluttertoast.showToast(msg: "发布成功！");
+                        Navigator.pop(context);
+                      }).onError((error, stackTrace) {
+                        Fluttertoast.showToast(msg: "发布失败！${error.toString()}");
+                      });
                     },
                   ),
                 ),
