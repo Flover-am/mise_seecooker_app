@@ -9,7 +9,7 @@ import 'package:seecooker/utils/sa_token_util.dart';
 
 class RecipeService {
   /// 测试阶段可以先用apiFox的Mock的url
-  static const String baseUrl = "${ServerUrlUtil.baseUrl}/recipe";
+  static const String baseUrl = "${ServerUrl.baseUrl}/recipe";
 
   /// 使用Dio进行网络请求
   static Dio dio = Dio();

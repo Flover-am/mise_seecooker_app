@@ -327,7 +327,11 @@ class _PublishPostPageState extends State<PublishPostPage> {
   /// 从相册选择多张图片
   Future<void> _pickMultipleImages() async{
     try{
-      List<XFile> pickedFile = await picker.pickMultiImage();
+      List<XFile> pickedFile = await picker.pickMultiImage(
+        maxWidth: 100,
+        maxHeight: 100,
+        imageQuality: 80
+      );
       setState(() {
         for(var i = 0;i < pickedFile.length;i++){
           _userImage.add(pickedFile[i].path);
@@ -345,7 +349,12 @@ class _PublishPostPageState extends State<PublishPostPage> {
   /// 从相机获取单张图片
   Future<void> _pickImageFromCamera() async{
     try {
-      XFile? pickedFile = await picker.pickImage(source: ImageSource.camera);
+      XFile? pickedFile = await picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1080,
+        maxHeight: 1080,
+        imageQuality: 80
+      );
       if(pickedFile!=null){
         setState(() {
           _userImage.add(pickedFile.path);

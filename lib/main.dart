@@ -33,7 +33,6 @@ void main() {
         ChangeNotifierProvider(create: (context) => IngredientsProvider()),
         ChangeNotifierProvider(create: (context) => OtherUserProvider()),
         ChangeNotifierProvider(create: (context) => RecommendProvider()),
-
       ],
       child: const MyApp()
     )

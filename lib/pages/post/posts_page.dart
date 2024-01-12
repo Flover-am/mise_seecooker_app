@@ -3,7 +3,6 @@ import 'package:seecooker/pages/publish/publish_post_page.dart';
 import 'package:seecooker/pages/search/search_page.dart';
 import 'package:seecooker/providers/post/community_posts_provider.dart';
 import 'package:seecooker/widgets/posts_waterfall.dart';
-import 'package:seecooker/pages/publish/publish_page.dart';
 
 class PostsPage extends StatefulWidget {
   const PostsPage({super.key});

@@ -78,6 +78,7 @@ class _RecipesListState<T extends RecipesProvider> extends State<RecipesList<T>>
     return Consumer<T>(
       builder: (context, provider, child) {
         return ListView.builder(
+          padding: EdgeInsets.zero,
           itemBuilder: (context, index) {
             if(index == provider.count) {
               provider.fetchMoreRecipes();

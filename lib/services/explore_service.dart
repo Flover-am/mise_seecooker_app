@@ -15,7 +15,7 @@ import 'package:seecooker/utils/server_url_util.dart';
 
 
 class ExploreService {
-  static const String baseUrl =ServerUrlUtil.baseUrl;
+  static const String baseUrl =ServerUrl.baseUrl;
 
   static Dio dio = Dio();
   static Future<HttpResult> fetchPosts(List<String> ingredients) async {

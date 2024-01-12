@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Shared Preferences相关功能
 class SharedPreferencesUtil {
   SharedPreferencesUtil._internal();
   factory SharedPreferencesUtil() => _instance;

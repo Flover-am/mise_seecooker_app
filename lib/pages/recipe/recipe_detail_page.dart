@@ -9,7 +9,6 @@ import 'package:seecooker/models/recipe_detail.dart';
 import 'package:seecooker/pages/account/other_account_page.dart';
 import 'package:seecooker/providers/other_user/other_user_provider.dart';
 import 'package:seecooker/providers/recipe_detail_provider.dart';
-import 'package:seecooker/widgets/author_info_bar.dart';
 import 'package:seecooker/widgets/refresh_place_holder.dart';
 import 'package:skeletons/skeletons.dart';
 

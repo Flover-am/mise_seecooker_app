@@ -6,7 +6,7 @@ import 'package:seecooker/utils/sa_token_util.dart';
 import 'package:seecooker/utils/server_url_util.dart';
 
 class CommunityService {
-  static const String baseUrl = "${ServerUrlUtil.baseUrl}/community";
+  static const String baseUrl = "${ServerUrl.baseUrl}/community";
 
   static Dio dio = Dio();
 

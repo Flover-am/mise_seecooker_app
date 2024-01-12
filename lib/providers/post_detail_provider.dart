@@ -31,7 +31,7 @@ class PostDetailProvider{
   Future<void> deletePost() async {
     final res = await CommunityService.deletePost(_postId);
     if(!res.isSuccess()) {
-      throw Exception('点赞失败: ${res.message}');
+      throw Exception('删除失败: ${res.message}');
     }
   }
 }

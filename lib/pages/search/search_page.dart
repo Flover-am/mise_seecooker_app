@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -7,9 +6,15 @@ import 'package:seecooker/providers/search/search_history_provider.dart';
 import 'package:seecooker/providers/search/search_recommend_provider.dart';
 import 'package:skeletons/skeletons.dart';
 
+/// 搜索页面
 class SearchPage extends StatelessWidget {
+  /// 搜索内容
   final String? query;
+
+  /// 搜索框焦点
   final FocusNode _focusNode = FocusNode();
+
+  /// 搜索框输入控制器
   final TextEditingController _textEditingController = TextEditingController();
 
   SearchPage({super.key, this.query});
@@ -219,6 +224,7 @@ class SearchPage extends StatelessWidget {
     );
   }
 
+  /// 跳转到搜索结果页
   void goToSearchResult(BuildContext context, String query){
     Provider.of<SearchHistoryProvider>(context, listen: false).updateSearchHistory(query);
     Navigator.pushReplacement(
