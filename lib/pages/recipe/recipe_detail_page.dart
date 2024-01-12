@@ -472,11 +472,7 @@ class RecipeBar extends StatelessWidget {
                           Fluttertoast.showToast(msg: "评分成功");
                         } catch(e) {
                           log("$e");
-                          if(e.toString() == "Exception: 请登录"){
-                            Fluttertoast.showToast(msg: "请登录");
-                          } else {
-                            Fluttertoast.showToast(msg: "$e");
-                          }
+                          Fluttertoast.showToast(msg: "$e".substring(11));
                         }
                       }
                     },

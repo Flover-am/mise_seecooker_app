@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
         slivers: [
           SliverAppBar(
             pinned: true,
-            expandedHeight: 192,
+            expandedHeight: 144,
             scrolledUnderElevation: 0,
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(bottom: 16),
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      height: 88,
+                      height: 64,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(
                               begin: Alignment.topCenter,
@@ -74,22 +74,12 @@ class _HomePageState extends State<HomePage> {
                           )
                       )
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 24),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Consumer<UserProvider>(
-                            builder: (context, provider, child) {
-                              if(provider.username != '未登录') {
-                                return Text('亲爱的 ${provider.username} ，', style: Theme.of(context).textTheme.titleMedium);
-                              } else {
-                                return Text('你好，', style: Theme.of(context).textTheme.titleMedium);
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 12),
                           Text.rich(
                             TextSpan(
                               style: Theme.of(context).textTheme.titleMedium,
